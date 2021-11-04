@@ -1,93 +1,82 @@
 ---
 # vim: set ft=ansible:
 
-- name: Reload inventory for bastion host
-  hosts: localhost
-  tasks:
+- name: Copy over k8s-aio env requirements.txt
+  ansible.builtin.copy:
+    src: conf/requirements.txt
+    dest: /tmp/requirements.txt
 
-    - meta: refresh_inventory
+- name: "Create k8s-aio venv"
+  pip:
+    requirements: "/tmp/requirements.txt"
+    virtualenv: "/opt/virtualenvs/k8s-aio"
+    virtualenv_site_packages: true
+    virtualenv_command: "/usr/bin/virtualenv"
 
-- name: Deploy OpenShift Virtualization Lab
-  gather_facts: false
-  hosts: bastion
-  tasks:
+- name: "Set Ansible interpreter to venv"
+  set_fact:
+    ansible_python_interpreter: /opt/virtualenvs/k8s-aio/bin/python
 
-    - name: Copy over k8s-aio env requirements.txt
-      ansible.builtin.copy:
-        src: conf/requirements.txt
-        dest: /tmp/requirements.txt
-
-    - name: "Create k8s-aio venv"
-      pip:
-        requirements: "/tmp/requirements.txt"
-        virtualenv: "/opt/virtualenvs/k8s-aio"
-        virtualenv_site_packages: true
-        virtualenv_command: "/usr/bin/virtualenv"
-
-    - name: "Set Ansible interpreter to venv"
-      set_fact:
-        ansible_python_interpreter: /opt/virtualenvs/k8s-aio/bin/python
-
-    - name: Create project for workbook
-      k8s:
-        state: present
-        definition: "{{ lookup('file', 'lab/conf/cnvlab-project.yaml') }}"
-      register: project_success
-      retries: 3
-      delay: 30
-      until: project_success is not failed
+- name: Create project for workbook
+  k8s:
+    state: present
+    definition: "{{ lookup('file', 'lab/conf/cnvlab-project.yaml') }}"
+  register: project_success
+  retries: 3
+  delay: 30
+  until: project_success is not failed
  
-    - name: Get necessary files
-      ansible.builtin.copy:
-        src: files/lab/
-        dest: /root/cnvlab
+- name: Get necessary files
+  ansible.builtin.copy:
+    src: files/lab/
+    dest: /root/cnvlab
 
-    - name: Deploy Workbook Instance for CNV Labs
-      block:
-      - name: Configure and apply build template
-        shell: >-
-          oc -n workbook process
-          -f /root/cnvlab/build-template.yaml -p NAME=cnv | oc -n workbook apply -f -
-        register: buildt_success
-        retries: 3
-        delay: 30
-        until: buildt_success is not failed
+- name: Deploy Workbook Instance for CNV Labs
+  block:
+  - name: Configure and apply build template
+    shell: >-
+      oc -n workbook process
+      -f /root/cnvlab/build-template.yaml -p NAME=cnv | oc -n workbook apply -f -
+    register: buildt_success
+    retries: 3
+    delay: 30
+    until: buildt_success is not failed
 
-      - name: Start the build
-        shell: oc -n workbook start-build cnv --from-dir=/root/cnvlab
-        register: build_success
-        retries: 3
-        delay: 30
-        until: build_success is not failed
+  - name: Start the build
+    shell: oc -n workbook start-build cnv --from-dir=/root/cnvlab
+    register: build_success
+    retries: 3
+    delay: 30
+    until: build_success is not failed
 
-      - name: Configure and deploy the deploy template
-        shell: >-
-          oc -n workbook process
-          -f /root/cnvlab/deploy-template.yaml -p NAME=cnv -p IMAGE_STREAM_NAME=cnv
-          | oc -n workbook apply -f -
-        register: deploy_success
-        retries: 3
-        delay: 30
-        until: deploy_success is not failed
+  - name: Configure and deploy the deploy template
+    shell: >-
+      oc -n workbook process
+      -f /root/cnvlab/deploy-template.yaml -p NAME=cnv -p IMAGE_STREAM_NAME=cnv
+      | oc -n workbook apply -f -
+    register: deploy_success
+    retries: 3
+    delay: 30
+    until: deploy_success is not failed
 
-    - name: Give cluster-admin privileges to CNV user
-      k8s:
-        state: present
-        definition: "{{ lookup('file', 'lab/conf/cnvlab-admin.yaml') }}"
-      register: clusteradmin_success
-      retries: 3
-      delay: 30
-      until: clusteradmin_success is not failed
+- name: Give cluster-admin privileges to CNV user
+  k8s:
+    state: present
+    definition: "{{ lookup('file', 'lab/conf/cnvlab-admin.yaml') }}"
+  register: clusteradmin_success
+  retries: 3
+  delay: 30
+  until: clusteradmin_success is not failed
 
-    - name: Get CNV Lab Workbook Route
-      k8s_info:
-        kind: Route
-        api_version: route.openshift.io/v1
-        namespace: "workbook"
-        label_selectors:
-          - app = cnv
-      register: getroute
+- name: Get CNV Lab Workbook Route
+  k8s_info:
+    kind: Route
+    api_version: route.openshift.io/v1
+    namespace: "workbook"
+    label_selectors:
+      - app = cnv
+  register: getroute
 
-    - name: Print CNV Lab Workbook Route
-      debug:
-        msg: "OpenShift Virtualization Lab Workbook: https://{{ getroute.resources[0].spec.host }}"
+- name: Print CNV Lab Workbook Route
+  debug:
+    msg: "OpenShift Virtualization Lab Workbook: https://{{ getroute.resources[0].spec.host }}"
