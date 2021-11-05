@@ -77,6 +77,11 @@
       - app = cnv
   register: getroute
 
+- name: Save route infos in an object
+  add_host: 
+    name: "cnvlab_holder"
+    route: "{{ getroute.resources[0].spec.host }}"
+
 - name: Print CNV Lab Workbook Route
   debug:
     msg: "OpenShift Virtualization Lab Workbook: https://{{ getroute.resources[0].spec.host }}"
