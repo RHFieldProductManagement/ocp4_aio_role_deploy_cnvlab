@@ -26,24 +26,25 @@
   delay: 30
   until: project_success is not failed
  
-- name: Get necessary files
-  ansible.builtin.copy:
-    src: files/lab/
-    dest: /root/cnvlab
+- name: Clone OpenShift virt repositories
+  git:
+    repo: "https://github.com/RHFieldProductManagement/ocp4_aio_role_deploy_cnvlab.git"
+    dest: "/root/cnvlab"
+    version: "v0.0.2"
 
 - name: Deploy Workbook Instance for CNV Labs
   block:
   - name: Configure and apply build template
     shell: >-
       oc -n workbook process
-      -f /root/cnvlab/build-template.yaml -p NAME=cnv | oc -n workbook apply -f -
+      -f /root/cnvlab/files/lab/build-template.yaml -p NAME=cnv | oc -n workbook apply -f -
     register: buildt_success
     retries: 3
     delay: 30
     until: buildt_success is not failed
 
   - name: Start the build
-    shell: oc -n workbook start-build cnv --from-dir=/root/cnvlab
+    shell: oc -n workbook start-build cnv --from-dir=/root/cnvlab/files/lab
     register: build_success
     retries: 3
     delay: 30
@@ -52,7 +53,7 @@
   - name: Configure and deploy the deploy template
     shell: >-
       oc -n workbook process
-      -f /root/cnvlab/deploy-template.yaml -p NAME=cnv -p IMAGE_STREAM_NAME=cnv
+      -f /root/cnvlab/files/lab/deploy-template.yaml -p NAME=cnv -p IMAGE_STREAM_NAME=cnv
       | oc -n workbook apply -f -
     register: deploy_success
     retries: 3
