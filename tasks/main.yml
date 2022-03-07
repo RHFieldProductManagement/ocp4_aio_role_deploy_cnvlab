@@ -69,6 +69,24 @@
   delay: 30
   until: clusteradmin_success is not failed
 
+- name: Apply the MongoDB VM Template File
+  k8s:
+    state: present
+    definition: "{{ lookup('file', 'lab/deploy/mongodb-vm-template.yaml') }}"
+  register: mongodb_success
+  retries: 3
+  delay: 30
+  until: mongodb_success is not failed
+
+- name: Apply the ParksMap Application Template
+  k8s:
+    state: present
+    definition: "{{ lookup('file', 'lab/deploy/parksmap-application-template.yaml') }}"
+  register: parksmap_success
+  retries: 3
+  delay: 30
+  until: parksmap_success is not failed
+
 - name: Get CNV Lab Workbook Route
   k8s_info:
     kind: Route
