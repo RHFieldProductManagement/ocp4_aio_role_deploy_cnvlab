@@ -1,6 +1,6 @@
-Since OpenShift 4.5, OpenShift Virtualization has been fully supported by Red Hat as a component of OpenShift itself. The mechanism for installation is to utilise the operator model and deploy via the OpenShift Operator Hub in the web-console. Note, it's entirely possible to deploy via the CLI should you wish to do so, but we're not documenting that mechanism here.
+Since OpenShift 4.5, OpenShift Virtualization has been fully supported by Red Hat as a component of OpenShift itself. The mechanism for installation is to utilise the operator model and deploy via the OpenShift Operator Hub in the OpenShift Web Console. Note, it's entirely possible to deploy via the CLI should you wish to do so, but we're not documenting that mechanism here.
 
-When you're ready, navigate to the top-level '**Operators**' menu entry, and select '**OperatorHub**' (you'll need to make sure that you're in the Administrator perspective). This lists all of the available operators that you can install from the operator catalogue. Simply start typing '**virtualization**' in the search box and you should see an entry called "**OpenShift Virtualization**" - please don't select "**KubeVirt**" as this is the community operator. Simply select it and you'll see a window that looks like the following:
+Navigate to the top-level '**Operators**' menu entry, and select '**OperatorHub**' (you'll need to make sure that you're in the Administrator perspective). This lists all of the available operators that you can install from the operator catalogue. Start typing '**virtualization**' in the search box and you should see an entry called "**OpenShift Virtualization**" - please don't select "**KubeVirt**" as this is the community operator. Simply select it and you'll see a window that looks like the following (the version may be slightly different):
 
 <img  border="1" src="img/ocp-virt-operator-install.png"/>
 
@@ -15,10 +15,13 @@ Make sure that the namespace it will be installed to is "**openshift-cnv**" - it
 
 <img  border="1" src="img/ocp-virt-operatore-install-success.png"/>
 
+Next we need to deploy the HyperConverged resource, which, in addition to the OpenShift Virtualization operator, creates and maintains an OpenShift Virtualization Deployment for the cluster. 
 
-Next we need to deploy the HyperConverged resource, which, in addition to the OpenShift Virtualization operator, creates and maintains an OpenShift Virtualization Deployment for the cluster. This may raise some questions about "hyperconverged infrastructures", however this relates to the fact that we're converging virtual machines and containers, and is how an "instance" of OpenShift Virtualization is instantiated - it does not impact the relation between compute and storage as we will see later in the labs. Click on "**Create HyperConverged**", as a required operand, in the same screen to proceed.
+> This may raise some questions about a similar term: "hyperconverged infrastructures" and the relationship of workloads and storage associated with that term. For OpenShift Virtualization this relates to the fact that we're converging virtual machines and containers and is how an "instance" of OpenShift Virtualization is instantiated - it does not impact the relation between compute and storage as we will see later in the labs. 
 
-This will open the next screen where we can (again) accept all the defaults for this lab - for production use, there are many additional flags, parameters, and attributes that can be applied at this stage, for example enabling tech-preview features, specifying host devices that can be utilised, implementing CPU masks, and so on. Continue the installation by click on "**Create**" at the bottom.
+Click on "**Create HyperConverged**", as a required operand, in the same screen to proceed.
+
+This will open a new screen. We can again accept all the defaults for this lab - for real world use, there are many additional flags, parameters, and attributes that can be applied at this stage, such as enabling tech-preview features, specifying host devices, implementing CPU masks, and so on. Continue the installation by clicking on "**Create**" at the bottom.
 
 <img  border="1" src="img/ocp-virt-operatore-create-HyperC.png"/>
 
@@ -50,10 +53,10 @@ You should see the output below; if it still says "**Installing**" in "**PHASE**
 
 ~~~bash
 NAME                                      DISPLAY                    VERSION   REPLACES                                  PHASE
-kubevirt-hyperconverged-operator.v4.9.0   OpenShift Virtualization   4.9.0     kubevirt-hyperconverged-operator.v4.8.2   Succeeded
+kubevirt-hyperconverged-operator.v4.9.3   OpenShift Virtualization   4.9.3     kubevirt-hyperconverged-operator.v4.9.2   Succeeded
 ~~~
 
-> **NOTE**: You may have slightly newer versions than the ones listed above.
+> **NOTE**: You may have slightly different versions than the ones listed above.
 
 If you do not see `Succeeded` in the `PHASE` column then the deployment may still be progressing, or has failed. You will not be able to proceed until the installation has been successful. Once the `PHASE` changes to `Succeeded` you can validate that the required resources and the additional components have been deployed across the nodes. First let's check the pods deployed in the `openshift-cnv` namespace:
 
@@ -84,7 +87,7 @@ hco-webhook-5c8d75b559-d4h5r                          1/1     Running   0       
 
 > **NOTE**: All pods shown from this command should be in the `Running` state. You will have many different types, the above snippet is just an example of the output at one point in time, you may have more or less at any one point. Below we discuss some of the pod types and what they do.
 
-You may check by filtering with grep the 'Running' ones and then counting the lines:
+You may check by using grep to do inverse-filtering for any 'Running' pods:
 
 ```execute-1
 oc get pods -n openshift-cnv | grep -v Running
@@ -119,13 +122,13 @@ Together, all of these pods are responsible for various functions of running a v
 
 
 
-There's also a few custom resources that get defined too, for example the `NodeNetworkState` (`nns` for short) which provides a current network configuration of our nodes - this is used to verify whether physical networking configurations have been successfully applied by the `nmstate-handler` pods - ensuring that the NetworkManager state on each node is configured as required, e.g. for defining interfaces/bridges on each of the machines for connectivity for both the physical machine itself and for providing network access for pods (and virtual machines) within OpenShift/Kubernetes:
+There's also a few custom resources that get defined too. For example the `NodeNetworkState` (`nns`)  provides the current network configuration of our nodes - this is used to verify whether physical networking configurations have been successfully applied by the `nmstate-handler` pods. This is useful for ensuring that the NetworkManager state on each node is configured as required. We use this for defining interfaces/bridges on each of the machines for both physical machine connectivity and for providing network access for pods (and virtual machines) within OpenShift/Kubernetes. View the NodeNetworkState state with:
 
 ```execute-1
 oc get nns -A
 ```
 
-Now you can see the list of NodeNetworkStates
+Which shows the list of nodes being managed:
 
 ~~~bash
 NAME                           AGE
@@ -137,13 +140,13 @@ ocp4-worker2.aio.example.com   8m50s
 ocp4-worker3.aio.example.com   8m54s
 ~~~
 
-And in order to get details of onew of them:
+You can then view the details of each managed node with:
 
 ```execute-1
 oc get nns/ocp4-worker1.aio.example.com -o yaml
 ```
 
-You should see NodeNetworkState definition in *yaml* format
+This shows the NodeNetworkState definition in *YAML* format:
 ~~~yaml
 apiVersion: nmstate.io/v1beta1
 kind: NodeNetworkState
@@ -195,7 +198,7 @@ metadata:
 (...)
 ~~~
 
-Here you can see the current state of the node (some of the output has been cut), the interfaces attached, and their physical/logical addresses. In a later section we're going to be modifying the network node state by applying a new configuration to allow nodes to utilise another interface to provide pod networking via a **bridge**. We will do this via a `NodeNetworkConfigurationEnactment` or `nnce` in short, to which we do not currently have any configured:
+Here you can see the current state of the node (some of the output has been cut), the interfaces attached, and their physical/logical addresses. In a later section we're going to be modifying the network node state by applying a new configuration to allow nodes to utilise another interface to provide pod networking via a **bridge**. We will do this via a `NodeNetworkConfigurationEnactment` or `nnce` in short. We do not currently have any *nnce*'s configured:
 
 ```execute-1
 oc get nnce -n openshift-cnv
@@ -209,10 +212,10 @@ No resources found in openshift-cnv namespace.
 
 ### Viewing the OpenShift Virtualization Dashboard
 
-When OpenShift Virtualization is deployed it adds additional components to OpenShift's web-console so you can interact with objects and custom resources defined by OpenShift Virtualization, including `VirtualMachine` types. If you select the `Console` button at the top of this pane you should see the web-console displayed. You can now navigate to "**Workloads**" --> "**Virtualization**" on the left-hand side panel and you should see the new snap-in component for OpenShift Virtualization but with no Virtual Machines found:
+When OpenShift Virtualization is deployed it adds additional components to OpenShift's web console so you can interact with objects and custom resources defined by OpenShift Virtualization, including `VirtualMachine` types. If you select the `Console` button at the top of this pane you should see the web-console displayed. You can now navigate to "**Workloads**" --> "**Virtualization**" on the left-hand side panel and you should see the new snap-in component for OpenShift Virtualization but with no Virtual Machines found:
 
 <img src="img/ocpvirt-dashboard.png"/>
 
 > **NOTE**: Please don't try and create any virtual machines just yet, we'll get to that shortly!
 
-Before we get started with workload deployment we need to configure some storage, let's get to that next...
+Before we get started with workload deployment we need to configure some storage. Choose "Storage Setup" below to move to the next part of the lab.
