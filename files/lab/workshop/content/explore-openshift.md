@@ -25,7 +25,7 @@ From within the lab guide window you'll see a button in the middle at the top th
 <img  border="1" src="img/console-button.png"/>
 
 
-However if you want to open up a dedicated tab/window for the Web Console you can do so, simple click on this link: [Web Console](http://console-openshift-console.%cluster_subdomain%/k8s/cluster/projects). To login, you need to first get the *kubeadmin-password*. You can get it from the OpenShift installation directory on the bastion node, the machine that is used to perform the installation of OpenShift in your dedicated environment.
+However if you want to open up a dedicated tab/window for the Web Console you can do so, simply click on this link: [Web Console](http://console-openshift-console.%cluster_subdomain%/k8s/cluster/projects). To login, you need to first get the *kubeadmin-password*. You can get it from the OpenShift installation directory on the bastion node, the machine that is used to perform the installation of OpenShift in your dedicated environment.
 
 First SSH to bastion node:
 
@@ -54,12 +54,14 @@ oc whoami
 ```
 The above output should show "**system:serviceaccount:workbook:cnv**", if it doesn't or it shows "**system:admin**" you've not yet disconnected from the session.
 
-On Web Console login screen, enter the following credentials:
+On OpenShift login screen you opened in the new tab enter the following credentials:
 
 - Username: *kubeadmin*
 - Password: (the password you previously copied)
 
 The first time you access the web console, you will most likely be in the *Administrator* perspective. At the top of the left navigation menu, you can toggle between the Administrator perspective and the Developer perspective.
+
+<img  border="1" src="img/explore-dev-view.png"/>
 
 Select **Developer** to switch to the Developer perspective. Once the Developer perspective loads, you should select the **Topology** view from the menu on the left-hand side. Right now, there are no applications or components to view, but once you begin working on the lab, you'll be able to visualise and interact with the components in your application here.
 
