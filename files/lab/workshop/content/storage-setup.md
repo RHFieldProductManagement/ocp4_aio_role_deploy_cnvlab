@@ -26,12 +26,14 @@ Result should be similar to:
 
 ~~~bash
 NAME                  DISPLAY                       VERSION   REPLACES              PHASE
-ocs-operator.v4.8.5   OpenShift Container Storage   4.8.5     ocs-operator.v4.8.4   Succeeded
+mcg-operator.v4.9.3   NooBaa Operator               4.9.3     mcg-operator.v4.9.2   Succeeded
+ocs-operator.v4.9.3   OpenShift Container Storage   4.9.3     ocs-operator.v4.9.2   Succeeded
+odf-operator.v4.9.3   OpenShift Data Foundation     4.9.3     odf-operator.v4.9.2   Succeeded
 ~~~
 
-We're going to setup two different types of storage in this section, firstly OCS/ODF based shared storage, and also `hostpath` storage which uses the hypervisor's local disk(s) which can be useful when there's plenty of fast storage available to the host.
+We're going to use the already-deployed OCS/ODF based shared storage for the majority of the tasks, and depending on how much time you have left there's a bonus lab section at the end that sets up `hostpath` storage which uses the hypervisor's local disk(s), which can be useful when there's plenty of fast storage available to the host.
 
-First, make sure you're in the default project:
+In the next few steps we're going to be creating a storage volume for a virtual machine that we'll create in a later lab section, and for this we'll pull in the contents of an existing disk image, so there's an operating system for our virtual machine to boot up. First, make sure you're in the default project:
 
 ```execute-1
 oc project default
@@ -47,13 +49,13 @@ Now using project "default" on server "https://172.30.0.1:443".
 
 Now let's create a new OCS-based Peristent Volume Claim (PVC) - a request for a dedicated storage volume that can be used for persistent storage with VM's and containerised applications. For this volume claim we will use a special annotation `cdi.kubevirt.io/storage.import.endpoint` which utilises the Kubernetes Containerized Data Importer (CDI).
 
-> **NOTE**: CDI is a utility to import, upload, and clone virtual machine images for OpenShift virtualisation. The CDI controller watches for this annotation on the PVC and if found it starts a process to import, upload, or clone. When the annotation is detected the `CDI` controller starts a pod which imports the image from that URL. Cloning and uploading follow a similar process. Read more about the Containerized Data Importer [here](https://github.com/kubevirt/containerized-data-importer).
+> **NOTE**: CDI is a utility to import, upload, and clone virtual machine images for OpenShift Virtualization. The CDI controller watches for this annotation on the PVC and if found it starts a process to import, upload, or clone. When the annotation is detected the `CDI` controller starts a pod which imports the image from that URL. Cloning and uploading follow a similar process. Read more about the Containerized Data Importer [here](https://github.com/kubevirt/containerized-data-importer).
 
-Basically we are asking OpenShift to create this volume and use the image in the endpoint to fill it. In this case we use `"http://192.168.123.100:81/rhel8-kvm.img"` in the annotation to ensure that upon instantiation of the PV it is populated with the contents of a CentOS8 (although it's labelled "rhel8") KVM image which can be later used as a backing store for a virtual machine.
+Basically we are asking OpenShift to create this Persistent Volume Claim and use the image in the endpoint to fill it. In this case we use `"http://192.168.123.100:81/rhel8-kvm.img"` in the annotation to ensure that upon instantiation of the PV it is populated with the contents of a CentOS 8 (although it's labelled "rhel8") KVM image which can be later used as a backing store for a virtual machine.
 
-In addition to triggering the CDI utility we also specify the storage class that OCS/ODF uses (`ocs-storagecluster-ceph-rbd`) which will dynamically create the PV in the backend Ceph storage platform. Finally note the `requests` section - we are asking for a 40gb volume size.
+In addition to triggering the CDI utility we also specify the storage class that OCS/ODF uses (`ocs-storagecluster-ceph-rbd`) which will dynamically create the PV in the backend Ceph storage platform. Finally note the `requests` section - we are asking for a 40GB volume size.
 
-OK, let's create the PVC with all this included!
+OK, let's create the PVC with all this included:
 
 
 ```execute-1 
@@ -77,7 +79,7 @@ spec:
 EOF
 ```
 
-Then check for the output below:
+This should create our new PVC:
 
 ~~~bash
 persistentvolumeclaim/rhel8-ocs created
@@ -169,9 +171,7 @@ Volumes:
 (...)
 ~~~
 
-Here we can see the importer settings we requested through our claims, such as `IMPORTER_SOURCE`, `IMPORTER_ENDPOINT`, and `IMPORTER_IMAGE_SIZE`. 
-
-Check pvc readiness by executing below
+Here we can see the importer settings we requested through our claims, such as `IMPORTER_SOURCE`, `IMPORTER_ENDPOINT`, and `IMPORTER_IMAGE_SIZE`. You can check PVC readiness by executing the command below:
 
 ```execute-1 
 oc get pvc
@@ -271,4 +271,4 @@ exit
 
 You'll see that this image matches the correct size, corresponds to the PV that we requested be created for us, and has consumed approximately ~9GB of the disk, reflecting that we've cloned a copy of CentOS8 into our persistent volume via the data importer tool. We'll use this persistent volume to spawn a virtual machine in a later step.
 
-For now, let's move on and check out some networking. Click on "Networking Setup" to move to the next lab.
+For now, let's move on and check out some networking. Click on "**Networking Setup**" below to move to the next lab section.

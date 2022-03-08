@@ -1,11 +1,11 @@
-Since OpenShift 4.5, OpenShift Virtualization has been fully supported by Red Hat as a component of OpenShift itself. The mechanism for installation is to utilise the operator model and deploy via the OpenShift Operator Hub in the OpenShift Web Console. Note, it's entirely possible to deploy via the CLI should you wish to do so, but we're not documenting that mechanism here.
+Since OpenShift 4.5, OpenShift Virtualization has been fully supported by Red Hat as a component of OpenShift itself. The mechanism for installation is to utilise the operator model and deploy via the OpenShift Operator Hub in the OpenShift Web Console. It's entirely possible to deploy via the CLI should you wish to do so, but we're not documenting that mechanism here.
 
-Navigate to the top-level '**Operators**' menu entry, and select '**OperatorHub**' (you'll need to make sure that you're in the Administrator perspective). This lists all of the available operators that you can install from the operator catalogue. Start typing '**virtualization**' in the search box and you should see an entry called "**OpenShift Virtualization**" - please don't select "**KubeVirt**" as this is the community operator. Simply select it and you'll see a window that looks like the following (the version may be slightly different):
+Select the "**Console**" button in the top of your lab guide window, or switch over to your dedicated web console page (if you opened one up earlier) and navigate to the top-level '**Operators**' menu entry, and select '**OperatorHub**' (you'll need to make sure that you're in the "Administrator" perspective by using the drop down in the top left hand corner of the web-console). This lists all of the available operators that you can install from the operator catalogue. Start typing '**virtualization**' in the search box and you should see an entry called "**OpenShift Virtualization**". Simply select it and you'll see a window that looks like the following (the version may be slightly different, likely slightly newer):
 
 <img  border="1" src="img/ocp-virt-operator-install.png"/>
 
 
-Next you'll want to select the '**Install**' button, which will take you to a second window where you'll be creating an 'Operator Subscription'. Leave the defaults here as they'll automatically select the latest version of OpenShift Virtualization and will allow the software to be installed automatically:
+Next you'll want to select the '**Install**' button, which will take you to a second window where you'll be creating an '*Operator Subscription*'. Leave the defaults here as they'll automatically select the latest version of OpenShift Virtualization, will allow the software to be installed automatically, and will be placed into a new "**openshift-cnv**" project:
 
 <img  border="1" src="img/ocp-virt-operator-install-details.png"/>
 
@@ -15,13 +15,15 @@ Make sure that the namespace it will be installed to is "**openshift-cnv**" - it
 
 <img  border="1" src="img/ocp-virt-operatore-install-success.png"/>
 
-Next we need to deploy the HyperConverged resource, which, in addition to the OpenShift Virtualization operator, creates and maintains an OpenShift Virtualization Deployment for the cluster. 
+Next we need to deploy the **HyperConverged** resource, which, in addition to the OpenShift Virtualization operator, creates and maintains an OpenShift Virtualization Deployment for the cluster.
 
 > This may raise some questions about a similar term: "hyperconverged infrastructures" and the relationship of workloads and storage associated with that term. For OpenShift Virtualization this relates to the fact that we're converging virtual machines and containers and is how an "instance" of OpenShift Virtualization is instantiated - it does not impact the relation between compute and storage as we will see later in the labs. 
 
 Click on "**Create HyperConverged**", as a required operand, in the same screen to proceed.
 
-This will open a new screen. We can again accept all the defaults for this lab - for real world use, there are many additional flags, parameters, and attributes that can be applied at this stage, such as enabling tech-preview features, specifying host devices, implementing CPU masks, and so on. Continue the installation by clicking on "**Create**" at the bottom.
+This will open a new screen. We can again accept all the defaults for this lab - for real world use, there are many additional flags, parameters, and attributes that can be applied at this stage, such as enabling tech-preview features, specifying host devices, implementing CPU masks, and so on.
+
+Continue the installation by clicking on "**Create**" at the bottom.
 
 <img  border="1" src="img/ocp-virt-operatore-create-HyperC.png"/>
 
@@ -31,13 +33,13 @@ Whilst this does its thing, you can move to the '**Workloads**' --> '**Pods**' m
 <img  border="1" src="img/ocp-virt-hco-4.png"/>
 
 
-You can also return to the 'terminal' tab in your hosted lab guide and watch via the CLI:
+You can also briefly return to the '**Terminal**' tab in your hosted lab guide and watch via the CLI:
 
 ```execute-1
 watch -n2 'oc get pods -n openshift-cnv'
 ```
 
-> **NOTE**: It may take a few minutes for the pods to start up properly, and you may see a few pods in an error state along the way - this is just Kubernetes' reconciliation loop. Press **Ctrl+C** to exit the watch command.
+> **NOTE**: It may take a few minutes for the pods to start up properly, and you may see a few pods in an "Error/CrashLoopBackOff" state along the way - this is just Kubernetes' reconciliation loop. Press **Ctrl+C** to exit the watch command.
 
 During this process you will see a lot of pods create and terminate, which will look something like the following depending on when you view it; it's always changing:
 
@@ -206,16 +208,16 @@ oc get nnce -n openshift-cnv
 
 It should not find any *nnce* definitions yet, as we've not defined any:
 ~~~bash
-No resources found in openshift-cnv namespace.
+No resources found
 ~~~
 
 
 ### Viewing the OpenShift Virtualization Dashboard
 
-When OpenShift Virtualization is deployed it adds additional components to OpenShift's web console so you can interact with objects and custom resources defined by OpenShift Virtualization, including `VirtualMachine` types. If you select the `Console` button at the top of this pane you should see the web-console displayed. You can now navigate to "**Workloads**" --> "**Virtualization**" on the left-hand side panel and you should see the new snap-in component for OpenShift Virtualization but with no Virtual Machines found:
+When OpenShift Virtualization is deployed it adds additional components to OpenShift's web console so you can interact with objects and custom resources defined by OpenShift Virtualization, including `VirtualMachine` types. If you select the "**Console**" button at the top of this pane, or return to your dedicated tab (if available), you can now navigate to "**Workloads**" --> "**Virtualization**" on the left-hand side panel, and you should see the new snap-in component for OpenShift Virtualization. Note that you shouldn't have any virtual machines defined:
 
 <img src="img/ocpvirt-dashboard.png"/>
 
 > **NOTE**: Please don't try and create any virtual machines just yet, we'll get to that shortly!
 
-Before we get started with workload deployment we need to configure some storage. Choose "Storage Setup" below to move to the next part of the lab.
+Before we get started with workload deployment we need to configure some storage. Choose "**Storage Setup**" below to move to the next part of the lab.

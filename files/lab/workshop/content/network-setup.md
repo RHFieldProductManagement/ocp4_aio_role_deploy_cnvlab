@@ -1,8 +1,8 @@
 In this section we're going to be configuring the networking for our environment. You're probably just wanting to create virtual machines, but let's just finish this one step and we'll understand a lot more about how networking works in OpenShift.
 
-With OpenShift Virtualization (or more specifically, OpenShift in general - regardless of the workload type) we have a few different options for networking. We can just have our virtual machines be attached to the same pod networks that our containers would have access to, or we can configure more real-world virtualisation networking constructs like bridged networking, SR/IOV, and so on. It's also possible to have a combination of these, e.g. both pod networking and a bridged interface directly attached to a VM at the same time, using [Multus](https://github.com/k8snetworkplumbingwg/multus-cni), the default networking CNI in OpenShift 4.x. Multus allows multiple "sub-CNI" devices to be attached to a pod (regardless of whether a virtual machine is running there).
+With OpenShift Virtualization (or more specifically, OpenShift in general - regardless of the workload type) we have a few different options for networking. We can just have our virtual machines be attached to the same pod networks that our containers would have access to, or we can configure more "real-world" virtualisation networking constructs like bridged networking, SR/IOV, and so on. It's also possible to have a combination of these, e.g. both pod networking and a bridged interface directly attached to a VM at the same time, using [Multus](https://github.com/k8snetworkplumbingwg/multus-cni), the default networking CNI in OpenShift 4.x. Multus allows multiple "sub-CNI" devices to be attached to a pod (regardless of whether a virtual machine is running there).
 
-In this lab we're going to enable multiple options - pod networking **and** a secondary network interface provided by a bridge on the underlying worker nodes (hypervisors). Each of the worker nodes has been configured with an additional, currently unused, network interface that is defined as `enp3s0`, and we'll create a bridge device, called `br1`, so we can attach our virtual machines to it - this network is actually the same L2 network as the one attached to `enp2s0`, so it's on the `192.168.123.0/24` network as well.
+In this lab we're going to utilise multiple options - pod networking **and** a secondary network interface provided by a bridge on the underlying worker nodes (hypervisors). Each of the worker nodes has been configured with an additional, currently unused, network interface that is defined as `enp3s0`, and we'll create a bridge device, called `br1`, so we can attach our virtual machines to it - this network is actually the **same** L2 network as the one attached to `enp2s0`, so it's on the lab network ( `192.168.123.0/24`) as well.
 
 The first step is to use the new Kubernetes NetworkManager state configuration to setup the underlying hosts to our liking. Recall that we can get the **current** state by requesting the `NetworkNodeState` (much of the following is snipped for brevity):
 
@@ -23,7 +23,7 @@ metadata:
     app.kubernetes.io/component: network
     app.kubernetes.io/managed-by: hco-operator
     app.kubernetes.io/part-of: hyperconverged-cluster
-    app.kubernetes.io/version: v4.9.0
+    app.kubernetes.io/version: v4.9.3
   name: ocp4-worker1.%node-network-domain%
 (...)
     - ipv4:
@@ -77,9 +77,9 @@ metadata:
 (...)
 ~~~
 
-In there you'll spot the interface that we'd like to use to create a bridge, `enp3s0`, with DHCP being disabled and not in current use - there are no IP addresses associated to that network. DHCP is configured in the environment, but as part of the installation we forced this network to be disabled via [MachineConfig](https://github.com/RHFieldProductManagement/openshift-aio/blob/main/conf/k8s/97_workers_empty_enp3s0.yaml). We'll make the necessary changes to this interface shortly.
+In there you'll (hopefully) spot the interface that we'd like to use to create a bridge, `enp3s0`, with DHCP being disabled and not in current use - there are no IP addresses associated to that network. DHCP is configured in the environment, but as part of the installation we forced this network to be disabled via [MachineConfig](https://github.com/RHFieldProductManagement/openshift-aio/blob/main/conf/k8s/97_workers_empty_enp3s0.yaml). We'll make the necessary changes to this interface shortly.
 
-> **NOTE**: The first interface, `enp1s0 ` is used for provisioning within the environment, and `enp2s0` is being used for inter-OpenShift communication, including all of the pod networking via OpenShift SDN.
+> **NOTE**: The first interface, `enp1s0 ` is used for PXE-based provisioning within the environment (not essential for baremetal deployments, but it's what we've used here), and `enp2s0` is being used for inter-OpenShift communication, including all of the pod networking via OpenShift SDN.
 
 
 Now we can apply a new `NodeNetworkConfigurationPolicy` for our worker nodes to setup a desired state for `br1` via `enp3s0`, noting that in the `spec` we specify a `nodeSelector` to ensure that this **only** gets applied to our worker nodes; eventually allowing us to attach VM's to this bridge:
@@ -122,7 +122,7 @@ Then enquire as to whether it was successfully applied:
 oc get nnce
 ```
 
-Check the status (it may take a few checks before all show as "**Available**", i.e. applied the requested configuration):
+Check the status (it may take a few checks before all show as "**Available**", i.e. applied the requested configuration, it will go from "Pending" --> "Progressing" --> "Available"):
 
 ~~~bash
 NAME                                                     STATUS
@@ -198,13 +198,13 @@ status:
     type: Degraded
 ~~~
 
-If you'd like to fully verify that this has been successfully configured on the host, we can do that easily via the `oc debug node` option (pick any of your workers):
+If you'd like to fully verify that this has been successfully configured on the host, we can do that easily via the `oc debug node` command (pick any of your workers):
 
 ```execute-1
 oc debug node/ocp4-worker1.%node-network-domain%
 ```
 
-Wait for debug pod:
+Wait for the debug pod to start:
 
 ~~~bash
 Starting pod/ocp4-worker1aioexamplecom-debug ...
@@ -231,15 +231,17 @@ This should show the following, with the key bit showing "**master br1**", so we
     link/ether 52:54:00:00:01:04 brd ff:ff:ff:ff:ff:ff
 ~~~
 
-Now exit from debug pod, remembering to execute this twice to return back to our lab workbook:
+Now exit from debug pod, **remembering to execute this twice** to return back to our lab workbook:
 
 ```execute-1
 exit
 ```
 
-```execute-1
-exit
-```
+It should say the following once you've exited the debug pod:
+
+~~~bash
+Removing debug pod ...
+~~~
 
 Ensure you are in the correct shell:
 
@@ -255,17 +257,13 @@ system:serviceaccount:workbook:cnv
 
 As you can see, *enp3s0* is attached to "*br1*" and has the MAC address of the underlying "physical" adaptor.
 
-> **NOTE**: Make sure you exit out of the debug pod before proceeding.
-
-Now that the "physical" networking is configured on the underlying worker nodes, we need to then define a `NetworkAttachmentDefinition` so that when we want to use this bridge, OpenShift and OpenShift Virtualization know how to attach into it.
-
-We need to ensure that we're in the right project first, i.e. "default":
+Now that the "physical" networking is configured on the underlying worker nodes, we need to then define a `NetworkAttachmentDefinition` so that when we want to use this bridge, OpenShift and OpenShift Virtualization know how to attach into it. We need to ensure that we're in the right project first, i.e. "**default**", ignore if it complains about already being in that project, it's just good practice to check:
 
 ```execute-1
 oc project default
 ```
 
-This associates the bridge we just defined with a logical name, known here as '**tuning-bridge-fixed**':
+Let's create the `NetworkAttachmentDefinition`, this associates the bridge we just defined with a logical name, known here as '**tuning-bridge-fixed**':
 
 
 ```execute-1
@@ -294,12 +292,12 @@ EOF
 ```
 
 
-Verify the Network Attchment Definition is created now:
+It should verify the NetworkAttchmentDefinition has been created:
 
 ~~~bash
 networkattachmentdefinition.k8s.cni.cncf.io/tuning-bridge-fixed created
 ~~~
 
-> **NOTE**: The important flags to recognise here are the **type**, being **cnv-bridge** which is a specific implementation that links in-VM interfaces to a counterpart on the underlying host for full-passthrough of networking. Also note that there is no **ipam** listed - we don't want the CNI to manage the network address allocation for us instead the network we want to attach to has DHCP enabled.
+> **NOTE**: The important flags to recognise here are the **type**, being **cnv-bridge** which is a specific implementation that links in-VM interfaces to a counterpart on the underlying host for **full-passthrough** of networking. Also note that there is no **IPAM** listed - we don't want the CNI to manage the network address allocation for us instead the network we want to attach to has DHCP enabled.
 
-That's it! We're good to go, next step is to deploy a virtual machine! Click on "Deploy Workloads" to continue with the lab.
+That's it! We're good to go, next step is to deploy a virtual machine! Click on "**Deploy Workloads**" to continue with the lab.

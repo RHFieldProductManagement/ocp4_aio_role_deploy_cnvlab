@@ -1,9 +1,9 @@
-Before we begin, it's important to make sure that we're in the CLI view, so select the "Terminal" button at the top of the screen. We also need to make sure that we're disconnected from the bastion machine that we connected to in a previous window, so make sure that you're the correct user:
+Before we begin, it's important to make sure that we're in the CLI view, so select the "**Terminal**" button at the top of the screen if it's not already selected. We also need to make sure that we're disconnected from the bastion machine that we connected to in a previous window, so make sure that you're the correct user:
 
 ```execute
 oc whoami
 ```
-This should return "**system:serviceaccount:workbook:cnv**". If it doesn't, select the menu from the top right hand corner and choose "Reload Terminal". This should take you right back to the beginning. Now you should be ready to continue...
+This should return "**system:serviceaccount:workbook:cnv**". If it doesn't, select the menu from the top right hand corner and choose "**Reload Terminal**". This should take you right back to the beginning. Now you should be ready to continue...
 
 On the right hand side where the web terminal is, let's see if we can execute the following:
 
@@ -15,15 +15,15 @@ You should be able to see the list of nodes as below:
 
 ~~~bash
 NAME                           STATUS   ROLES    AGE   VERSION
-ocp4-master1.%node-network-domain%  Ready    master   57m   v1.22.0-rc.0+a44d0f0
-ocp4-master2.%node-network-domain%  Ready    master   58m   v1.22.0-rc.0+a44d0f0
-ocp4-master3.%node-network-domain%  Ready    master   58m   v1.22.0-rc.0+a44d0f0
-ocp4-worker1.%node-network-domain%  Ready    worker   38m   v1.22.0-rc.0+a44d0f0
-ocp4-worker2.%node-network-domain%  Ready    worker   38m   v1.22.0-rc.0+a44d0f0
-ocp4-worker3.%node-network-domain%  Ready    worker   38m   v1.22.0-rc.0+a44d0f0
+ocp4-master1.aio.example.com   Ready    master   18h   v1.22.3+b93fd35
+ocp4-master2.aio.example.com   Ready    master   18h   v1.22.3+b93fd35
+ocp4-master3.aio.example.com   Ready    master   18h   v1.22.3+b93fd35
+ocp4-worker1.aio.example.com   Ready    worker   18h   v1.22.3+b93fd35
+ocp4-worker2.aio.example.com   Ready    worker   18h   v1.22.3+b93fd35
+ocp4-worker3.aio.example.com   Ready    worker   18h   v1.22.3+b93fd35
 ~~~
 
-If you do **NOT** see **three** masters and **three** workers listed in your output, you may need to approve the CSR requests, again, note that <u>you only need to do this if you're missing nodes</u>, but it won't harm to run this regardless (you'll see "No resources found" if the CSR's are already approved and do not need to approve them manually):
+If you do **NOT** see **three** masters and **three** workers listed in your output, you may need to approve the CSR requests, again, note that <u>you only need to do this if you're missing nodes</u>, but it won't harm to run this regardless:
 
 ```execute
 for csr in $(oc get csr | awk '/Pending/ {print $1}'); \
@@ -116,7 +116,7 @@ Our application will now build from source, you can watch it happen by tailing t
 oc logs duckhunt-js-1-build -f
 ```
 
-You should need to wait 3-4 minutes for the following output to confirm the new image is pushed to registry:
+This process will likely take approximately 3-4 minutes for the following output to confirm the new image is pushed to registry:
 
 ~~~bash
 Successfully pushed image-registry.openshift-image-registry.svc:5000/test/duckhunt-js@sha256:c4e64bc633ae09ce0f2f2f6de2ca9eaca8e11dc5b335301a2be78216df4b6929
@@ -125,7 +125,7 @@ Push successful
 
 > **NOTE**: You may get an error saying "Error from server (BadRequest): container "sti-build" in pod "duckhunt-js-1-build" is waiting to start: PodInitializing"; you were just too quick to ask for the log output of the pods, simply re-run the command.
 
-To check status of the pods, execute below command:
+Once finished, check the status of the pods by executing the command below:
 
 ```execute
 oc get pods 
