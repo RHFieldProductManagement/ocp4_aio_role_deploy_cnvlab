@@ -23,7 +23,7 @@ ocp4-worker2.%node-network-domain%  Ready    worker   38m   v1.22.0-rc.0+a44d0f0
 ocp4-worker3.%node-network-domain%  Ready    worker   38m   v1.22.0-rc.0+a44d0f0
 ~~~
 
-If you do not see **three** masters and **three** workers listed in your output, you may need to approve the CSR requests, note that you only need to do this if you're missing nodes, but it won't harm to run this regardless ("No resources found" is a completely normal response here):
+If you do **NOT** see **three** masters and **three** workers listed in your output, you may need to approve the CSR requests, again, note that <u>you only need to do this if you're missing nodes</u>, but it won't harm to run this regardless (you'll see "No resources found" if the CSR's are already approved and do not need to approve them manually):
 
 ```execute
 for csr in $(oc get csr | awk '/Pending/ {print $1}'); \
@@ -39,7 +39,7 @@ certificatesigningrequest.certificates.k8s.io/csr-4k6n8 approved
 
 > **NOTE**: If you needed to do this, it may take a few minutes for the worker to be in a `Ready` state, this is due to it needing to deploy all of the necessary pods. We can proceed though and it'll catch up in the background.
 >
-> **IMPORTANT**: If you do not have any CSR's to approve and you've still not got 6 nodes then it's likely that your environment has failed to deploy properly, we're trying to figure out why it very rarely does this. Please delete your environment and attempt another deployment - we apologise!
+> **IMPORTANT**: If you do not have any CSR's to approve and you've still not got six nodes then it's likely that your environment has failed to deploy properly. We're trying to figure out why it very rarely does this. Please delete your environment and attempt another deployment - we apologise!
 
 Next let's validate the version that we've got deployed, and the status of the cluster operators:
 
@@ -47,11 +47,11 @@ Next let's validate the version that we've got deployed, and the status of the c
 oc get clusterversion
 ```
 
-Then you should see the following, we're currently fixed on 4.9.5, but we'll bump this when we get a chance:
+Then you should see the following (your minor version may be different, but should be no less than below):
 
 ~~~bash
 NAME      VERSION   AVAILABLE   PROGRESSING   SINCE   STATUS
-version   4.9.5     True        False         27m     Cluster version is 4.9.5.
+version   4.9.23     True        False         27m     Cluster version is 4.9.23
 ~~~
 
 After that check the cluster operators:
@@ -64,23 +64,23 @@ This command will list the all cluster operators, the main components of OpenShi
 
 ~~~bash
 NAME                                       VERSION   AVAILABLE   PROGRESSING   DEGRADED   SINCE   MESSAGE
-authentication                             4.9.5     True        False         False      7h26m   
-baremetal                                  4.9.5     True        False         False      7h48m   
-cloud-controller-manager                   4.9.5     True        False         False      7h51m   
-cloud-credential                           4.9.5     True        False         False      8h      
-cluster-autoscaler                         4.9.5     True        False         False      7h48m   
-config-operator                            4.9.5     True        False         False      7h50m   
-console                                    4.9.5     True        False         False      7h29m   
-csi-snapshot-controller                    4.9.5     True        False         False      7h48m   
-dns                                        4.9.5     True        False         False      7h48m   
-etcd                                       4.9.5     True        False         False      7h48m   
-image-registry                             4.9.5     True        False         False      7h18m
+authentication                             4.9.23    True        False         False      6h19m
+baremetal                                  4.9.23    True        False         False      6h40m
+cloud-controller-manager                   4.9.23    True        False         False      6h42m
+cloud-credential                           4.9.23    True        False         False      6h54m
+cluster-autoscaler                         4.9.23    True        False         False      6h40m
+config-operator                            4.9.23    True        False         False      6h42m
+console                                    4.9.23    True        False         False      6h23m
+csi-snapshot-controller                    4.9.23    True        False         False      6h41m
+dns                                        4.9.23    True        False         False      6h40m
+etcd                                       4.9.23    True        False         False      6h40m
+image-registry                             4.9.23    True        False         False      6h17m
 (...)
 ~~~
 
 ### Making sure OpenShift is fully functional
 
-OK, so this is likely something that you've done before, but in an attempt to validate OpenShift is ready for our lab, let's have a little bit of fun. Let's build a simple web-browser based game (called Duckhunt) from source, expose it via a route, and make sure all of the networking is hooked up properly. We'll use the **s2i** (source to image) container type:
+Let's now validate that OpenShift is ready for our lab by having little bit of fun. Let's build a simple web-browser based game (called Duckhunt) from source, expose it via a route, and make sure all of the networking is hooked up properly. We'll use the **s2i** (source to image) container type:
 
 Start with creating a new project with following command:
 
@@ -116,7 +116,7 @@ Our application will now build from source, you can watch it happen by tailing t
 oc logs duckhunt-js-1-build -f
 ```
 
-And you should wait for an output to see new image is pushed to registry:
+You should need to wait 3-4 minutes for the following output to confirm the new image is pushed to registry:
 
 ~~~bash
 Successfully pushed image-registry.openshift-image-registry.svc:5000/test/duckhunt-js@sha256:c4e64bc633ae09ce0f2f2f6de2ca9eaca8e11dc5b335301a2be78216df4b6929
@@ -167,7 +167,7 @@ duckhunt-js   duckhunt-js-test.%cluster_subdomain%          duckhunt-js   8080-t
 ~~~
 
 You should be able to open up the application in the same browser that you're reading this guide from, either copy and paste the address, or click this link: [http://duckhunt-js-test.%cluster_subdomain%](http://duckhunt-js-test.%cluster_subdomain%). If your OpenShift cluster is working as expected and the application build was successful, you should now be able to have a quick play with this... good luck ;-)
-> **NOTE**: If you've deployed this environment via RHPDS, your URL above may be slightly different, and the hyperlink above will not work as expected. Use the output from the `oc get route duckhunt-js` as the correct route/address to use.
+> **NOTE**: If the link above doesn't work just run `oc get route duckhunt-js` to find the exposed route for the app. 
 
 <img src="img/duckhunt.png"/>
 
