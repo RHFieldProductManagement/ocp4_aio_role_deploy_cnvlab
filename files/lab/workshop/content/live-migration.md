@@ -1,23 +1,8 @@
-Live Migration is the process of moving an instance from one node in a cluster to another without interruption. This process can be manual or automatic. This depends if the `evictionStrategy` strategy is set to `LiveMigrate` and the underlying node is placed into maintenance. 
+Live Migration is the process of moving an instance from one node in a cluster to another without interruption. This process can be manual or automatic. In OpenShift this is controlled by an `evictionStrategy` strategy. If this is set to `LiveMigrate` and the underlying node are placed into maintenance mode, VMs can be moved between them with minimal interruption. 
 
-Live migration is an administrative function in OpenShift Virtualization. While the action is visible to all users, only admins can initiate a migration. Migration limits and timeouts are managed via the `kubevirt-config` `configmap`. For more details about limits see the [documentation](https://access.redhat.com/documentation/en-us/openshift_container_platform/4.3/html-single/container-native_virtualization/index#cnv-live-migration-limits-ref_cnv-live-migration-limits).
+Live migration is an administrative function in OpenShift Virtualization. While the action is visible to all users, only admins can initiate a migration. Migration limits and timeouts are managed via the `kubevirt-config` `configmap`. For more details about limits see the [documentation](https://docs.openshift.com/container-platform/4.9/virt/live_migration/virt-live-migration-limits.html).
 
-In our lab we only need to have only one VM running. Let's remove the hostpath-based VM, as this cannot be live migrated anyway, as it's utilising hypervisor based storage and is therefore RWO (read-write once) by definition. Our OCS-based virtual machine is using shared-storage on Ceph, and therefore should support live migration.
-
-
-First delete the VM we created earlier:
-
-```execute-1
-oc delete vm/rhel8-server-hostpath
-```
-
-This should advise that the instance has been removed:
-
-~~~bash
-virtualmachine.kubevirt.io "rhel8-server-hostpath" deleted
-~~~
-
-We should only have the one VM running now-
+In our lab we currently only have one VM running, use the `vmi` utility to view it:
 
 ```execute-1
 oc get vmi
@@ -34,18 +19,17 @@ In this example we can see the `rhel8-server-ocs` instance is on `ocp4-worker3.a
 
 
 ```execute-1
-oc describe vmi rhel8-server-ocs | egrep -i '(eviction|migration)'
+oc describe vmi rhel8-server-ocs | egrep '(eviction|migration)'
 ```
 
 This command should have a similar output as below
 
 ~~~yaml
-(...)
   Eviction Strategy:  LiveMigrate
   Migration Method:  LiveMigration
 ~~~
 
-The easiest way to initiate a migration is to create an `VirtualMachineInstanceMigration` object in the cluster directly against the `vmi` we want to migrate (this can also be conducted via the OpenShift console if we like, and we'll take a look at it in a later lab section). But wait! Once we create this object it will trigger the migration, so first, let's review what it looks like:
+The easiest way to initiate a migration is to create an `VirtualMachineInstanceMigration` object in the cluster directly against the `vmi` we want to migrate (this can also be conducted via the OpenShift console if we like, and we'll take a look at it in a later lab section). But wait! Once we create this object it will immediatly trigger the migration, so first, let's see what the code looks like:
 
 ~~~yaml
 apiVersion: kubevirt.io/v1alpha3
@@ -109,7 +93,7 @@ status:
   phase: Succeeded                                  <----------- Now it has finished the migration
 ~~~
 
-Finally view the `vmi` object and you can see the new underlying host (was *ocp4-worker3*, now it's *ocp4-worker1*); your environment may have different source and destination hosts, depending on where `rhel8-server-ocs` was initially scheduled.
+Finally view the `vmi` object and you can see the new underlying host (was *ocp4-worker3*, now it's *ocp4-worker1*); your environment may have different source and destination hosts, depending on where `rhel8-server-ocs` was initially scheduled. Don't forget to `ctrl-c`out of the running watch command.
 
 ```execute-1
 oc get vmi
@@ -168,7 +152,7 @@ Events:
 
 ## Node Maintenance
 
-Building on-top of live migration, many organisations will need to perform node-maintenance, e.g. for software/hardware updates, or for decommissioning. During the lifecycle of a pod, it's almost a given that this will happen without compromising the workloads, but virtual machines can be somewhat more challenging given their legacy nature. Therefore, OpenShift Virtualization has a node-maintenance feature, which can force a machine to no longer be schedulable and any running workloads will be automatically live migrated off if they have the ability to (e.g. using shared storage) and have an appropriate eviction strategy.
+Building on-top of live migration, many organisations will need to perform node-maintenance, e.g. for software/hardware updates, or for decommissioning. During the lifecycle of a **pod**, it's almost a given that this will happen without compromising the workloads, but virtual machines can be somewhat more challenging given their nature. To address this OpenShift Virtualization has a node-maintenance feature which manages the process safely by marking nodes unschedulable and migrating workloads automatically.
 
 Let's take a look at the current running virtual machines and the nodes we have available:
 
@@ -176,7 +160,7 @@ Let's take a look at the current running virtual machines and the nodes we have 
 oc get nodes
 ```
 
-This will list down the nodes:
+This lists the OpenShift nodes:
 
 ~~~bash
 NAME                           STATUS   ROLES    AGE   VERSION
@@ -203,8 +187,16 @@ rhel8-server-ocs   45h   Running   192.168.123.64   ocp4-worker1.aio.example.com
 
 In this environment, we have one virtual machine running on *ocp4-worker1* (yours may vary). Let's take down the node for maintenance and ensure that our workload (VM) stays up and running:
 
+> **NOTE**: You may need to modify the below command to specify the worker listed in the output from above.  
+>
+> **NOTE**: You **may** lose your browser based web terminal like this:
+>
+> ![live-mirate-terminal-closed](/Users/august/Documents/work/fpm/ocp4_aio_role_deploy_cnvlab/files/lab/workshop/content/img/live-mirate-terminal-closed.png)
+>
+> If this happens you'll need to wait a few seconds for it to become accessible again. Try reloading the terminal from the hamburger menu in the upper right of the browser. This is because the router and/or workbook pods may be running on the worker you put into maintenance.
 
-```execute-1
+
+```copy
 cat << EOF | oc apply -f -
 apiVersion: nodemaintenance.kubevirt.io/v1beta1
 kind: NodeMaintenance
@@ -221,8 +213,6 @@ Check the `NodeMaintenance` object is created:
 ~~~bash
 nodemaintenance.nodemaintenance.kubevirt.io/worker1-maintenance
 ~~~
-
-> **NOTE**: You may need to modify the above command to specify `workerX` if your virtual machine is currently running on another worker. Also note that you **may** lose your browser based web terminal, and you'll need to wait a few seconds for it to become accessible again (try refreshing your browser) - this is because the router and/or workbook pods may be running on the worker you put into maintenance.
 
 Assuming you're connected back in, let's check the status of our environment:
 
@@ -261,7 +251,7 @@ Now check the VMI:
 oc get vmi
 ```
 
-Note that the VM has been automatically live migrated back to an available worker, as per the `EvictionStrategy`, in this case `ocp4-worker3.aio.example.com`. 
+Note that the VM has been automatically live migrated back to an available worker and is not on the `SchedulingDisabled` worker, as per the `EvictionStrategy`, in this case `ocp4-worker3.aio.example.com`. 
 
 ~~~bash
 NAME               AGE   PHASE     IP               NODENAME                       READY
@@ -284,7 +274,9 @@ worker1-maintenance   5m16s
 
 Now delete it:
 
-```execute-1
+> **NOTE**: You may need to modify the below command to specify your `nodemaintenance` object is the same as in the output from above.
+
+```copy
 oc delete nodemaintenance/worker1-maintenance
 ```
 
@@ -296,11 +288,13 @@ nodemaintenance.nodemaintenance.kubevirt.io "worker1-maintenance" deleted
 
 Then check the node again:
 
-```execute-1
+> **NOTE**: Change the below value for your environment.
+
+```copy
 oc get node/ocp4-worker1.aio.example.com
 ```
 
-Note the removal of the `SchedulingDisabled` annotation on the '**STATUS**' column, also note that just because this node has become active again it doesn't mean that the virtual machine will 'fail back' to it. 
+Note the removal of the `SchedulingDisabled` annotation on the '**STATUS**' column. Also important is that just because this node has become active again doesn't mean  the virtual machine returns to it automatically. 
 
 ~~~bash
 NAME                           STATUS   ROLES    AGE   VERSION
@@ -320,12 +314,13 @@ virtualmachine.kubevirt.io "rhel8-server-ocs" deleted
 Now delete the PVCs:
 
 ```execute-1
-oc delete pvc rhel8-ocs rhel8-hostpath
+oc delete pvc rhel8-ocs
 ```
 
-It should show both being removed:
+It should show the removal:
 
 ~~~bash
 persistentvolumeclaim "rhel8-ocs" deleted
-persistentvolumeclaim "rhel8-hostpath" deleted
 ~~~
+
+Choose "Clone a Virtual Machine" to continue with the lab.
