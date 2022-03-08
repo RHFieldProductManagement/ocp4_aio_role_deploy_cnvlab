@@ -2,9 +2,13 @@ Now let's bring all these configurations together and actually launch some workl
 
 > **NOTE**: We're calling most of the resources "RHEL 8" here, regardless of whether you're actually using CentOS 8 as your base image - it won't impact anything for our purposes here.
 
-To begin with let's use the OpenShift Data Foundation volume we created earlier to launch some VMs. 
+The virtual machine we're going to create will have the following properties-
 
-We are going to create a machine called `rhel8-server-ocs`. As you'll recall we have created a PVC called `rhel8-ocs` that was created using the CDI utility with a CentOS 8 base image (yes, it's called RHEL8, but here we're actually using CentOS8). To connect the machine to the network we will utilise the `NetworkAttachmentDefinition` we created for the underlying host's third NIC (`enp3s0` via `br1`). This is the `tuning-bridge-fixed` interface which refers to that bridge created previously. It's also important to remember that OpenShift 4.x uses Multus as it's default networking CNI so we also ensure Multus knows about this `NetworkAttachmentDefinition`. Lastly we have set the `evictionStrategy` to `LiveMigrate` so that any request to move the instance will use this method. We will explore this in more depth in a later lab.
+* We are going to create a machine called `rhel8-server-ocs`.
+* We'll utilise the Persistent Volume Claim (PVC) called `rhel8-ocs` that was created using the CDI utility with a CentOS 8 base image.
+* We will utilise the `NetworkAttachmentDefinition` we created for the underlying host's third NIC (`enp3s0` via `br1`). This is the `tuning-bridge-fixed` interface which refers to that bridge created previously.
+* As we're using Multus as it's default networking CNI we also ensure Multus attaches this `NetworkAttachmentDefinition`.
+* Lastly we have set the `evictionStrategy` to `LiveMigrate` so that any request to move the instance will use this method (we will explore this in more depth in a later lab).
 
 Let's apply a VM configuration via the CLI first:
 
@@ -64,7 +68,7 @@ spec:
 EOF
 ```
 
-You should see VirtualMachine object is created:
+You should see a `VirtualMachine` object is created:
 
 ~~~bash
 virtualmachine.kubevirt.io/rhel8-server-ocs created
@@ -77,20 +81,20 @@ This starts to **schedule** the virtual machine across the available hypervisors
 oc get vm
 ```
 
-This command will list the VirtualMachine objects:
+This command will list the `VirtualMachine` objects:
 
 ~~~bash
 NAME               AGE   STATUS     READY
 rhel8-server-ocs   4s    Starting   False
 ~~~
 
-Now execute following command:
+Now execute following command to list the *instance* of that virtual machine object:
 
 ```execute-1
 oc get vmi
 ```
 
-This command will list the VirtualMachineInstance objects:
+This command will list the `VirtualMachineInstance` objects:
 
 
 ~~~bash
@@ -113,7 +117,7 @@ NAME                                   READY   STATUS    RESTARTS   AGE
 virt-launcher-rhel8-server-ocs-z5rmr   1/1     Running   0          3m5s
 ~~~
 
-Then execute following to describe the details (if you copy from the lab remember to chnage the pod name to reflect your pod shown in the terminal):
+Then execute following to describe the details (if you copy from the lab remember to change the pod name to reflect your pod shown in the terminal):
 
 ```copy
 oc describe pod virt-launcher-rhel8-server-ocs-z5rmr
@@ -166,9 +170,7 @@ Status:       Running
 (...)
 ~~~
 
-When you look into this launcher pod, you'll see that it has the same  libvirt functionality we find in existing Red Hat virtualisation products like RHV and OpenStack. 
-
-First get a shell on the pod that's operating our virtual machine, recalling that each VM has a `virt-launcher` pod associated to it:
+When you look into this launcher pod, you'll see that it has the same libvirt functionality we find in existing Red Hat virtualisation products like RHV and OpenStack. First get a shell on the pod that's operating our virtual machine, recalling that each VM has a `virt-launcher` pod associated to it:
 
 ```execute-1
 oc get pods
@@ -345,6 +347,8 @@ Pod IP: 192.168.123.106
 If you don't see a command prompt, try pressing enter.
 ~~~
 
+Switch into the hosts namespace:
+
 ```execute-1
 chroot /host
 ```
@@ -388,17 +392,13 @@ Or visually represented:
 
 <img src="img/veth-pair.png" />
 
-Exit the debug shell(s) before proceeding, remembering to do this twice as the first exits from the chroot, the second from the debug pod:
+Exit the debug shell(s) before proceeding, remembering to do this **twice** as the first exits from the chroot, the second from the debug pod:
 
 ```execute-1
 exit
 ```
 
-```execute-1
-exit
-```
-
-Execute `oc whoami` here just to make sure you're in the right place:
+Remember, it should notify you with "Removing debug pod ..." to demonstrate that you're leaving debug mode. When you're ready, execute `oc whoami` here just to make sure you're in the right place:
 
 ```execute-1
 oc whoami
@@ -416,6 +416,4 @@ Then ensure you are in the default project:
 oc project default
 ```
 
-That's it for deploying basic workloads as we've successfully deployed a VM on-top of OCS! 
-
-Let's trying doing more with those workloads. Select "Live Migration" for the next lab.
+That's it for deploying basic workloads as we've successfully deployed a VM on-top of OCS!  Let's trying doing more with those workloads. Select "**Live Migration**" below for the next lab.
