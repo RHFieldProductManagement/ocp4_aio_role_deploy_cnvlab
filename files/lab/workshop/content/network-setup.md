@@ -1,6 +1,6 @@
 In this section we're going to be configuring the networking for our environment. You're probably just wanting to create virtual machines, but let's just finish this one step and we'll understand a lot more about how networking works in OpenShift.
 
-With OpenShift Virtualization (or more specifically, OpenShift in general - regardless of the workload type) we have a few different options for networking - we can just have our virtual machines be attached to the same pod networks that our containers would have access to, or we can configure more real-world virtualisation networking constructs like bridged networking, SR/IOV, and so on. It's also absolutely possible to have a combination of these, e.g. both pod networking and a bridged interface directly attached to a VM at the same time, using [Multus](https://github.com/k8snetworkplumbingwg/multus-cni), the default networking CNI in OpenShift 4.x. Multus allows multiple "sub-CNI" devices to be attached to a pod (regardless of whether a virtual machine is running there).
+With OpenShift Virtualization (or more specifically, OpenShift in general - regardless of the workload type) we have a few different options for networking. We can just have our virtual machines be attached to the same pod networks that our containers would have access to, or we can configure more real-world virtualisation networking constructs like bridged networking, SR/IOV, and so on. It's also possible to have a combination of these, e.g. both pod networking and a bridged interface directly attached to a VM at the same time, using [Multus](https://github.com/k8snetworkplumbingwg/multus-cni), the default networking CNI in OpenShift 4.x. Multus allows multiple "sub-CNI" devices to be attached to a pod (regardless of whether a virtual machine is running there).
 
 In this lab we're going to enable multiple options - pod networking **and** a secondary network interface provided by a bridge on the underlying worker nodes (hypervisors). Each of the worker nodes has been configured with an additional, currently unused, network interface that is defined as `enp3s0`, and we'll create a bridge device, called `br1`, so we can attach our virtual machines to it - this network is actually the same L2 network as the one attached to `enp2s0`, so it's on the `192.168.123.0/24` network as well.
 
@@ -225,7 +225,7 @@ Then check the status of our **enp3s0** device:
 ip link show dev enp3s0
 ```
 
-This should show following, with the key bit showing "**master br1**", so we know it has been consumed into our new bridge:
+This should show the following, with the key bit showing "**master br1**", so we know it has been consumed into our new bridge:
 ~~~bash
 4: enp3s0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc fq_codel master br1 state UP mode DEFAULT group default qlen 1000
     link/ether 52:54:00:00:01:04 brd ff:ff:ff:ff:ff:ff
@@ -300,6 +300,6 @@ Verify the Network Attchment Definition is created now:
 networkattachmentdefinition.k8s.cni.cncf.io/tuning-bridge-fixed created
 ~~~
 
-> **NOTE**: The important flags to recognise here are the **type**, being **cnv-bridge** which is a specific implementation that links in-VM interfaces to a counterpart on the underlying host for full-passthrough of networking. Also note that there is no **ipam** listed - we don't want the CNI to manage the network address allocation for us - the network we want to attach to has DHCP enabled, and so let's not get involved.
+> **NOTE**: The important flags to recognise here are the **type**, being **cnv-bridge** which is a specific implementation that links in-VM interfaces to a counterpart on the underlying host for full-passthrough of networking. Also note that there is no **ipam** listed - we don't want the CNI to manage the network address allocation for us instead the network we want to attach to has DHCP enabled.
 
-That's it! We're good to go, next step is to deploy a virtual machine!
+That's it! We're good to go, next step is to deploy a virtual machine! Click on "Deploy Workloads" to continue with the lab.
