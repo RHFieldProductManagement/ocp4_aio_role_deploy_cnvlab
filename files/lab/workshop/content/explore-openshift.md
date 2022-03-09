@@ -27,7 +27,7 @@ From within this lab guide, SSH to the bastion node:
 ssh %bastion-username%@%bastion-host%
 ```
 
-When you see the prompt, agree to the SSH certificates by typing "yes", and then enter **%bastion-password%** as the password. Then you can execute following command to get the kubeadmin password:
+When you see the prompt, if required, agree to the SSH certificates by typing "yes", and then enter **%bastion-password%** as the password. Then you can execute following command to get the kubeadmin password:
 
 ```execute-1
 echo $(cat %kubeadmin-password-file%)

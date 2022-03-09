@@ -1,9 +1,9 @@
 In this lab, we will use OpenShift Web Console to deploy the frontend and backend components of the ParksMap application. 
 Parksmap application consists of one frontend web application, two backend applications and 2 databases. 
 
-- ParksMap frontend web application which is also called `parksmap` and uses OpenShift's service discovery mechanism to discover the backend services deployed and shows their data on the map.
+- ParksMap frontend web application, also called `parksmap`, and uses OpenShift's service discovery mechanism to discover the backend services deployed and shows their data on the map.
 
-- Nationalparks backend application queries for national parks information (including its
+- Nationalparks backend application queries for national parks information (including their
 coordinates) that is stored in a MongoDB database. 
 
 - MLBParks backend application queries Major League Baseball stadiums in the US that are stored in an another MongoDB database.
