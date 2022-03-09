@@ -37,8 +37,9 @@ This will open a dialog that will allow you to configure the template. This temp
 - *Database Username*
 - *Database Admin Password*
   
+
 Enter *mongodb-nationalparks* in  **MongoDB Application Name** field and leave other parameter values as-is.
- 
+
  <br/>
 
 ![Configure Template](img/parksmap-mongodb-nationalparks.png)  
@@ -48,7 +49,7 @@ Enter *mongodb-nationalparks* in  **MongoDB Application Name** field and leave o
 Next click the blue *Create* button. 
 
 You will be directed to the *Topology* page, where you should see the visualization for the `mongodb-nationalparks` virtual machine in the `workshop` application. 
-This will make OpenShift to create both *VirtualMachine* and *Service* objects. `nationalparks` backend application will use this *mongodb-nationalparks service* to communicate with MongoDB.  
+OpenShift creates both *VirtualMachine* and *Service* objects. `nationalparks` backend application will use this *mongodb-nationalparks service* to communicate with MongoDB.  
 
 ### 3. Verify the Database Service in Virtual Machine  
 
@@ -63,15 +64,17 @@ NAME                    AGE   STATUS     READY
 mongodb-nationalparks   45s   Running    True
 ~~~
 
-After MongoDB Virtual Machine started, open *Virtual Machine Console* as shown in the figure below 
+Once the MongoDB Virtual Machine is in a Running state, open the *Virtual Machine Console* by selecting the mongodb-nationalparks VM icon and choosing "Open Console" from the "Actions" menu: 
 
  <br/>
 
-![Open VM Console](img/parksmap-nationalparks-mongodb-console.png)  
+![parksmap-opensonconsole](/Users/august/Documents/work/fpm/ocp4_aio_role_deploy_cnvlab/files/lab/workshop/content/img/parksmap-opensonconsole.png)
 
  <br/>
 
-Switch to *Serial Console* and wait for the login prompt.
+Switch to *Serial Console* and wait for the login prompt:
+
+![parksmap-serialconsole](/Users/august/Documents/work/fpm/ocp4_aio_role_deploy_cnvlab/files/lab/workshop/content/img/parksmap-serialconsole.png)
 
 On the login screen, enter the following credentials:
 
@@ -123,7 +126,7 @@ Items inserted in database: 2893
 
 If you then go back to `/ws/data/all` you will see tons of JSON data now.
 
-If you check your browser now:
+This data will be visualised on the map if you check your browser now:
 
 [http://parksmap-%parksmap-project-namespace%.%cluster_subdomain%](http://parksmap-%parksmap-project-namespace%.%cluster_subdomain%)
 
@@ -248,8 +251,7 @@ Cloud-init documentation can be found here:
 
 OpenShift Virtualization supports cloud-init's "NoCloud" and "ConfigDrive" datasources which involve injecting startup scripts into a VM instance through the use of an ephemeral disk. VMs with the cloud-init package installed will detect the ephemeral disk and execute custom userdata scripts at boot.
 
-Other than cloud-init, OpenShift Virtualization also supports `SysPrep` whichan automation tool for Windows that automates Windows installation, setup, and custom software provisioning. 
+Other than cloud-init, OpenShift Virtualization also supports `SysPrep` which is an automation tool for Windows that automates Windows installation, setup, and custom software provisioning. 
 
-So you can now automate your Windows virtual machine setup by uploading answer files in XML format in the Advanced → SysPrep section of the Create virtual machine from template wizard
-
+You can automate Windows virtual machine setup by uploading answer files in XML format in the Advanced → SysPrep section of the Create virtual machine from template wizard.
 
