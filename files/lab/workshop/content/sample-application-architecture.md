@@ -9,8 +9,8 @@ There will be a set of independent backend services deployed that will provide d
 * WorldWide National Parks
 * Major League Baseball Stadiums in North America
 
-The original source code for this application is located link:https://github.com/openshift-roadshow/[here].
+The original source code for this application is available [here](https://github.com/openshift-roadshow/parksmap-web).
 
 The server-side component of the ParksMap web application acts as a communication gateway to all the available backends. These backends will be dynamically discovered by using service discovery mechanisms provided by OpenShift which will be discussed in more details in the following labs.
 
-The backend applications use MongoDB to persist map and geo-spatial information. . In order to showcase how containers and virtual machines can run together in an OpenShift Environment, you will be deploying MongoDB applications as virtual machines.
+The backend applications use MongoDB to persist map and geo-spatial information. In order to showcase how containers and virtual machines can run together in an OpenShift Environment, you will be deploying MongoDB applications as virtual machines.
