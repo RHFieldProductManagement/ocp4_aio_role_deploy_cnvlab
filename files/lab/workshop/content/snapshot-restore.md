@@ -26,19 +26,19 @@ The QEMU guest agent takes a consistent snapshot by attempting to quiesce the VM
 
 > **NOTE**: The qemu-guest-agent is widely available and available by default in Red Hat virtual machines. It might be already installed and enabled on the virtual machine used in this lab module.
 
-1. Navigate to the OpenShift Web UI so we can access the console of the `mongodb-nationalparks` virtual machine. You'll need to select "**Workloads**" --> "**Virtualization**" --> "**Virtual Machines**" --> "**mongodb-nationalparks**" --> "**Console**". You'll be able to login with "**centos/redhat**", noting that you may have to click on the console window for it to capture your input. <img src="img/snapshot-vm-console.png"/>
+1. Navigate to the OpenShift Web UI so we can access the console of the `mongodb-nationalparks` virtual machine. From the "**Administrator**" view, you'll need to select "**Workloads**" --> "**Virtualization**" --> "**Virtual Machines**" --> "**mongodb-nationalparks**" --> "**Console**". You'll be able to login with "**centos/redhat**", noting that you may have to click on the console window for it to capture your input. <img src="img/snapshot-vm-console.png"/>
 
 > **TIP**: You might find `Serial Console` option is more responsive.
 
-> **NOTE**: If you don't see an VMs make sure to change to the Default project via the drop down at the top of the console.
+> **NOTE**: If you don't see an VMs make sure to change to the parksmap-dem project via the drop down at the top of the console.
 
-2. Once you're in the virtual machine Install the QEMU guest agent on the virtual machine
-```execute
+2. Once you're in the virtual machine's console install the QEMU guest agent on the virtual machine
+```copy
 sudo yum install -y qemu-guest-agent
 ```
 
 3. Ensure the service is persistent and start it
-```execute
+```copy
 sudo systemctl enable --now qemu-guest-agent
 ```
 
@@ -64,14 +64,14 @@ Virtual machine (VM) snapshots can be created either by using the web console or
 7. Click **Save**.
    </td>
    <td><img src="img/vm-snapshot-card.png" width="100%"/></td>
-  </tr>
- </table>
+    </tr>
+    </table>
 
 Once you click Save to create snapshot, the vm controller checks that the QEMU guest agent is installed and running. If so, it freezes the VM file system before taking the snapshot, and initiates snapshot creation on actual storage system for each Container Storage Interface (CSI) volume attached to the VM, a copy of the VM specification and metadata is also created.
 
 <img src="img/vm-snapshot-creating.png"/><br>
 
-It should take just a little seconds to actually create the snapshot and make it Ready to use. Once the snapshot becomes **Ready** then it can be used to restore the virtual machine to that specific point in time then the snapshot is taken.
+It should take just a few seconds to actually create the snapshot and make it Ready to use. Once the snapshot becomes **Ready** then it can be used to restore the virtual machine to that specific point in time then the snapshot is taken.
 
 <img src="img/vm-snapshot-ready.png"/>
 
@@ -82,17 +82,17 @@ After taking an online snapshot of the database vm, let's destroy the database b
 1. Navigate to the OpenShift Web UI so we can access the console of the `mongodb-nationalparks` virtual machine. You'll need to select "**Workloads**" --> "**Virtualization**" --> "**Virtual Machines**" --> "**mongodb-nationalparks**" --> "**Console**". You'll be able to login with "**centos/redhat**", noting that you may have to click on the console window for it to capture your input.
 
 2. Once you're in the virtual machine, delete everything under it's data path.
-```execute
+```copy
 sudo systemctl stop mongod
 ```
-```execute
+```copy
 sudo rm -rf /var/lib/mongo/*
 ```
-```execute
+```copy
 sudo systemctl start mongod
 ```
 
-Now you can check by refreshing `ParksMap` web page (Map Visualizer on OpenShift 4), it should **fail** to load national parks locations from the backend service and no longer display them on the map.
+Now you can check by refreshing `ParksMap` [web page](http://parksmap-parksmap-demo.apps.hgdmbmc.dynamic.opentlc.com/), it should now **fail** to load national parks locations from the backend service and no longer display them on the map. MLB Parks should be fine (check the USA map for these  :) ).
 
 ### Exercise: Restoring a virtual machine from a snapshot in the web console
 
@@ -100,31 +100,27 @@ In this exercise, let's restore our mongodb database vm by using the web console
 You can only restore to a powered off (offline) VM so we will first power off the virtual machine in this exercise.
 
 1. Click **Workloads** → **Virtualization** from the side menu.
-
 2. Click the **Virtual Machines** tab.
-
 3. Select `mongodb-nationalparks` virtual machine to open its **Overview** screen.
+4. If the mongodb-nationalparks virtual machine is running click on its name and then click **Actions** → **Stop Virtual Machine** to power it down.
+5. Wait for the machine to display a "Stopped" status 
+6. Click the **Snapshots** tab. The page displays a list of snapshots associated with the virtual machine.
+6. There are two ways to restore a snapshot in the console; you can use either here: 
 
-4. If the virtual machine is running, click **Actions** → **Stop Virtual Machine** to power it down.
-
-5. Click the **Snapshots** tab. The page displays a list of snapshots associated with the virtual machine.
-
-6. Choose one of the following methods to restore a VM snapshot:
-
-   - For the snapshot that you want to use as the source to restore the VM, click **Restore**.
-   - Select a snapshot to open the **Snapshot Details** screen and click **Actions** → **Restore Virtual Machine Snapshot**.
-
+   - Choose the **Restore** box following the name ofthe snapshot you want to restore. 
+   - Select the snapshot's name and open the **Snapshot Details** screen. From there click **Actions** → **Restore Virtual Machine Snapshot**.
 7. In the confirmation pop-up window, click **Restore** to restore the VM to its previous configuration represented by the snapshot.
 
 <img src="img/vm-snapshot-restore-popup.png"/><br>
 
 Once you click Restore to restore vm from the snapshot, it initiates snapshot restoration on actual storage system for each Container Storage Interface (CSI) volume attached to the VM and included in the snaphot, VM specification and metadata is also restored.  
-It should take just a little seconds to actually restore the snapshot and make the VM ready to be powered on again.
+It should take just a few seconds to actually restore the snapshot and make the VM ready to be powered on again.
 
 <img src="img/vm-snapshot-restoring.png"/><br>
 
-After the snapshot was restored successfully and it's status become **Ready**, then you can click **Actions** → **Start Virtual Machine** to power it on.
-Once the VM is powered on and boots successfully, you can refresh `ParksMap` web page (Map Visualizer on OpenShift 4). It should successfully load national parks locations from the backend service and start displaying them on the map again.
+After the snapshot was restored successfully and its status become **Ready**, you can then click **Actions** → **Start Virtual Machine** to power it on.
+
+Once the VM is powered on and boots successfully, you can refresh `ParksMap` the [web page](http://parksmap-parksmap-demo.apps.hgdmbmc.dynamic.opentlc.com/). It should now successfully load national parks locations again from the restored backend service and start displaying them on the map again.
 
 ### Background: Virtual machine snapshot controller and custom resource definitions (CRDs)
 
@@ -154,7 +150,8 @@ mongodb-nationalparks-snap0   VirtualMachine   mongodb-nationalparks   Succeeded
 ~~~
 
 2. Create the `VirtualMachineSnapshot` resource. The snapshot controller creates a `VirtualMachineSnapshotContent` object, binds it to the `VirtualMachineSnapshot` and updates the **status** and **readyToUse** fields of the VirtualMachineSnapshot object. The name of the new vm snapshot will be `mongodb-nationalparks-snap1` in this example.
-```execute
+
+```execute-1
 cat << EOF | oc apply -f -
 apiVersion: snapshot.kubevirt.io/v1alpha1
 kind: VirtualMachineSnapshot
@@ -171,7 +168,7 @@ EOF
 virtualmachinesnapshot.snapshot.kubevirt.io/mongodb-nationalparks-snap1 created
 ~~~
 
-3. **Optional**: As in the previous exercise, the snapshot creation will take a little seconds in the background, and you can use the wait command and monitor the status of the snapshot.
+3. **Optional**: As in the previous exercise, the snapshot creation will take a few seconds in the background, and you can use the wait command and monitor the status of the snapshot.
 ```execute
 oc wait vmsnapshot mongodb-nationalparks-snap1 --for condition=Ready
 ```
@@ -237,8 +234,8 @@ Events:
 ~~~
 
 6. `VirtualMachineSnapshotContent` objects represent a provisioned resource on the cluster, a vm snapshot in our case. It is created by the VM snapshot controller and contains references to all resources required to restore the VM. The underlying kubernetes StorageClass, PersistentVolume, VolumeSnapshot objects used and created for each attached disk and VM's metadata information is stored in the `VirtualMachineSnapshotContent` object. So it contains all the information needed to restore the VM to that specific point in time that snapshot is taken.
-You can see these details by describing the VirtualMachineSnapshotContent bound to our vm snapshot.
-```execute
+You can see these details by describing the VirtualMachineSnapshotContent bound to our vm snapshot. This value for your environment is provided at the bottom of the previous command.
+```copy
 oc describe vmsnapshotcontent vmsnapshot-content-7a46dfc9-9904-42e9-a0a3-c02ef43d0f2b
 ```
 
@@ -258,13 +255,13 @@ To see how to restore the VM in the CLI, let's delete the VM's boot disk complet
 
 6. Select the **disk** named `mongodb-nationalparks` which is the boot disk of our database VM, and click the Options menu <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABsAAAAjCAIAAADqn+bCAAAACXBIWXMAAA7EAAAOxAGVKw4bAAAA+0lEQVRIie2WMQqEMBBFJ47gUXRBLyBYqbUXULCx9CR2XsAb6AlUEM9kpckW7obdZhwWYWHXX/3i8TPJZEKEUgpOlXFu3JX4V4kmB2qaZhgGKSUiZlkWxzEBC84N9zxv27bdO47Tti0Bs3at4wBgXVca/lJnfN/XPggCGmadIwAsywIAiGhZFk1ydy2EYJKgGCqK4vZUVVU0zKpxnmftp2mi4S/1GhG1N82DMWNNYVmW4zgqpRAxTVMa5t4evlg11nXd9/1eY57nSZIQMKtG13WllLu3bbvrOgJmdUbHwfur8Xniqw6Hh5UYRdGDNowwDA+WvP4UV+JPJ94B1gKUWcTOCT0AAAAASUVORK5CYII=" alt="kebab" title="Options menu"> and select **Delete**.
 
-7. In the confirmation pop-up window, select the **Delete DataVolume and PVC** checkbox click **Detach** to delete the disk completely.
+7. In the confirmation pop-up window, select the **Delete DataVolume and PVC** checkbox and click **Detach** to delete the disk completely.
 
 <img src="img/vm-snapshot-delete-disk.png"/><br>
 
-Now you can check by refreshing `ParksMap` web page (Map Visualizer on OpenShift 4), it should **fail** to load national parks locations from the backend service and no longer display them on the map.
+Now you can check by refreshing `ParksMap` [web page](http://parksmap-parksmap-demo.apps.hgdmbmc.dynamic.opentlc.com/), it should **fail** to load national parks locations from the backend service and no longer display them on the map.
 
-# Exercise: Delete the VM's boot disk
+# Exercise: Restore the VM's boot disk
 
 In this exercise, let's restore our mongodb database vm by using the CLI to the snapshot created in the previous exercise.
 You can only restore to a powered off (offline) VM so we will first power off the virtual machine in this exercise.
@@ -279,7 +276,7 @@ mongodb-nationalparks-snap0-restore-pb4mbl   VirtualMachine   mongodb-nationalpa
 ~~~
 
 2. Create a `VirtualMachineRestore` object that specifies the name of the VM we want to restore and the name of the snapshot to be used as the source. The name of the vm and it's snapshot will be `mongodb-nationalparks` and `mongodb-nationalparks-snap1` in this example respectively. Right after creating the `VirtualMachineRestore` object, the snapshot controller updates the status fields of the VirtualMachineRestore object and replaces the existing VM configuration with the snapshot content.
-```execute
+```execute-1
 cat << EOF | oc apply -f -
 apiVersion: snapshot.kubevirt.io/v1alpha1
 kind: VirtualMachineRestore
@@ -303,7 +300,7 @@ oc wait vmrestore mongodb-nationalparks-vmrestore1 --for condition=Ready
 ```
 
 4. List the existing vm restore objects in the project again to verify that the new vm restore is created successfully. If the vm restored successfully then the `complete` flag must be set to `true`. 
-~~~bash
+~~~execute-1
 oc get vmrestores
 ~~~
 ~~~bash
@@ -357,7 +354,17 @@ Events:
   ----    ------                         ----   ----                -------
   Normal  VirtualMachineRestoreComplete  7m50s  restore-controller  Successfully completed VirtualMachineRestore mongodb-nationalparks-vmrestore1
 ~~~
-After the snapshot was restored successfully and it's `complete` flag is set to `true`, then you can click **Actions** → **Start Virtual Machine** to power the VM on.
-Once the VM is powered on and boots successfully, you can refresh `ParksMap` web page (Map Visualizer on OpenShift 4). It should successfully load national parks locations from the backend service and start displaying them on the map again.
+
+
+You'll know the snapshot is restored syccesfsfully when it's `complete` flag is set to `true`:
+
+```execute-1
+oc describe vmsnapshot mongodb-nationalparks-snap1 | grep true
+```
+
+
+You can now start your VM back up. From the console go to **Actions** → **Start Virtual Machine** to power the VM on.
+
+Once the VM is powered on and boots successfully, you can refresh `ParksMap` [web page](http://parksmap-parksmap-demo.apps.hgdmbmc.dynamic.opentlc.com/). It should successfully load national parks locations from the backend service and start displaying them on the map again.
 
 That's it for taking vm snapshots and performing restores - we've created snapshots of our mongodb database vm using both OpenShift web console and CLI, and restored it after deleting data files and underlying vm disk.
