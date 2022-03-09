@@ -1,8 +1,8 @@
 ### Background: Hot-plugging virtual disks
 It is expected to have **Dynamic Reconfiguration** capabilities for VMs today, such as CPU/Memory/Storage/Network hot-plug/hot-unplug.
-Although these capabilities have been around for the traditional virtualization platforms, it is a particularly challenging feature to implement in a **Kubernetes** platform because of the kubernetes principle of **immutable Pods**, where once deployed they are never modified. If something needs to be changed, you never do so directly on the Pod. Instead, you’ll build and deploy a new one that have all your needed changes baked in.
+Although these capabilities have been around for the traditional virtualization platforms, it is a particularly challenging feature to implement in a **Kubernetes** platform because of the kubernetes principle of **immutable Pods**, where once deployed they are never modified. If something needs to be changed, you never do so directly on the Pod. Instead, you’ll build and deploy a new one that has all your needed changes baked in.
 
-OpenShift Virtualization strives to have these dynamic reconfiguration capabilities for VMs although it's a kubernetes-based platform. In 4.9 release, Hot-plugging virtual disks to a running virtual machine is supported as a Technology Preview feature, so as a VM owner, you are able to attach and detach storage on demand.
+OpenShift Virtualization strives to have these dynamic reconfiguration capabilities for VMs although it's a kubernetes-based platform. In the 4.9 release, Hot-plugging virtual disks to a running virtual machine is supported as a Technology Preview feature, so as a VM owner, you are able to attach and detach storage on demand.
 
 ### Exercise: Hot-plugging a virtual disk using the web console
 Hot-plug and hot-unplug virtual disks when you want to add or remove them without stopping your virtual machine or virtual machine instance. This capability is helpful when you need to add storage to a running virtual machine without incurring down-time. When you hot-plug a virtual disk, you attach a virtual disk to a virtual machine instance while the virtual machine is running. When you hot-unplug a virtual disk, you detach a virtual disk from a virtual machine instance while the virtual machine is running. Only data volumes and persistent volume claims (PVCs) can be hot-plugged and hot-unplugged. You cannot hot-plug or hot-unplug container disks.
@@ -20,13 +20,13 @@ In this exercise, let's attach a new 5G disk to mongodb database vm by using the
 
 4. On the **Disks** tab, click **Add Disk**.
 
-5. In the **Add Disk** window, fill in the information for the virtual disk that you want to hot-plug.
+5. In the **Add Disk** window, fill in the information for the virtual disk that you want to hot-plug. **Be sure to review the image provided to ensure you set the values correctly.**
 
 6. Click **Add**.
    </td>
    <td><img src="img/hot-plug-disk-card.png" width="80%"/></td>
-  </tr>
- </table>
+    </tr>
+    </table>
 
 Once you click Add to attach new disk, a new vm disk is automatically provisioned using the selected storage class, which is ceph-rbd in this exercise, and attached to the running virtual machine. You can see the new disk in the Disks tab of the virtual machine.
 
@@ -43,7 +43,7 @@ To verify if the new 5G disk is recognized and ready to use by the guest operati
 4. Navigate to the "**Console**" tab. You'll be able to login with "**centos/redhat**", noting that you may have to click on the console window for it to capture your input.
 
 5. Once you're in the virtual machine, run the lsblk command to list block devices recognized by the operating system.
-```execute
+```copy
 sudo lsblk
 ```
 <img src="img/hot-plug-disk-lsblk.png" width="50%"/></td>
@@ -72,10 +72,11 @@ In this exercise, let's resize our hot-plugged 5G disk to 7G by using the web co
    
    </td>
    <td><img src="img/hot-plug-disk-expand-pvc.png" width="100%"/></td>
-  </tr>
- </table>
+    </tr>
+    </table>
 
-Currently, guest operating systems are not noticed automatically when you expand one of VM disks as we did in this exercise. The feature to automatically notify guest operating systems has already been implemented and merged into the upstream KubeVirt project (https://github.com/kubevirt/kubevirt/pull/5981), and is expected to be added into a future OpenShift Virtualization release.
+Currently, an expanded disk's new size isn't automatically recognised by the OS. Instead this must be done at a lower level, which we will explain below. There is an [upstream feature](https://github.com/kubevirt/kubevirt/pull/5981) for this functionality in Kubernetes which is expected to be added ina. future version of OpenShift.
+
 To verify if the guest operating system has recognized the disk expansion, let's connect the console of our virtual machine and list block devices again.
 Size of the hot-plugged disk should still listed as 5G instead of 7G.
 
@@ -93,11 +94,17 @@ sudo lsblk
 ```
 <img src="img/hot-plug-disk-lsblk.png" width="50%"/></td>
 
-OpenShift Virtualization creates one pod for each running virtual machine. This pod's primary container runs the virt-launcher. The main purpose of the virt-launcher Pod is to provide the cgroups and namespaces which will be used to host the VM process.
+As we mentioned, the OS still sees this disk as 5GB. Let's fix this, but first a quick refresher from previous labs. As you'll recall OpenShift Virtualization creates one pod for each running virtual machine. This pod's primary container runs the virt-launcher. The main purpose of the virt-launcher Pod is to provide the cgroups and namespaces which will be used to host the VM process.
 An instance of `libvirtd` is present in every VM pod. virt-launcher uses libvirtd to manage the life-cycle of the VM process.
-libvirt is an open-source API, daemon and management tool for managing platform virtualization including KVM, `virsh` is the most popular command line interface to interact with libvirt daemon `libvirtd`. In other words, you can manage KVM VM’s using `virsh` command line interface.
-To send a disk size change event to guest operating system, we can execute `virsh blockresize` command inside the virt-launcher pod of the virtual machine.
-Let's connect the terminal of `virt-launcher` pod of our virtual machine and execute `virsh blockresize` command to notify guest operating system so that it can recognize the disk size expansion.
+libvirt is an open-source API, daemon and management tool for managing platform virtualization including KVM, `virsh` is the most popular command line interface to interact with libvirt daemon `libvirtd`. 
+
+In other words, you can manage KVM VM’s using `virsh` command line interface.
+
+To send the disk size change event we need to a guest operating system, we can execute the `virsh blockresize` command inside the virt-launcher pod of the virtual machine.
+
+Let's do it!
+
+First connect the terminal of the `virt-launcher` pod of our virtual machine and execute `virsh blockresize` command to notify the guest operating system so that it can recognize the disk size expansion.
 
 1. Click **Workloads** → **Pods** from the side menu.
    
@@ -108,7 +115,7 @@ Let's connect the terminal of `virt-launcher` pod of our virtual machine and exe
 4. Once you're in the Pod's terminal, run the following commands to list block devices attached to the running virtual machine.
 
 First list the running virtual machine and note it's Id.
-```execute
+```copy
 virsh list
 ```
 ~~~bash
@@ -117,7 +124,7 @@ virsh list
  1    backup-test_mongodb-nationalparks   running
 ~~~
 Now list the block devices attached to the running virtual machine with `virsh domblklist` command.
-```execute
+```copy
 virsh domblklist 1
 ```
 ~~~bash
@@ -127,9 +134,10 @@ virsh domblklist 1
  vdb      /var/run/kubevirt-ephemeral-disks/cloud-init-data/backup-test/mongodb-nationalparks/noCloud.iso
  sda      /var/run/kubevirt/hotplug-disks/disk-0
 ~~~
-Name of the disk we have expanded should be disk-0. You can check the name of the disk on the **Disks** tab of the virtual machine if you are not sure.
+The name of the disk we have expanded should be disk-0. You can check the name of the disk on the **Disks** tab of the virtual machine if you are not sure.
 Once you identify the disk which is `sda` in our example, then run the `virsh blockresize` command to notify the guest operating system that the disk is expanded to 7 GB.
-```execute
+
+```copy
 virsh blockresize 1 sda 7g
 ```
 ~~~bash
@@ -164,8 +172,8 @@ In this exercise, let's detach the disk that we have hot-plugged in the previous
 7. In the confirmation pop-up window, click **Detach** to hot-unplug the disk.
    </td>
    <td><img src="img/hot-plug-disk-detach.png" width="100%"/></td>
-  </tr>
- </table>
+    </tr>
+    </table>
 
 Once you click **Detach** to hot-unplug the disk it's  detached from the running virtual machine and guest operating system automatically recognizes the event. 
 To verify if the 7G disk removal is recognized by the guest operating system, let's connect the console of our virtual machine and list block devices once again. The disk should no longer be listed by the guest operating system.
