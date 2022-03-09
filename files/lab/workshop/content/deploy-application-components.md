@@ -133,7 +133,7 @@ The way that external clients are able to access applications running in OpenShi
 
 Also note that there is a decorator icon on the `parksmap` visualization now. If you click that, it will open the URL for your *Route* in a browser:
 
-![parksmap-decorator](/Users/august/Documents/work/fpm/ocp4_aio_role_deploy_cnvlab/files/lab/workshop/content/img/parksmap-decorator.png) 
+![parksmap-decorator](img/parksmap-decorator.png) 
 
 This application is now available at the URL shown in the Developer Perspective. Click the link and you will see the following:
 

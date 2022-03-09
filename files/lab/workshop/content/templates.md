@@ -39,7 +39,7 @@ The new PVC will then be set as the boot source of the selected CentOS 8 templat
 6. Set **Persistent Volume Claim size** as **20 GiB**. This will also be the size of the root disk of the VMs created by using this template.
 7. Fill in the **Source provider** field with the name of the source disk provider. We can enter `CentOS Community` here in this exercise. Your details should looks like this:
 
-![templates-add-boot-source](/Users/august/Documents/work/fpm/ocp4_aio_role_deploy_cnvlab/files/lab/workshop/content/img/templates-add-boot-source.png)
+![templates-add-boot-source](img/templates-add-boot-source.png)
 
 8. Click **Save and import**.
 

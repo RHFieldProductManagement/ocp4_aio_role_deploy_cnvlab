@@ -68,13 +68,13 @@ Once the MongoDB Virtual Machine is in a Running state, open the *Virtual Machin
 
  <br/>
 
-![parksmap-opensonconsole](/Users/august/Documents/work/fpm/ocp4_aio_role_deploy_cnvlab/files/lab/workshop/content/img/parksmap-opensonconsole.png)
+![parksmap-opensonconsole](img/parksmap-opensonconsole.png)
 
  <br/>
 
 Switch to *Serial Console* and wait for the login prompt:
 
-![parksmap-serialconsole](/Users/august/Documents/work/fpm/ocp4_aio_role_deploy_cnvlab/files/lab/workshop/content/img/parksmap-serialconsole.png)
+![parksmap-serialconsole](img/parksmap-serialconsole.png)
 
 On the login screen, enter the following credentials:
 

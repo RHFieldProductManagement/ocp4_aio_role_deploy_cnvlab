@@ -191,7 +191,7 @@ In this environment, we have one virtual machine running on *ocp4-worker1* (your
 >
 > **NOTE**: You **may** lose your browser based web terminal like this:
 >
-> ![live-mirate-terminal-closed](/Users/august/Documents/work/fpm/ocp4_aio_role_deploy_cnvlab/files/lab/workshop/content/img/live-mirate-terminal-closed.png)
+> ![live-mirate-terminal-closed](img/live-mirate-terminal-closed.png)
 >
 > If this happens you'll need to wait a few seconds for it to become accessible again. Try reloading the terminal from the hamburger menu in the upper right of the browser. This is because the router and/or workbook pods may be running on the worker you put into maintenance.
 
