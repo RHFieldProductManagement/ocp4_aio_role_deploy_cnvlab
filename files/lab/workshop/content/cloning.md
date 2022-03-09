@@ -1,4 +1,12 @@
-In this lab we're going to clone a workload and prove that it's identical to the previous. For convenience we're going to download and customise a Fedora 34 image, launch a virtual machine via OpenShift Virtualization based on it, install a basic application inside the VM, and then clone it - we'll then test to see if the cloned machine works as expected and is "the same" as before. Before we begin we need to setup our Fedora 34 cloud image, let's first connect to our bastion host as we need somewhere to process and serve the image.
+In this lab we're going to clone a workload and see that it's identical to the source of the clone. To do this we'll complete the following steps:
+
+- Download and customise a Fedora 34 image
+- Launch it as a virtual machine via OpenShift Virtualization 
+- Install a basic application inside the VM.
+- Clone the VM! 
+- Test it all! 
+
+Before we begin we need to setup our Fedora 34 cloud image, let's first connect to our bastion host so we can process and serve the image.
 
 First ssh to bastion node (password is *%bastion-password%*):
 
@@ -58,13 +66,15 @@ Enable libvirtd service as it's a dependency for libguestfs:
 systemctl enable --now libvirtd
 ```
 
-Then customise the downloaded image as follows, first enabling ssh login as root:
+Then customise the downloaded image as follows: 
+
+First we enable ssh logins for root:
 
 ```execute-1
 virt-customize -a /var/www/html/%cloud-image-name-fedora% --run-command 'sed -i s/^#PermitRootLogin.*/PermitRootLogin\ yes/ /etc/ssh/sshd_config && touch /.autorelabel'
 ```
 
-Then removing cloud-init and setting the root password to "redhat":
+Then remove cloud-init and set the root password to "redhat":
 
 ```execute-1
 virt-customize -a /var/www/html/%cloud-image-name-fedora% --uninstall=cloud-init --root-password password:redhat --ssh-inject root:file:/root/.ssh/id_rsa.pub
@@ -88,11 +98,11 @@ system:serviceaccount:workbook:cnv
 ~~~
 
 
-> **NOTE**: Make sure that you've disconnected from this machine, and  before proceeding.
+> **NOTE**: Make sure that you've disconnected from the bastion machine before proceeding.
 
 Now that we've prepared our Fedora 34 VM and placed it on an accessible location on our bastion host: (for reference it's at: http://%bastion-host%:81/%cloud-image-name-fedora%).
 
-Let's build a PVC that will eventually house a copy of this image so we can build a VM from it afterwards, this utilises the CDI utility to get the Fedora image from the endpoint we placed it on:
+Let's build a PVC for this image allowing us to build a VM from it afterwards. Again we'll utilise the CDI utility to get the Fedora image from the endpoint we placed it on:
 
 ```execute-1
 cat << EOF | oc apply -f -
@@ -169,7 +179,7 @@ I0319 02:41:08.657711       1 prometheus.go:69] 17.53
 I0319 02:41:09.678442       1 prometheus.go:69] 24.25
 ~~~
 
-Ctrl-C to exit, or just wait for it to finish... you can also view a stripped down importer description below, noting that it's unlikely that you'll be able to execute this command unless you're very quick!
+Ctrl-C to exit, or just wait for it to finish. We've also included a stripped down importer description below, noting that it's unlikely that you'll be able to execute this command unless you're very quick!
 
 ```execute-1
 oc describe pod $(oc get pods | awk '/importer/ {print $1;}')
@@ -286,7 +296,7 @@ NAME            AGE   PHASE     IP               NODENAME                       
 fc34-original   65s   Running   192.168.123.64   ocp4-worker3.aio.example.com   True
 ~~~
 
-> **NOTE:** The IP address for the Fedora 34 virtual machine may be missing in your output above as it takes a while for the `qemu-guest-agent` to report the data through to OpenShift and we also requested an SELinux relabel, so we'll need to be patient.
+> **NOTE:** The IP address for the Fedora 34 virtual machine may be missing in your output above as it takes a while for the `qemu-guest-agent` to report the data through to OpenShift. We also requested an SELinux relabel for the VM, which take some more time. You'll need to wait for the IP address to show before you can move to the next steps.
 
 When you've got an IP address, we should be able to SSH to it from our terminal window, noting you'll need to adapt the address below to match your environment:
 
@@ -305,14 +315,14 @@ SSH to the Virtual Machine (the password is "redhat"), and your IP address may n
 ssh root@192.168.123.64
 ```
 
-See the shell prompt:
+The following tasks should be performed from the VM's shell:
 
 ~~~bash
 [root@fedora ~]#
 ~~~
 
 
-At this stage, we're going to deploy a basic application into our Fedora-based virtual machine; let's install `nginx` via `systemd` and `podman`, i.e. have *systemd* call *podman* to start an *nginx* container at boot time, and have it display a simple web-page:
+We're going to deploy a basic application into our Fedora-based virtual machine; let's install `nginx` via `systemd` and `podman`, i.e. have *systemd* call *podman* to start an *nginx* container at boot time, and have it display a simple web page:
 
 
 First install podman:
@@ -380,7 +390,7 @@ Expect to see the *cnv* service account again:
 system:serviceaccount:workbook:cnv
 ~~~
 
-Let's quickly verify that this works as expected - you should be able to navigate directly to the IP address of your machine via `curl` - recalling that in my example it's *192.168.123.64*, it may be different for you, but unlikely if you've not created any additional VM's along the way:
+Let's quickly verify that this works as expected. You should be able to navigate directly to the IP address of your machine via `curl`. You may need to adjust the IP to reflect your environment's values.
 
 
 ```copy
@@ -396,28 +406,26 @@ URI: /
 Request ID: 517056307646f72f6d320830b6a9dfb6
 ~~~
 
-> **NOTE**: We've purposely installed a plain-text server-side option here as we cannot route to the 192.168.123.0/24 network via the internet. In a later step we'll change this to a visual one and we'll expose it via the OpenShift ingress service, and it'll be available as a route. But let's move on!
+> **NOTE**: We've purposely installed a plain-text server-side option here as we cannot route to the 192.168.123.0/24 network via the internet. In a later step we'll change this to a visual one and we'll expose it via the OpenShift ingress service and it'll be available as a route.
 
 
-Now that we know our VM is working, we need to shutdown the VM so we can clone it without risking filesystem corruption. We'll use the `virtctl` command to help us with this as it saves us logging back into the VM, and instructs VM shutdown via the guest agent:
+Now that we know our VM is working, we need to shutdown the VM so we can clone it without risking filesystem corruption. We'll use the `virtctl` command to help us with this as it saves us logging back into the VM by interacting via the guest agent:
 
 ```execute-1
 virtctl stop fc34-original
 ```
 
-It should say that the VM is stopping:
+The VM is now scheduled to stop:
 
 ~~~bash
 VM fc34-original was scheduled to stop
 ~~~
 
-Now if you check the list of `vm` objects you should see that it's marked as `Stopped` rather than being automatically restarted by OpenShift Virtualization:
+Next, check the list of `vm` objects. It's now marked as `Stopped`:
 
 ```execute-1
 oc get vm
 ```
-
-Here, note the "Stopped" status:
 
 ~~~bash
 NAME            AGE   STATUS    READY
@@ -428,7 +436,9 @@ fc34-original   37m   Stopped   False
 
 ### Clone the VM
 
-Now that we've got a working virtual machine with a test workload we're ready to actually clone it, to prove that the built-in cloning utilities work, and that the cloned machine shares the same workload. There are a couple of ways of doing this, first we'll use the CLI to do so, and we'll simply clone the underlying storage volume, to do this we'll need to create a PV (persistent volume) to clone into. This is done by creating a special resource called a `DataVolume`, this custom resource type is provide by CDI. DataVolumes orchestrate import, clone, and upload operations and help the process of importing data into a cluster. DataVolumes are integrated into OpenShift Virtualization.
+Now that we've got a working virtual machine with a test workload we're ready to actually clone it. This will demonstrate that the built-in cloning utilities work and that the cloned machine shares the same workload. 
+
+There are a couple of ways of doing this, but first we'll use the CLI to do it. For this method we clone the underlying storage volume by creating a PV (persistent volume) to clone into. This is done with a special resource called a `DataVolume`. This custom resource type is provide by CDI. DataVolumes orchestrate import, clone, and upload operations and help the process of importing data into a cluster. DataVolumes are integrated into OpenShift Virtualization.
 
 The volume we are creating is named `fc34-clone` and we'll be pulling the data from the volume ("source") `fc34-original`:
 
@@ -455,38 +465,15 @@ spec:
 EOF
 ```
 
-Now DataVolume should be created:
+The DataVolume is created:
 
 ~~~bash
 datavolume.cdi.kubevirt.io/fc34-clone created
 ~~~
 
-Usually, a clone goes through a number of stages, where you can watch the progress where it will go through `CloneScheduled` and `CloneInProgress` phases along with a handy status percentage, but in our case we're using OpenShift Container Storage which takes an instant clone of a volume within the storage platform for us. So I'm providing the below output to show you what it would usually look like on a platform that didn't support such functionality, e.g. NFS, there's no need to type *these* commands:
+Usually, a clone goes through a number of stages, and you can watch the progress through `CloneScheduled` and `CloneInProgress` phases. However in our case we're using OpenShift Container Storage which makes an instant clone of a volume within the storage platform and doesn't require this process. 
 
-
-~~~bash
-$ oc get pods
-NAME                                              READY   STATUS              RESTARTS   AGE
-3c3943f9-0a5c-4ce9-a913-782f8754f418-source-pod   0/1     ContainerCreating   0          6s
-cdi-upload-fc34-clone                             1/1     Running             0          34s
-
-$ watch -n5 oc get datavolume
-
-Every 5.0s: oc get datavolume
-
-NAME         PHASE            PROGRESS   AGE
-fc34-clone   CloneScheduled              39s
-(...)
-
-NAME         PHASE             PROGRESS   AGE
-fc34-clone   CloneInProgress   27.38%     2m46s
-(...)
-
-NAME         PHASE       PROGRESS   AGE
-fc34-clone   Succeeded   100.0%     3m13s
-~~~
-
-Regardless, you should be able to view the status of our clone, and it should say "**Succeeded**", and we should be able to view all your PVCs including the new clone:
+You'll be able to view the status of the clone and its `PHASE` as "**Succeeded**". We are also able to view all PVCs including the new clone:
 
 ```execute-1
 oc get dv/fc34-clone pvc/fc34-clone
@@ -505,7 +492,7 @@ fc34-clone      Bound    pvc-3c3943f9-0a5c-4ce9-a913-782f8754f418   40Gi       R
 
 ### Start the cloned VM
 
-Finally we can start up a new VM using the cloned PVC, let's create a new definition of a `VirtualMachine` to house this VM and start it automatically (`running: true`):
+We can now start up a new VM using the cloned PVC. First create a new definition of a `VirtualMachine` to house the VM and start it automatically (`running: true`):
 
 ```execute-1
 cat << EOF | oc apply -f -
@@ -562,7 +549,7 @@ spec:
 EOF
 ```
 
-Again, this should show the VM being created:
+This shows the VM creation:
 
 ~~~bash
 virtualmachine.kubevirt.io/fc34-clone created
@@ -574,7 +561,7 @@ After a few minutes you should see the new virtual machine running:
 oc get vm
 ```
 
-You should have one running (the clone), and one stopped (the original):
+You will have one running (the clone), and one stopped (the original):
 
 ~~~bash
 NAME            AGE   STATUS    READY
@@ -582,7 +569,7 @@ fc34-clone      84s   Running   True
 fc34-original   76m   Stopped   False
 ~~~
 
-This machine should have an IP address after a few minutes - it won't be the same as the original VM as it will have a new MAC address:
+This machine should also get an IP address after a few minutes - it won't be the same as the original VM as the clone was given a new MAC address:
 
 ```execute-1
 oc get vmi
@@ -597,16 +584,19 @@ fc34-clone   88s   Running   192.168.123.70   ocp4-worker2.aio.example.com   Tru
 
 > **Note** Give the command 2-3 minutes to report the IP. 
 
-This machine will also be visible from the OpenShift Virtualization console, and you can login using "**root/redhat**" if you want to try:
+This machine will also be visible from the OpenShift Virtualization console. You can login using "**root/redhat**" if you want to try:
 
 <img src="img/fc34-clone-console.png"/>
 
 ### Test the clone
 
-Like before, we should be able to just directly connect to the VM on port 80 via `curl` and it should show our simple NGINX based application responding... at least it should, if the clone worked properly. Let's try it! Remember to adapt to the IP address of *your* machine:
+Like before, we should be able to just directly connect to the VM on port 80 via `curl` and view our simple NGINX based application responding. Let's try it! Remember to use to the IP address from yoir environment:
+
+~~~copy
+$ curl http://192.168.123.70
+~~~
 
 ~~~bash
-$ curl http://192.168.123.70
 Server address: 192.168.123.70:80
 Server name: fedora
 Date: 25/Nov/2021:15:58:20 +0000
@@ -614,7 +604,7 @@ URI: /
 Request ID: 30d16f4250df0d0d82ec2af2ebb60728
 ~~~
 
-There we go, our VM was cloned, at least the backend storage volume was cloned and we created a new virtual machine from it. Now you're probably thinking "wow, that was a lot of work just to clone a VM", and you'd be right! There's a much more simple workflow via the UI, and one that copies over all of the same configuration without us having to define a new VM ourselves. Let's first delete our clone, and then we'll move onto re-cloning the original via the UI:
+Our VM was cloned! At least the backend storage volume was cloned and we created a new virtual machine from it. Now you're probably thinking "wow, that was a lot of work just to clone a VM", and you'd be right! There's a much more simple workflow via the UI, and one that copies over all of the same configuration without us having to define a new VM ourselves. Let's first delete our clone, and then we'll move onto re-cloning the original via the UI:
 
 ```execute-1
 oc delete vm/fc34-clone dv/fc34-clone pvc/fc34-clone
@@ -670,6 +660,9 @@ Like before, we should be able to confirm that it really is our clone:
 
 ~~~bash
 $ curl http://192.168.123.71
+~~~
+
+~~~bash
 Server address: 192.168.123.71:80
 Server name: fedora
 Date: 25/Nov/2021:16:26:05 +0000
@@ -689,3 +682,5 @@ Here's the output you should expect to see:
 virtualmachine.kubevirt.io "fc34-original" deleted
 virtualmachine.kubevirt.io "fc34-original-clone" deleted
 ~~~
+
+Choose "Masquerade Networking" to continue with the lab.
