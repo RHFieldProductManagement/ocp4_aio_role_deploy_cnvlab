@@ -69,7 +69,7 @@ modules:
         exit_sign: Network Isolation
     micro-segmentation:
         name: Network Isolation for Virtual Machines 
-        exit_sign: Snapshots
+        exit_sign: Lab Complete!
     snapshot-restore:
         name: Backup and Restore Virtual Machines using Snapshots
         exit_sign: Hot-plug 

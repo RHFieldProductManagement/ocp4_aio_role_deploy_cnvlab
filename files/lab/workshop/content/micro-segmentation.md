@@ -76,7 +76,7 @@ Now, let's apply following network policy to restrict access to **mongodb-mlbpar
 
 1. Click **Networking** → **NetworkPolicies** from the side menu.
 
-2. Click **CreateNetworkPolicy**  pod.
+2. Click the **CreateNetworkPolicy** button.
 
 3. Click **Edit YAML**.
 
@@ -86,7 +86,7 @@ apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
   name: mlbparks-policy
-  namespace: <your-namespace>
+  namespace:  parksmap-demo
 spec:
   podSelector:
     matchLabels:
@@ -95,7 +95,7 @@ spec:
   - from:
     - namespaceSelector:
         matchLabels:
-          kubernetes.io/metadata.name: <your-namespace>
+          kubernetes.io/metadata.name:  parksmap-demo
       podSelector:
         matchLabels:
           component: mlbparks
@@ -108,7 +108,7 @@ Then apply following network policy to restrict access to **mongodb-nationalpark
 
 1. Click **Networking** → **NetworkPolicies** from the side menu.
 
-2. Click **CreateNetworkPolicy**  pod.
+2. Click the **CreateNetworkPolicy** button.
 
 3. Click **Edit YAML**.
 
@@ -119,7 +119,7 @@ apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
   name: nationalparks-policy
-  namespace: <your-namespace>
+  namespace: parksmap-demo
 spec:
   podSelector:
     matchLabels:
@@ -128,7 +128,7 @@ spec:
   - from:
     - namespaceSelector:
         matchLabels:
-          kubernetes.io/metadata.name: <your-namespace>
+          kubernetes.io/metadata.name: parksmap-demo
       podSelector:
         matchLabels:
           component: nationalparks
@@ -145,6 +145,8 @@ Finally, Let's verify that nationalparks could access only mongodb-nationalparks
 3. Click the **Terminal** tab.
 
 4. Run following commands and verify both mongodb services are accessible.
+
+   > Note: Curl's timeout is greater than 60 seconds. If you'd like to increase that add a `-m 5` to change it to five seconds (or another value of your choosing).
 ~~~bash
 sh-4.4$ curl mongodb-nationalparks:27017
 It looks like you are trying to access MongoDB over HTTP on the native driver port.
