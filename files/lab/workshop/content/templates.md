@@ -34,9 +34,13 @@ The new PVC will then be set as the boot source of the selected CentOS 8 templat
 2. Click the **Templates** tab.
 3. Identify the `CentOS 8.0+ VM` template to configure its boot source and click **Add source**.
 4. In the **Add boot source to template window**, select **Import via URL (creates PVC)** from the **Boot source type** drop down.
+
 5. Input `http://%bastion-host%:81/rhel8-kvm.img` as the URL of the guest image into the **Import URL** field.
 6. Set **Persistent Volume Claim size** as **20 GiB**. This will also be the size of the root disk of the VMs created by using this template.
-7. Fill in the **Source provider** field with the name of the source disk provider. We can enter `CentOS Community` here in this exercise.
+7. Fill in the **Source provider** field with the name of the source disk provider. We can enter `CentOS Community` here in this exercise. Your details should looks like this:
+
+![templates-add-boot-source](/Users/august/Documents/work/fpm/ocp4_aio_role_deploy_cnvlab/files/lab/workshop/content/img/templates-add-boot-source.png)
+
 8. Click **Save and import**.
 
 Once you click **Save and import** a new `PersistentVolumeClaim` of the specified size is automatically provisioned using the selected storage class, which is ceph-rbd in this exercise.
