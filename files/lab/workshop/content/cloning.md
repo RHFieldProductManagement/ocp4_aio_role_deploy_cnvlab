@@ -3,37 +3,35 @@ In this lab we're going to clone a workload and see that it's identical to the s
 - Download and customise a Fedora 34 image
 - Launch it as a virtual machine via OpenShift Virtualization 
 - Install a basic application inside the VM.
-- Clone the VM! 
-- Test it all! 
+- Clone the VM
+- Test the clone to make sure it's identical to the source
 
-Before we begin we need to setup our Fedora 34 cloud image, let's first connect to our bastion host so we can process and serve the image.
-
-First ssh to bastion node (password is *%bastion-password%*):
+Before we begin we need to setup our Fedora 34 cloud image, let's first connect to our bastion host so we can process and serve the image from there. First ssh to bastion node (password is *%bastion-password%*):
 
 ```execute-1
 ssh %bastion-username%@%bastion-host%
 ```
 
 
-Change directory to `/var/www/html` and download the latest Fedora 34 cloud image there:
+Change directory to `/var/www/html` where we'll serve the image from via Apache:
 
 ```execute-1
 cd /var/www/html
 ```
 
-Download the cloud image:
+Download the latest Fedora 34 cloud image to this directory:
 
 ```execute-1
 wget https://www.mirrorservice.org/sites/dl.fedoraproject.org/pub/fedora/linux/releases/34/Cloud/x86_64/images/%cloud-image-name-fedora%.xz
 ```
 
-Wait for the download to complete and extract the image:
+Wait for the download to complete and extract/decompress the image:
 
 
 ```execute-1
 xz -d %cloud-image-name-fedora%.xz
 ```
-You will not see any output but it may take a minute.
+> **NOTE**: You will not see any output, but it may take a minute to complete.
 
 
 Check the cloud image file:
@@ -66,15 +64,13 @@ Enable libvirtd service as it's a dependency for libguestfs:
 systemctl enable --now libvirtd
 ```
 
-Then customise the downloaded image as follows: 
-
-First we enable ssh logins for root:
+Now we're ready to customise the downloaded image. First we enable ssh logins for root and mark the system for an SELinux relabel:
 
 ```execute-1
 virt-customize -a /var/www/html/%cloud-image-name-fedora% --run-command 'sed -i s/^#PermitRootLogin.*/PermitRootLogin\ yes/ /etc/ssh/sshd_config && touch /.autorelabel'
 ```
 
-Then remove cloud-init and set the root password to "redhat":
+Then remove cloud-init (as we don't need it during this lab) and set the root password to "**redhat**":
 
 ```execute-1
 virt-customize -a /var/www/html/%cloud-image-name-fedora% --uninstall=cloud-init --root-password password:redhat --ssh-inject root:file:/root/.ssh/id_rsa.pub
@@ -100,9 +96,19 @@ system:serviceaccount:workbook:cnv
 
 > **NOTE**: Make sure that you've disconnected from the bastion machine before proceeding.
 
-Now that we've prepared our Fedora 34 VM and placed it on an accessible location on our bastion host: (for reference it's at: http://%bastion-host%:81/%cloud-image-name-fedora%).
+Now that we've prepared our Fedora 34 VM and placed it on an accessible location on our bastion host (for reference it's at: http://%bastion-host%:81/%cloud-image-name-fedora%), let's build a PVC for this image allowing us to build a VM from it afterwards, **one that will become our "original" or "source" virtual machine for cloning purposes**. First, make sure you're in the default project:
 
-Let's build a PVC for this image allowing us to build a VM from it afterwards. Again we'll utilise the CDI utility to get the Fedora image from the endpoint we placed it on:
+```execute-1
+oc project default
+```
+
+You should see:
+
+~~~bash
+Now using project "default" on server "https://172.30.0.1:443".
+~~~
+
+Again we'll utilise the CDI utility to get the Fedora image from the endpoint we placed it on:
 
 ```execute-1
 cat << EOF | oc apply -f -
@@ -185,6 +191,8 @@ Ctrl-C to exit, or just wait for it to finish. We've also included a stripped do
 oc describe pod $(oc get pods | awk '/importer/ {print $1;}')
 ```
 
+Which, if you're quick enough (the import may have already completed and the above command will fail), should show...
+
 ~~~yaml
 Name:         importer-fc34-original
 Namespace:    default
@@ -221,7 +229,7 @@ Volumes:
 
 ### Fedora 34 Virtual Machine
 
-Now it's time to launch our Fedora VM. Again we are just using the same pieces we've been using throughout the labs. For review we are using the `fc34-original` PVC we just prepared (created with CDI importing the Fedora image, stored on OCS), and we are utilising the standard bridged networking on the workers via the `tuning-bridge-fixed` construct - the same as we've been using for the other two virtual machines we created previously:
+Now it's time to launch a Fedora VM based on the image we just created, that will become our original VM that we'll clone in a later step. Again we are just using the same pieces we've been using throughout the labs. For review we are using the `fc34-original` PVC we just prepared (created with CDI importing the Fedora image, stored on ODF/OCS), and we are utilising the standard bridged networking on the workers via the `tuning-bridge-fixed` construct - the same as we've been using for the other two virtual machines we created previously:
 
 ```execute-1
 cat << EOF | oc apply -f -
@@ -289,30 +297,19 @@ We can view the running VM:
 oc get vmi
 ```
 
-You should see the following, noting that your IP address may be different, and may take some time to come up:
+You should see the following, noting that your IP address may be different, and may take some to show an IP address (retry this command for a few minutes):
 
 ~~~bash
 NAME            AGE   PHASE     IP               NODENAME                       READY
-fc34-original   65s   Running   192.168.123.64   ocp4-worker3.aio.example.com   True
+fc34-original   65s   Running   192.168.123.65   ocp4-worker3.aio.example.com   True
 ~~~
 
 > **NOTE:** The IP address for the Fedora 34 virtual machine may be missing in your output above as it takes a while for the `qemu-guest-agent` to report the data through to OpenShift. We also requested an SELinux relabel for the VM, which take some more time. You'll need to wait for the IP address to show before you can move to the next steps.
 
-When you've got an IP address, we should be able to SSH to it from our terminal window, noting you'll need to adapt the address below to match your environment:
-
-```execute-1
-oc get vmi/fc34-original
-```
-
-~~~bash
-NAME            AGE   PHASE     IP               NODENAME                       READY
-fc34-original   11m   Running   192.168.123.64   ocp4-worker3.aio.example.com   True
-~~~
-
-SSH to the Virtual Machine (the password is "redhat"), and your IP address may not be the same as the example:
+When you've got an IP address, we should be able to SSH to it from our terminal window, noting you'll need to adapt the address below to match your environment (the password is "**redhat**" like we set earlier), and your IP address may **not** be the same as the example - adapt for your configuration:
 
 ```copy
-ssh root@192.168.123.64
+ssh root@192.168.123.65
 ```
 
 The following tasks should be performed from the VM's shell:
@@ -351,6 +348,8 @@ Then enable nginx service:
 ```execute-1
 systemctl daemon-reload && systemctl enable --now nginx
 ```
+
+Which should show:
 
 ~~~bash
 Created symlink /etc/systemd/system/multi-user.target.wants/nginx.service → /etc/systemd/system/nginx.service.
