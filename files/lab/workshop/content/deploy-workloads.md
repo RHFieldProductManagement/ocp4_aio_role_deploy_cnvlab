@@ -12,7 +12,7 @@ The virtual machine we're going to create will have the following properties-
 
 A high-level view of these components is as follows:
 
-![CNV-networking-visual](/Users/august/Documents/work/fpm/ocp4_aio_role_deploy_cnvlab/files/lab/workshop/content/img/CNV-networking-visual.png)
+![CNV-networking-visual](img/CNV-networking-visual.png)
 
 Let's apply this VM configuration via the CLI first:
 
