@@ -361,7 +361,7 @@ objects:
           role: frontend
       spec:
         containers:
-        - image: quay.io/erkanercan/parksmap:latest
+        - image: quay.io/openshiftroadshow/parksmap:latest
           imagePullPolicy: Always
           name: "${PM_APPLICATION_NAME}"
           ports:

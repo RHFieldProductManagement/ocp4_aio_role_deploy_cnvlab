@@ -66,7 +66,7 @@ modules:
         exit_sign: Deploy second DB
     deploy-database-yaml:
         name: Deploy Database VM using YAML
-        exit_sign: Network Isolation
+        exit_sign: Backup and Restore
     micro-segmentation:
         name: Network Isolation for Virtual Machines 
         exit_sign: Lab Complete!

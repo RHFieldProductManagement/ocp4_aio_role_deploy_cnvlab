@@ -1,10 +1,10 @@
-Up to this point we've provisioned our virtual machines on a single bridged network using the more traditional networking models that you may typically encounter in traditional virtualisation environments. OpenShift 4.x utilises Multus as the default CNI, which permits the user to attach multiple network interfaces from different "delegate CNI's" simultaneously. Therefore, one of the models available for OpenShift Virtualization is to provide networking with a combination of attachments, including "pod networking". This mean we can have virtual machines attached to the same networks that the container pods are attached to. This has the added benefit of allowing virtual machines to leverage all of the Kubernetes models for services, load balancers, ingress, network policies, node ports, and a wide variety of other functions.
+Up to this point we've provisioned our virtual machines on a single bridged network using the more traditional networking models that you may typically encounter in traditional virtualisation environments. OpenShift 4.x utilises Multus as the default CNI, which permits the user to attach multiple network interfaces from different "delegate CNI's" simultaneously. 
 
-Pod networking is also referred to as "masquerade mode" when it's related to OpenShift Virtualization, and it can be used to hide a virtual machine’s outgoing traffic behind the pod IP address. Masquerade mode uses Network Address Translation (NAT) to connect virtual machines to the Pod network backend through a Linux bridge. Masquerade mode is the recommended binding method for VM's that need to use (or have access to) the default pod network.
+Therefore, one of the models available for OpenShift Virtualization is to provide networking with a combination of attachments, including "pod networking". This mean we can have virtual machines attached to the same networks that the container pods are attached to. This has the added benefit of allowing virtual machines to leverage all of the Kubernetes models for services, load balancers, ingress, network policies, node ports, and a wide variety of other functions.
 
-Utilising pod networking requires the interface to connect using the `masquerade: {}` method and for IPv4 addresses to be allocated via DHCP. We are going to test this with one of the same Fedora images (or PVC's) we used in the previous lab section. 
+Pod networking is also referred to as "**masquerade** mode" when it's related to OpenShift Virtualization, and it can be used to hide a virtual machine’s outgoing traffic behind the pod IP address. Masquerade mode uses Network Address Translation (NAT) to connect virtual machines to the Pod network backend through a Linux bridge. Masquerade mode is the recommended binding method for VM's that need to use (or have access to) the default pod network.
 
-In our virtual machine configuration file we need to instruct the machine to use masquerade mode for the interface (there's no command to execute here, just for your information):
+Utilising pod networking requires the interface to connect using the `masquerade: {}` method and for IPv4 addresses to be allocated via DHCP. We are going to test this with one of the same Fedora images (or PVC's) we used in the previous lab section. In our virtual machine configuration file we need to instruct the machine to use masquerade mode for the interface (there's no command to execute here, just for your information):
 
 ~~~
 interfaces:
@@ -21,7 +21,7 @@ networks:
     pod: {}
 ~~~
 
-So let's go ahead and create a `VirtualMachine` using our existing Fedora 34 image via a PVC we created previously. *Look closely, we are using our cloned PVC so we get the benefits of the installed **NGINX** server, qemu-guest-agent and ssh configuration!*
+So let's go ahead and create a `VirtualMachine` using our **existing** Fedora 34 image via a PVC we created previously. *Look closely, we are using our cloned PVC so we get the benefits of the installed **NGINX** server, qemu-guest-agent and ssh configuration!*
 
 ```execute-1
 cat << EOF | oc apply -f -
@@ -84,6 +84,8 @@ This should start a new VM:
 virtualmachine.kubevirt.io/fc34-podnet created
 ~~~
 
+After a few minutes, this VM should be started, and we can check with this command:
+
 ```execute-1
 oc get vmi
 ```
@@ -95,13 +97,13 @@ NAME          AGE   PHASE     IP             NODENAME                       READ
 fc34-podnet   68s   Running   10.129.2.210   ocp4-worker2.aio.example.com   True
 ~~~
 
-We can see the Virtual Machine Instance is created on the pod network, note the IP address in the 10.12x range:
-
-If you recall, all VMs are managed by pods, and the pod manages the networking. So we should see the same IP address on the pod associated with the VM:
+We can see the Virtual Machine Instance is created on the *pod network*, note the IP address in the **10.12x** range. If you recall, all VMs are managed by pods, and the pod manages the networking. So we should see the same IP address on the pod associated with the VM:
 
 ```execute
 oc get pods -o wide
 ```
+
+Which clearly shows that the IP address the VM has matches the IP of the virt-launcher pod, noting that your IP addresses may be different to the example, but should match:
 
 ~~~bash
 NAME                              READY   STATUS    RESTARTS   AGE     IP             NODE                           NOMINATED NODE   READINESS GATES
@@ -129,20 +131,25 @@ $ oc describe pod/virt-launcher-fc34-podnet-cxztw | grep -A 9 networks-status
                 }]
 ~~~
 
-As this lab guide is being hosted within the same cluster, you should be able to ping and connect into this VM directly from the terminal window on this IP, adjust to suit your config:
+As this lab guide is running within a pod itself and being hosted within the same cluster, you should be able to ping and connect into this VM directly from the terminal window on this IP, adjust to suit your config:
 
 
 ```copy
-ping -c1 10.128.2.27
+ping -c4 10.128.2.210
 ```
 
+Which should return:
+
 ~~~bash
-$ ping -c1 10.129.2.210
+$ ping -c4 10.129.2.210
 PING 10.129.2.210 (10.129.2.210) 56(84) bytes of data.
 64 bytes from 10.129.2.210: icmp_seq=1 ttl=63 time=1.69 ms
+64 bytes from 10.129.2.210: icmp_seq=2 ttl=63 time=1.69 ms
+64 bytes from 10.129.2.210: icmp_seq=3 ttl=63 time=1.69 ms
+64 bytes from 10.129.2.210: icmp_seq=4 ttl=63 time=1.69 ms
 
 --- 10.129.2.210 ping statistics ---
-1 packets transmitted, 1 received, 0% packet loss, time 0ms
+4 packets transmitted, 4 received, 0% packet loss, time 0ms
 rtt min/avg/max/mdev = 1.692/1.692/1.692/0.000 ms
 ~~~
 
@@ -152,7 +159,7 @@ You can also SSH to the machine (password is *%bastion-password%*):
 $ ssh root@10.129.2.210
 ```
 
-Once in, take a look around:
+Once in, take a look around and view the networking configuration that the guest sees:
 
 ~~~bash
 [root@fc34-podnet ~]# ip a s eth0
@@ -165,29 +172,33 @@ Once in, take a look around:
 
 ~~~
 
-When done, don't forget to exit:
+*Wait*, why is this IP address **10.0.2.2** inside of the guest?! Well, in OpenShift Virtualization, every VM has the "same IP" inside the guest, and the hypervisor is bridging (**masquerading**) the pod network into the guest via a tap device. So don't be alarmed when you see the IP address being different here.
 
-```copy
+This becomes even more evident if we curl the IP address of our VM on the pod network, recalling that we installed NGINX on this VM's disk image in an earlier lab step, you'll see that we curl on the pod IP, but it shows the server address as something different. Let's leave our VM first to validate this:
+
+```execute-1
 exit
 ```
 
 Make sure you ensure you're disconnected before proceeding:
 
 ```execute-1
-$ oc whoami
+oc whoami
 ```
+
+Which should show:
 
 ~~~bash
 system:serviceaccount:workbook:cnv
 ~~~
 
-**Wait a second**... look at the IP address that's been assigned to our VM and the one it recognises... it's different to the one we connected on. Well, this is the masquerading in action - our host is masquerading (on all ports) from the pod network to the network given to our VM (**10.0.2.2** in our case).
-
-This becomes even more evident if we curl the IP address of our VM on the pod network, recalling that we installed NGINX on this VM's disk image in an earlier lab step, you'll see that we curl on the pod IP, but it shows the server address as something different:
+Now if we curl the IP address on the pod network (making sure you change this IP for the one that your VM is using on the pod network, **not** **10.0.2.2**.):
 
 ~~~bash
 $ curl http://10.129.2.210
 ~~~
+
+Which should show the following:
 
 ~~~
 Server address: 10.0.2.2:80
@@ -197,9 +208,13 @@ URI: /
 Request ID: ae6332e46227c84fe604b6f5c9ec0822
 ~~~
 
+Note the "server address" being the **10.0.2.2** address.
+
+
+
 ## Exposing the VM to the outside world
 
-In this step we're going to interface our VM to the outside world using OpenShift/Kubernetes networking constructs, namely services and routes. This makes our VM available via the OpenShift ingress service and you should be able to hit our VM from the internet. As validated in the previous step, our VM has NGINX running on port 80, so let's use the `virtctl` utility to expose the virtual machine instance on that port. 
+In this step we're going to interface our VM to the outside world using OpenShift/Kubernetes networking constructs, namely services and routes, demonstrating that whilst this is a VM, it's just "another" type of workload as far as OpenShift is concerned, and the same principles should be able to be applied. This step makes our VM available via the OpenShift ingress service and you should be able to hit our VM from the internet. As validated in the previous step, our VM has NGINX running on port 80, so let's use the `virtctl` utility, a CLI tool for managing OpenShift Virtualization above what `oc` provides, to expose the virtual machine instance on that port. 
 
 First `expose` it on port 80 and create a service (an entrypoint) based on our VM:
 
@@ -263,4 +278,4 @@ We've successfully exposed our VM externally to the internet via the pod network
 oc delete vm/fc34-podnet
 ```
 
-Choose "Templates" to move to the next lab.
+Choose "**Templates**" to move to the next lab.

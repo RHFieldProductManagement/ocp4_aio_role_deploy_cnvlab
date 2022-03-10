@@ -336,7 +336,7 @@ cat >> /etc/systemd/system/nginx.service << EOF
 Description=Nginx Podman container
 Wants=syslog.service
 [Service]
-ExecStart=/usr/bin/podman run --net=host docker.io/nginxdemos/hello:plain-text
+ExecStart=/usr/bin/podman run --net=host quay.io/roxenham/nginxdemos:plain-text
 ExecStop=/usr/bin/podman stop --all
 [Install]
 WantedBy=multi-user.target
@@ -393,12 +393,12 @@ Let's quickly verify that this works as expected. You should be able to navigate
 
 
 ```copy
-curl http://192.168.123.69
+curl http://192.168.123.65
 ```
 
 ~~~bash
-$ curl http://192.168.123.69
-Server address: 192.168.123.69:80
+$ curl http://192.168.123.65
+Server address: 192.168.123.65:80
 Server name: fedora
 Date: 25/Nov/2021:15:09:21 +0000
 URI: /
@@ -568,35 +568,35 @@ fc34-clone      84s   Running   True
 fc34-original   76m   Stopped   False
 ~~~
 
-This machine should also get an IP address after a few minutes - it won't be the same as the original VM as the clone was given a new MAC address:
+This machine should also get an IP address after a few minutes - it won't be the same as the original VM as the clone was given a new MAC address, you may need to be patient here until it shows you the IP address of the new VM:
 
 ```execute-1
 oc get vmi
 ```
 
-In our example, this IP is "*192.168.123.70*":
+In our example, this IP is "*192.168.123.66*":
 
 ~~~bash
 NAME         AGE   PHASE     IP               NODENAME                       READY
-fc34-clone   88s   Running   192.168.123.70   ocp4-worker2.aio.example.com   True
+fc34-clone   88s   Running   192.168.123.66   ocp4-worker2.aio.example.com   True
 ~~~
 
-> **Note** Give the command 2-3 minutes to report the IP. 
-
-This machine will also be visible from the OpenShift Virtualization console. You can login using "**root/redhat**" if you want to try:
+This machine will also be visible from the OpenShift Virtualization console, which you can navigate to using the top "**Console**" button, or by using your dedicated tab if you've created one. You can login using "**root/redhat**", by going into the "**Workloads**" --> "**Virtualization**" --> "**fc34-clone**" --> "**Console**", if you want to try:
 
 <img src="img/fc34-clone-console.png"/>
 
 ### Test the clone
 
-Like before, we should be able to just directly connect to the VM on port 80 via `curl` and view our simple NGINX based application responding. Let's try it! Remember to use to the IP address from yoir environment:
+Like before, we should be able to just directly connect to the VM on port 80 via `curl` and view our simple NGINX based application responding. Let's try it! Remember to use to the IP address from **your** environment as the example below may be different:
 
 ~~~copy
-$ curl http://192.168.123.70
+$ curl http://192.168.123.66
 ~~~
 
+Which should show similar to the following, if our clone was successful:
+
 ~~~bash
-Server address: 192.168.123.70:80
+Server address: 192.168.123.66:80
 Server name: fedora
 Date: 25/Nov/2021:15:58:20 +0000
 URI: /
@@ -652,17 +652,19 @@ Here our running VM is showing with our new IP address, in the example case it's
 
 ~~~bash
 NAME                  AGE   PHASE     IP               NODENAME                       READY
-fc34-original-clone   89s   Running   192.168.123.71   ocp4-worker3.aio.example.com   True
+fc34-original-clone   89s   Running   192.168.123.66   ocp4-worker3.aio.example.com   True
 ~~~
 
 Like before, we should be able to confirm that it really is our clone:
 
 ~~~bash
-$ curl http://192.168.123.71
+$ curl http://192.168.123.66
 ~~~
 
+Which should show something similar to this:
+
 ~~~bash
-Server address: 192.168.123.71:80
+Server address: 192.168.123.66:80
 Server name: fedora
 Date: 25/Nov/2021:16:26:05 +0000
 URI: /
@@ -682,4 +684,4 @@ virtualmachine.kubevirt.io "fc34-original" deleted
 virtualmachine.kubevirt.io "fc34-original-clone" deleted
 ~~~
 
-Choose "Masquerade Networking" to continue with the lab.
+Choose "**Masquerade Networking**" to continue with the lab.
