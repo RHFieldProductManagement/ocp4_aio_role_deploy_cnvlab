@@ -14,12 +14,11 @@ Projects are a top level concept to help you organise your resources. An OpenShi
 
 #### Web Console
 
-OpenShift ships with a web-based console that will allow users to perform various tasks via a web browser. From within the lab guide window you'll see two buttons at the top of the screen, with the currently active tab in blue, one for the "Terminal", the default, and one for the "Console"; you can switch between these two options at will. Select the console and you should see the OpenShift web console, in which you'll already be logged in:
+OpenShift ships with a web-based console that will allow users to perform various tasks via a web browser. From within the lab guide window you'll see two buttons at the top of the screen, with the currently active tab in blue, one for the "**Terminal**", the default, and one for the "**Console**"; you can switch between these two options at will. Select the console and you should see the OpenShift web console, in which you'll already be logged in:
 
 <img  border="1" src="img/console-button.png"/>
 
-
-However if you want to open up an additional **dedicated** tab/window for the Web Console you can do so, simply click on [this link](http://console-openshift-console.%cluster_subdomain%/dashboards), although you will have to return to the instructions to get the "kubeadmin" (the OpenShift administrator user) password. To get the *kubeadmin-password* we'll need to grab it from the OpenShift installation directory on the server in which the cluster was installed from, or in our case the "bastion" node. Let's jump over to that machine to get it.
+**Entirely Optional**: However, if you want to open up an additional **dedicated** tab/window for the Web Console you can do so, simply click on [this link](http://console-openshift-console.%cluster_subdomain%/dashboards), although you will have to return to the instructions to get the "kubeadmin" (the OpenShift administrator user) password. To get the *kubeadmin-password* we'll need to grab it from the OpenShift installation directory on the server in which the cluster was installed from, or in our case the "bastion" node. Let's jump over to that machine to get it.
 
 From within this lab guide, SSH to the bastion node:
 
