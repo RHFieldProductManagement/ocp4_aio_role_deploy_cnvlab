@@ -39,27 +39,32 @@ The *oc policy* command above is giving a defined _role_ (*view*) to the default
 
 We will use OpenShift Web Console to deploy Parksmap Web Application components. 
 
-Please go to the [Web Console](http://console-openshift-console.%cluster_subdomain%/k8s/cluster/projects) 
-and on the login screen, enter the following credentials:
+Please go to the [Web Console](http://console-openshift-console.%cluster_subdomain%/k8s/cluster/projects) outside the lab environment login as the kubeadmin user with the credentials you retrived previously. 
 
-- Username: *kubeadmin*
-
-- Password: **$KUBEADMIN_PASSWORD** 
+> **NOTE:** As mentioned, since we require the kubeadmin user for these labs all steps need to be completed in the web console outside the lab environment.
 
 ### 4.  Search for the Application Template
 
+> **NOTE:** We recommended making the lab instructions pane in the lab environment larger by sliding the handle to the right. This will reduce the size of the terminal and in-lab web console but will better display the lab instructions and images.
+
 If you are in the in the Administrator perspective, switch to Developer perspective and go to the `%parksmap-project-namespace%` project. 
 
-From the left menu, click `+Add`. You will see a screen where you have multiple options to deploy applications to OpenShift. Click `All Services` as shown below.
+![parksmap-developer-persepctive](img/parksmap-developer-persepctive.png)
+
+From the menu, select the `+Add` panel. Find the parksmap project and select it:
+
+![parksmap-choose-project](img/parksmap-choose-project.png)
+
+You will see a screen where you have multiple options to deploy applications to OpenShift. Click `All Services` as shown below.
 
  <br/>
 
-![Service Catalog](img/parksmap-all-services.png)  
+![Service Catalog](img/parksmap-all-services-new.png)  
 
- <br/> 
+ <br/>
 
-We will be using `Templates` to deploy the application components. A template describes a set of objects that can be parameterized 
-and processed to produce a list of objects for creation by OpenShift Container Platform. 
+We will be using `Templates` to deploy the application components. A template describes a set of objects that can be parameterized and processed to produce a list of objects for creation by OpenShift Container Platform. 
+
 A template can be processed to create anything you have permission to create within a project, for example services, build configurations, and deployment configurations. A template can also define a set of labels to apply to every object defined in the template.
 
 You can create a list of objects from a template using the CLI or, if a template has been uploaded to your project or the global template library, using the web console.
