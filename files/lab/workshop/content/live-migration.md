@@ -161,7 +161,7 @@ Select the "**Console**" button in the top of your lab guide window, or switch o
 <img  border="1" src="img/nodemaintenance-operator-install.png"/>
 
 
-Next you'll want to select the '**Install**' button, which will take you to a second window where you'll be creating an '*Operator Subscription*'. Leave the defaults here as they'll automatically select the latest version of OpenShift Virtualization, will allow the software to be installed automatically, and will be placed into a new "**openshift-operators**" project:
+Next you'll want to select the '**Install**' button, which will take you to a second window where you'll be creating an '*Operator Subscription*'. Leave the defaults here as they'll automatically select the latest version of the Node Maintenance Operator, will allow the software to be installed automatically, and will be placed into a new "**openshift-operators**" project:
 
 <img  border="1" src="img/nodemaintenance-operator-install-details.png"/>
 
