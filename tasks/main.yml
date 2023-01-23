@@ -30,7 +30,7 @@
   git:
     repo: "https://github.com/RHFieldProductManagement/ocp4_aio_role_deploy_cnvlab.git"
     dest: "/root/cnvlab"
-    version: "v0.0.5"
+    version: "v0.0.11"
 
 - name: Deploy Workbook Instance for CNV Labs
   block:
@@ -43,10 +43,30 @@
     delay: 30
     until: buildt_success is not failed
 
-  - name: Start the build
-    shell: oc -n workbook start-build cnv --from-dir=/root/cnvlab/files/lab
-    register: build_success
+  - name: Create the latest tag
+    shell: >-
+      oc tag quay.io/hgeaydem/cnv-workbook:latest cnv:latest
+    register: tag_success
     retries: 3
+    delay: 30
+    until: tag_success is not failed
+
+  - name: Create the latest tag (namespaced)
+    shell: >-
+      oc tag quay.io/hgeaydem/cnv-workbook:latest cnv:latest -n workbook
+    register: tag_success
+    retries: 3
+    delay: 30
+    until: tag_success is not failed
+
+  - name: Start the build
+    shell: |
+      oc tag -d cnv:latest
+      oc tag quay.io/hgeaydem/cnv-workbook:latest cnv:latest
+      oc tag quay.io/hgeaydem/cnv-workbook:latest cnv:latest -n workbook
+      oc -n workbook start-build cnv --from-dir=/root/cnvlab/files/lab
+    register: build_success
+    retries: 10
     delay: 30
     until: build_success is not failed
 

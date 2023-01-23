@@ -51,7 +51,7 @@ Then you should see the following (your minor version may be different, but shou
 
 ~~~bash
 NAME      VERSION   AVAILABLE   PROGRESSING   SINCE   STATUS
-version   4.9.23     True        False         27m     Cluster version is 4.9.23
+version   4.12.0     True        False         27m     Cluster version is 4.12.0
 ~~~
 
 After that check the cluster operators:
@@ -64,17 +64,17 @@ This command will list the all cluster operators, the main components of OpenShi
 
 ~~~bash
 NAME                                       VERSION   AVAILABLE   PROGRESSING   DEGRADED   SINCE   MESSAGE
-authentication                             4.9.23    True        False         False      6h19m
-baremetal                                  4.9.23    True        False         False      6h40m
-cloud-controller-manager                   4.9.23    True        False         False      6h42m
-cloud-credential                           4.9.23    True        False         False      6h54m
-cluster-autoscaler                         4.9.23    True        False         False      6h40m
-config-operator                            4.9.23    True        False         False      6h42m
-console                                    4.9.23    True        False         False      6h23m
-csi-snapshot-controller                    4.9.23    True        False         False      6h41m
-dns                                        4.9.23    True        False         False      6h40m
-etcd                                       4.9.23    True        False         False      6h40m
-image-registry                             4.9.23    True        False         False      6h17m
+authentication                             4.12.0    True        False         False      6h19m
+baremetal                                  4.12.0    True        False         False      6h40m
+cloud-controller-manager                   4.12.0    True        False         False      6h42m
+cloud-credential                           4.12.0    True        False         False      6h54m
+cluster-autoscaler                         4.12.0    True        False         False      6h40m
+config-operator                            4.12.0    True        False         False      6h42m
+console                                    4.12.0    True        False         False      6h23m
+csi-snapshot-controller                    4.12.0    True        False         False      6h41m
+dns                                        4.12.0    True        False         False      6h40m
+etcd                                       4.12.0    True        False         False      6h40m
+image-registry                             4.12.0    True        False         False      6h17m
 (...)
 ~~~
 

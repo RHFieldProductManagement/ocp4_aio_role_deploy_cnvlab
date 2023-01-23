@@ -16,7 +16,7 @@ parameters:
     value: bookbag
   - name: BUILDER_IMAGE
     required: true
-    value: quay.io/roxenham/cnv-workbook:latest
+    value: quay.io/hgeaydem/cnv-workbook:latest
   - name: GIT_REPO
     value: https://github.com/RHFieldProductManagement/openshift-aio.git
 

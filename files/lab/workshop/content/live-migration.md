@@ -154,9 +154,24 @@ Events:
 
 ## Node Maintenance
 
-Building on-top of live migration, many organisations will need to perform node-maintenance, e.g. for software/hardware updates, or for decommissioning. During the lifecycle of a **pod**, it's almost a given that this will happen without compromising the workloads, but virtual machines can be somewhat more challenging given their nature. To address this OpenShift Virtualization has a node-maintenance feature which manages the process safely by marking nodes unschedulable and migrating workloads automatically.
+Building on-top of live migration, many organisations will need to perform node-maintenance, e.g. for software/hardware updates, or for decommissioning. During the lifecycle of a **pod**, it's almost a given that this will happen without compromising the workloads, but virtual machines can be somewhat more challenging given their nature. To address this OpenShift Virtualization works with the (optional) Node Maintenance Operator which manages the process safely by marking nodes unschedulable and migrating workloads (both containers and VMs) automatically. 
 
-Let's take a look at the current running virtual machines and the nodes we have available:
+Select the "**Console**" button in the top of your lab guide window, or switch over to your dedicated web console page (if you opened one up earlier) and navigate to the top-level '**Operators**' menu entry, and select '**OperatorHub**' (you'll need to make sure that you're in the "Administrator" perspective by using the drop down in the top left hand corner of the web-console). This lists all of the available operators that you can install from the operator catalogue. Start typing '**maintenance**' in the search box and you should see an entry called "**Node Maintenance Operator**". Simply select it and you'll see a window that looks like the following (the version may be slightly different, likely slightly newer):
+
+<img  border="1" src="img/nodemaintenance-operator-install.png"/>
+
+
+Next you'll want to select the '**Install**' button, which will take you to a second window where you'll be creating an '*Operator Subscription*'. Leave the defaults here as they'll automatically select the latest version of OpenShift Virtualization, will allow the software to be installed automatically, and will be placed into a new "**openshift-operators**" project:
+
+<img  border="1" src="img/nodemaintenance-operator-install-details.png"/>
+
+
+
+Make sure that the namespace it will be installed to is "**openshift-operators**" - it should be the default entry, but make sure. When you're ready, press the blue **'Install'** button. After a minute or two you'll see that the operator has been configured successfully:
+
+<img  border="1" src="img/nodemaintenance-operator-install-success.png"/>
+
+Let's now take a look at the current running virtual machines and the nodes we have available:
 
 ```execute-1
 oc get nodes
@@ -166,12 +181,12 @@ This lists the OpenShift nodes:
 
 ~~~bash
 NAME                           STATUS   ROLES    AGE   VERSION
-ocp4-master1.aio.example.com   Ready    master   2d    v1.22.0-rc.0+a44d0f0
-ocp4-master2.aio.example.com   Ready    master   2d    v1.22.0-rc.0+a44d0f0
-ocp4-master3.aio.example.com   Ready    master   2d    v1.22.0-rc.0+a44d0f0
-ocp4-worker1.aio.example.com   Ready    worker   2d    v1.22.0-rc.0+a44d0f0
-ocp4-worker2.aio.example.com   Ready    worker   2d    v1.22.0-rc.0+a44d0f0
-ocp4-worker3.aio.example.com   Ready    worker   2d    v1.22.0-rc.0+a44d0f0
+ocp4-master1.aio.example.com   Ready    master   2d    v1.25.4+77bec7a
+ocp4-master2.aio.example.com   Ready    master   2d    v1.25.4+77bec7a
+ocp4-master3.aio.example.com   Ready    master   2d    v1.25.4+77bec7a
+ocp4-worker1.aio.example.com   Ready    worker   2d    v1.25.4+77bec7a
+ocp4-worker2.aio.example.com   Ready    worker   2d    v1.25.4+77bec7a
+ocp4-worker3.aio.example.com   Ready    worker   2d    v1.25.4+77bec7a
 ~~~
 
 Now check the VMIs:
@@ -191,7 +206,8 @@ In this environment, we have one virtual machine running on *ocp4-worker1* (your
 
 ```execute-1
 cat << EOF | nodemaintenance.yaml
-apiVersion: nodemaintenance.kubevirt.io/v1beta1
+apiVersion: nodemaintenance.medik8s.io/v1beta1
+
 kind: NodeMaintenance
 metadata:
   name: worker-maintenance
@@ -215,7 +231,7 @@ oc apply -f nodemaintenance.yaml
 See that the `NodeMaintenance` object is created:
 
 ~~~bash
-nodemaintenance.nodemaintenance.kubevirt.io/worker1-maintenance
+nodemaintenance.nodemaintenance.medik8s.io/worker1-maintenance
 ~~~
 
 > **NOTE**: You **may** lose your browser based web terminal like this:
@@ -246,12 +262,12 @@ Notice that scheduling is disabled for `worker1` (or the worker that you specifi
 
 ~~~bash
 NAME                           STATUS                     ROLES    AGE   VERSION
-ocp4-master1.aio.example.com   Ready                      master   2d    v1.22.0-rc.0+a44d0f0
-ocp4-master2.aio.example.com   Ready                      master   2d    v1.22.0-rc.0+a44d0f0
-ocp4-master3.aio.example.com   Ready                      master   2d    v1.22.0-rc.0+a44d0f0
-ocp4-worker1.aio.example.com   Ready,SchedulingDisabled   worker   2d    v1.22.0-rc.0+a44d0f0
-ocp4-worker2.aio.example.com   Ready                      worker   2d    v1.22.0-rc.0+a44d0f0
-ocp4-worker3.aio.example.com   Ready                      worker   2d    v1.22.0-rc.0+a44d0f0
+ocp4-master1.aio.example.com   Ready                      master   2d    v1.25.4+77bec7a
+ocp4-master2.aio.example.com   Ready                      master   2d    v1.25.4+77bec7a
+ocp4-master3.aio.example.com   Ready                      master   2d    v1.25.4+77bec7a
+ocp4-worker1.aio.example.com   Ready,SchedulingDisabled   worker   2d    v1.25.4+77bec7a
+ocp4-worker2.aio.example.com   Ready                      worker   2d    v1.25.4+77bec7a
+ocp4-worker3.aio.example.com   Ready                      worker   2d    v1.25.4+77bec7a
 ~~~
 
 
@@ -293,7 +309,7 @@ oc delete nodemaintenance/worker1-maintenance
 It should return the following output:
 
 ~~~bash
-nodemaintenance.nodemaintenance.kubevirt.io "worker1-maintenance" deleted
+nodemaintenance.nodemaintenance.medik8s.io "worker1-maintenance" deleted
 ~~~
 
 Then check the same node again:
@@ -306,7 +322,7 @@ Note the removal of the `SchedulingDisabled` annotation on the '**STATUS**' colu
 
 ~~~bash
 NAME                           STATUS   ROLES    AGE   VERSION
-ocp4-worker1.aio.example.com   Ready    worker   2d    v1.22.0-rc.0+a44d0f0
+ocp4-worker1.aio.example.com   Ready    worker   2d    v1.25.4+77bec7a
 ~~~
 
 Before proceeding let's remove the `rhel8-server-ocs` virtual machine as well as any lingering PVC's we don't need any longer:
