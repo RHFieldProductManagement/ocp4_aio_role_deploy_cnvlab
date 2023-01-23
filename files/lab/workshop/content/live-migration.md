@@ -202,20 +202,30 @@ NAME               AGE   PHASE     IP               NODENAME                    
 rhel8-server-ocs   45h   Running   192.168.123.64   ocp4-worker1.aio.example.com   True
 ~~~
 
-In this environment, we have one virtual machine running on *ocp4-worker1* (yours may vary). Let's take down the node for maintenance and ensure that our workload (VM) stays up and running:
+In this environment, we have one virtual machine running on *ocp4-worker1* (yours may vary). Let's take down the node for maintenance and ensure that our workload (VM) stays up and running. First generate a CRD for the node maintenance:
 
-> **NOTE**: You may need to modify the below command to specify the worker listed in the output from above.  
-
-```copy
-cat << EOF | oc apply -f -
+```execute-1
+cat << EOF | nodemaintenance.yaml
 apiVersion: nodemaintenance.medik8s.io/v1beta1
+
 kind: NodeMaintenance
 metadata:
-  name: worker1-maintenance
+  name: worker-maintenance
 spec:
-  nodeName: ocp4-worker1.aio.example.com
-  reason: "Worker1 Maintenance"
+  nodeName: CHANGE_ME
+  reason: "Worker Maintenance"
 EOF
+```
+Make sure that you change the node name in the file (`CHANGE_ME`) to the one that the Virtual Machine is *actually* scheduled on:
+
+```execute-1
+vim nodemaintenance.yaml 
+```
+
+Apply the configuation within the file in order to create the `NodeMaintenance` custom resource: 
+
+```execute-1
+oc apply -f nodemaintenance.yaml 
 ```
 
 See that the `NodeMaintenance` object is created:
