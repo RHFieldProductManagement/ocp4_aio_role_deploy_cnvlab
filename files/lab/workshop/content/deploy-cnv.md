@@ -123,8 +123,22 @@ Together, all of these pods are responsible for various functions of running a v
 | *[virt-template-validator](https://kubernetes.io/blog/2018/05/22/getting-to-know-kubevirt/)*            |Add-on to check the annotations on templates and reject them if invalid.|
 
 
+Before continuing with the installation, we will need to install the ""**NMState Operator**" which provides a Kubernetes API for performing state-driven network configuration across the OpenShift cluster’s nodes.
 
-There's also a few custom resources that get defined too. For example the `NodeNetworkState` (`nns`)  provides the current network configuration of our nodes - this is used to verify whether physical networking configurations have been successfully applied by the `nmstate-handler` pods. This is useful for ensuring that the NetworkManager state on each node is configured as required. We use this for defining interfaces/bridges on each of the machines for both physical machine connectivity and for providing network access for pods (and virtual machines) within OpenShift/Kubernetes. View the NodeNetworkState state with:
+If you're not in the Console tab, select "**Console**" in the top of your lab guide window. In case you opened earlier a dedicated web console page, switch over to it and verify you are in the "Administrator" perspective by using the drop down in the left hand corner. Then, navigate to the '**Operators**' menu entry in the left side of the web console, select '**OperatorHub**' to list all the available operators from the catalogue. You will see the search box where you need to type '**nmstate**'. Select the operator called "**Kubernetes NMState Operator**" and you will see a similar window to this one:
+
+<img  border="1" src="img/nmstate-operator-install.png"/>
+
+The next step will be clicking on '**Install**', which will take you to a second window to create the '*Operator Subscription*'. Leave the defaults here as they will automatically select the latest version available, install the software automatically and place it into the "**openshift-nmstate**" namespace (be careful and verify that it will be installed in the 'openshift-nmstate' project). Here you can find all the details: 
+
+<img  border="1" src="img/nmstate-operator-install-details.png"/>
+
+Once finished, press the blue '**Install**' button and wait a couple of minutes to ensure that the operator has been configured successfully:
+
+<img  border="1" src="img/nmstate-operator-install-success.png"/>
+
+
+The `NodeNetworkState` (`nns`) resource provides the current network configuration of our nodes - this is used to verify whether physical networking configurations have been successfully applied by the `nmstate-handler` pods. This is useful for ensuring that the NetworkManager state on each node is configured as required. We use this for defining interfaces/bridges on each of the machines for both physical machine connectivity and for providing network access for pods (and virtual machines) within OpenShift/Kubernetes. View the NodeNetworkState state with:
 
 ```execute-1
 oc get nns -A
@@ -150,7 +164,7 @@ oc get nns/ocp4-worker1.aio.example.com -o yaml
 
 This shows the NodeNetworkState definition in *YAML* format:
 ~~~yaml
-apiVersion: nmstate.io/v1beta1
+apiVersion: nmstate.io/v1
 kind: NodeNetworkState
 metadata:
   creationTimestamp: "2021-10-21T14:56:59Z"
