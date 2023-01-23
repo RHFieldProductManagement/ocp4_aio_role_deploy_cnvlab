@@ -14,7 +14,7 @@ oc get nns/ocp4-worker1.aio.example.com -o yaml
 This will display the NodeNetworkState in yaml format
 
 ~~~yaml
-apiVersion: nmstate.io/v1beta1
+apiVersion: nmstate.io/v1
 kind: NodeNetworkState
 metadata:
   creationTimestamp: "2021-11-08T12:11:09Z"
@@ -86,7 +86,7 @@ Now we can apply a new `NodeNetworkConfigurationPolicy` for our worker nodes to 
 
 ```execute-1
 cat << EOF | oc apply -f -
-apiVersion: nmstate.io/v1alpha1
+apiVersion: nmstate.io/v1
 kind: NodeNetworkConfigurationPolicy
 metadata:
   name: br1-enp3s0-policy-workers
@@ -154,12 +154,12 @@ oc get nncp/br1-enp3s0-policy-workers -o yaml
 You will see NetworkNodeConfigurationPolicy definition in yaml format:
 
 ~~~yaml
-apiVersion: nmstate.io/v1beta1
+apiVersion: nmstate.io/v1
 kind: NodeNetworkConfigurationPolicy
 metadata:
   annotations:
     kubectl.kubernetes.io/last-applied-configuration: |
-      {"apiVersion":"nmstate.io/v1alpha1","kind":"NodeNetworkConfigurationPolicy","metadata":{"annotations":{},"name":"br1-enp3s0-policy-workers"},"spec":{"desiredState":{"interfaces":[{"bridge":{"options":{"stp":{"enabled":false}},"port":[{"name":"enp3s0"}]},"description":"Linux bridge with enp3s0 as a port","ipv4":{"enabled":false},"name":"br1","state":"up","type":"linux-bridge"}]},"nodeSelector":{"node-role.kubernetes.io/worker":""}}}
+      {"apiVersion":"nmstate.io/v1","kind":"NodeNetworkConfigurationPolicy","metadata":{"annotations":{},"name":"br1-enp3s0-policy-workers"},"spec":{"desiredState":{"interfaces":[{"bridge":{"options":{"stp":{"enabled":false}},"port":[{"name":"enp3s0"}]},"description":"Linux bridge with enp3s0 as a port","ipv4":{"enabled":false},"name":"br1","state":"up","type":"linux-bridge"}]},"nodeSelector":{"node-role.kubernetes.io/worker":""}}}
     nmstate.io/webhook-mutating-timestamp: "1636377787953660263"
   creationTimestamp: "2021-11-08T13:23:08Z"
   generation: 1
