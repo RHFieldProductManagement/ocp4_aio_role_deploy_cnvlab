@@ -4,21 +4,7 @@ With OpenShift Virtualization (or more specifically, OpenShift in general - rega
 
 In this lab we're going to utilise multiple options - pod networking **and** a secondary network interface provided by a bridge on the underlying worker nodes (hypervisors). Each of the worker nodes has been configured with an additional, currently unused, network interface that is defined as `enp3s0`, and we'll create a bridge device, called `br1`, so we can attach our virtual machines to it - this network is actually the **same** L2 network as the one attached to `enp2s0`, so it's on the lab network ( `192.168.123.0/24`) as well.
 
-Before continuing with the network configuration, we will need to install the ""**NMState Operator**" which provides a Kubernetes API for performing state-driven network configuration across the OpenShift cluster’s nodes.
-
-If you're not in the Console tab, select "**Console**" in the top of your lab guide window. In case you opened earlier a dedicated web console page, switch over to it and verify you are in the "Administrator" perspective by using the drop down in the left hand corner. Then, navigate to the '**Operators**' menu entry in the left side of the web console, select '**OperatorHub**' to list all the available operators from the catalogue. You will see the search box where you need to type '**nmstate**'. Select the operator called "**Kubernetes NMState Operator**" and you will see a similar window to this one:
-
-<img  border="1" src="img/nmstate-operator-install.png"/>
-
-The next step will be clicking on '**Install**', which will take you to a second window to create the '*Operator Subscription*'. Leave the defaults here as they will automatically select the latest version available, install the software automatically and place it into the "**openshift-nmstate**" namespace (be careful and verify that it will be installed in the 'openshift-nmstate' project). Here you can find all the details: 
-
-<img  border="1" src="img/nmstate-operator-install-details.png"/>
-
-Once finished, press the blue '**Install**' button and wait a couple of minutes to ensure that the operator has been configured successfully:
-
-<img  border="1" src="img/nmstate-operator-install-success.png"/>
-
-Now, we can continue with the configuration. The first step is to use the new Kubernetes NetworkManager state configuration to setup the underlying hosts to our liking. Recall that we can get the **current** state by requesting the `NetworkNodeState` (much of the following is snipped for brevity):
+The first step is to use the new Kubernetes NetworkManager state configuration to setup the underlying hosts to our liking. Recall that we can get the **current** state by requesting the `NetworkNodeState` (much of the following is snipped for brevity):
 
 
 ```execute-1
