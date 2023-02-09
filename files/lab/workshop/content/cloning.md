@@ -49,7 +49,7 @@ It should show the following:
 Now we need to customise this image, we're going to do the following:
 
 * Permit root login over ssh
-* Reset the root password to "redhat"
+* Reset the root password to a secure one
 
 
 Install libguestfs-tools so we can modify the image:
@@ -70,10 +70,10 @@ Now we're ready to customise the downloaded image. First we enable ssh logins fo
 virt-customize -a /var/www/html/%cloud-image-name-fedora% --run-command 'sed -i s/^#PermitRootLogin.*/PermitRootLogin\ yes/ /etc/ssh/sshd_config && touch /.autorelabel'
 ```
 
-Then remove cloud-init (as we don't need it during this lab) and set the root password to "**redhat**":
+Then remove cloud-init (as we don't need it during this lab) and set the root password to something secure:
 
-```execute-1
-virt-customize -a /var/www/html/%cloud-image-name-fedora% --uninstall=cloud-init --root-password password:redhat --ssh-inject root:file:/root/.ssh/id_rsa.pub
+```copy-and-edit
+virt-customize -a /var/www/html/%cloud-image-name-fedora% --uninstall=cloud-init --root-password password:<set plaintext secure password here> --ssh-inject root:file:/root/.ssh/id_rsa.pub
 ```
 
 Then exit from the bastion host:
@@ -306,7 +306,7 @@ fc34-original   65s   Running   192.168.123.65   ocp4-worker3.aio.example.com   
 
 > **NOTE:** The IP address for the Fedora 34 virtual machine may be missing in your output above as it takes a while for the `qemu-guest-agent` to report the data through to OpenShift. We also requested an SELinux relabel for the VM, which take some more time. You'll need to wait for the IP address to show before you can move to the next steps.
 
-When you've got an IP address, we should be able to SSH to it from our terminal window, noting you'll need to adapt the address below to match your environment (the password is "**redhat**" like we set earlier), and your IP address may **not** be the same as the example - adapt for your configuration:
+When you've got an IP address, we should be able to SSH to it from our terminal window, noting you'll need to adapt the address below to match your environment (the password is the one you've set earlier), and your IP address may **not** be the same as the example - adapt for your configuration:
 
 ```copy
 ssh root@192.168.123.65
@@ -581,7 +581,7 @@ NAME         AGE   PHASE     IP               NODENAME                       REA
 fc34-clone   88s   Running   192.168.123.66   ocp4-worker2.aio.example.com   True
 ~~~
 
-This machine will also be visible from the OpenShift Virtualization console, which you can navigate to using the top "**Console**" button, or by using your dedicated tab if you've created one. You can login using "**root/redhat**", by going into the "**Workloads**" --> "**Virtualization**" --> "**fc34-clone**" --> "**Console**", if you want to try:
+This machine will also be visible from the OpenShift Virtualization console, which you can navigate to using the top "**Console**" button, or by using your dedicated tab if you've created one. You can login using the "**root**" user with the password you've set earliyer, by going into the "**Workloads**" --> "**Virtualization**" --> "**fc34-clone**" --> "**Console**", if you want to try:
 
 <img src="img/fc34-clone-console.png"/>
 

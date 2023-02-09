@@ -139,7 +139,7 @@ Have a look around the options, but one area worth reviewing is the console. Cli
 
 <img src="img/console-21.png"/>
 
-In this example we have chosen serial and logged in as user: `root` password: `redhat`:
+In this example we have chosen serial and logged in as user: `root` using the password set earliyer:
 
 <img src="img/console-20.png"/>
 
