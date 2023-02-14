@@ -30,7 +30,7 @@
   git:
     repo: "https://github.com/RHFieldProductManagement/ocp4_aio_role_deploy_cnvlab.git"
     dest: "/root/cnvlab"
-    version: "v0.0.13"
+    version: "v0.0.14"
 
 - name: Deploy Workbook Instance for CNV Labs
   block:

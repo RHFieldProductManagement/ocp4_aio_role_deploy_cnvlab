@@ -137,6 +137,13 @@ Once finished, press the blue '**Install**' button and wait a couple of minutes 
 
 <img  border="1" src="img/nmstate-operator-install-success.png"/>
 
+Once the operator is installed, we still need to create an instance of NMState deployment by clicking on the "**Create instance**" link for the Provided API as follow:
+
+<img  border="1" src="img/nmstate-create-instance.png"/>
+
+This will present us with a form shall we need to add any advanced configuration parameters. Just click "**Create**" and wait for a few minutes for nmstate to get installed on all our nodes
+
+<img  border="1" src="img/nmstate-create-instance-2.png"/>
 
 The `NodeNetworkState` (`nns`) resource provides the current network configuration of our nodes - this is used to verify whether physical networking configurations have been successfully applied by the `nmstate-handler` pods. This is useful for ensuring that the NetworkManager state on each node is configured as required. We use this for defining interfaces/bridges on each of the machines for both physical machine connectivity and for providing network access for pods (and virtual machines) within OpenShift/Kubernetes. View the NodeNetworkState state with:
 

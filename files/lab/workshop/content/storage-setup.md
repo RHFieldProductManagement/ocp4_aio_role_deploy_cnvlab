@@ -209,9 +209,7 @@ Let's take a look on the Ceph-backed storage system for more information about t
 
 
 ```execute-1
-CSI_VOL=$(oc describe pv/`oc get pv | grep default/rhel8-ocs \ 
-| awk '{print $1}'` | grep imageName | sed 's/ //g' \ 
-| awk -F "=" '{print $2}')
+CSI_VOL=$(oc describe pv/`oc get pv | grep default/rhel8-ocs | awk '{print $1}'` | grep imageName | sed 's/ //g' | awk -F "=" '{print $2}')
 ```
 
 Let's make sure that the variable indeed contains the CSI volume ID: 
@@ -225,10 +223,8 @@ This gives us the imageName we need. In the above output that is `csi-vol-70d062
 Now, in the pod's terminal we can use the `rbd` command to inspect the image, noting we must specify the pool name "*ocs-storagecluster-cephblockpool*" as this is a "block" type of PV:
 
 
-```
-oc exec -it -n openshift-storage $(oc get pods -n openshift-storage \ 
-| awk '/tools/ {print $1;}') -- rbd info $CSI_VOL \ 
---pool=ocs-storagecluster-cephblockpool
+```execute-1
+oc exec -it -n openshift-storage $(oc get pods -n openshift-storage | awk '/tools/ {print $1;}') -- rbd info $CSI_VOL --pool=ocs-storagecluster-cephblockpool
 ```
 
 This will display information about the image:
@@ -252,9 +248,8 @@ rbd image 'csi-vol-70d062c5-408f-11ec-a2b0-0a580a830025':
 
 Then execute an `rbd disk-usage` request against the same image to see the disk usage; don't forget to specifiy the correct pool:
 
-```
-oc exec -it -n openshift-storage $(oc get pods -n openshift-storage \ 
-| awk '/tools/ {print $1;}') --  rbd disk-usage $CSI_VOL --pool=ocs-storagecluster-cephblockpool
+```execute-1
+oc exec -it -n openshift-storage $(oc get pods -n openshift-storage | awk '/tools/ {print $1;}') --  rbd disk-usage $CSI_VOL --pool=ocs-storagecluster-cephblockpool
 ```
 
 This will display the usage:

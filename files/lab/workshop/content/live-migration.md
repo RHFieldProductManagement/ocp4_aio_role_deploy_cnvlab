@@ -205,7 +205,7 @@ rhel8-server-ocs   45h   Running   192.168.123.64   ocp4-worker1.aio.example.com
 In this environment, we have one virtual machine running on *ocp4-worker1* (yours may vary). Let's take down the node for maintenance and ensure that our workload (VM) stays up and running. First generate a CRD for the node maintenance:
 
 ```execute-1
-cat << EOF | nodemaintenance.yaml
+cat << EOF > nodemaintenance.yaml
 apiVersion: nodemaintenance.medik8s.io/v1beta1
 
 kind: NodeMaintenance
