@@ -41,11 +41,7 @@ watch -n2 'oc get pods -n openshift-cnv'
 
 > **NOTE**: It may take a few minutes for the pods to start up properly, and you may see a few pods in an "Error/CrashLoopBackOff" state along the way - this is just Kubernetes' reconciliation loop. Press **Ctrl+C** to exit the watch command.
 
-During this process you will see a lot of pods create and terminate, which will look something like the following depending on when you view it; it's always changing:
-
-<img src="img/deploy-cnv-watch.png"/>
-
-This will continue for some time, depending on your environment. You will know the process is complete when you can return (again, *Ctrl-C* to exit the watch command) to the top terminal and see that the operator installation has been successful by running the following command:
+During this process you will see a lot of pods create and terminate. This will continue for some time, depending on your environment. You will know the process is complete when you can return (again, *Ctrl-C* to exit the watch command) to the top terminal and see that the operator installation has been successful by running the following command:
 
 ```execute-1
 oc get csv -n openshift-cnv
