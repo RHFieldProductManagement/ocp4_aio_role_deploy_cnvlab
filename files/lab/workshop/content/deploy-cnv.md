@@ -133,7 +133,7 @@ This will present us with a form, shall we need to add any advanced configuratio
 <img  border="1" src="img/nmstate-create-instance-2.png"/>
 
 
-The `NodeNetworkState` (`nns`) resource provides the current network configuration of our nodes - this is used to verify whether physical networking configurations have been successfully applied by the `nmstate-handler` pods. This is useful for ensuring that the NetworkManager state on each node is configured as required. We use this for defining interfaces/bridges on each of the machines for both physical machine connectivity and for providing network access for pods (and virtual machines) within OpenShift/Kubernetes. View the NodeNetworkState state with:
+NMState installation provides different resources like the `NodeNetworkState` (`nns`) which extracts the current network configuration of our nodes - this is used to verify whether physical networking configurations have been successfully applied by the `nmstate-handler` pods. This is useful for ensuring that the NetworkManager state on each node is configured as required. We use this for defining interfaces/bridges on each of the machines for both physical machine connectivity and for providing network access for pods (and virtual machines) within OpenShift/Kubernetes. View the NodeNetworkState state with:
 
 ```execute-1
 oc get nns -A
@@ -159,26 +159,42 @@ oc get nns/ocp4-worker1.aio.example.com -o yaml
 
 This shows the NodeNetworkState definition in *YAML* format:
 ~~~yaml
-apiVersion: nmstate.io/v1
+apiVersion: nmstate.io/v1beta1
 kind: NodeNetworkState
 metadata:
-  creationTimestamp: "2021-10-21T14:56:59Z"
+  creationTimestamp: "2023-02-16T16:46:29Z"
   generation: 1
   name: ocp4-worker1.aio.example.com
 (...)
-   interfaces:
-    - ipv4:
+    interfaces:
+    - accept-all-mac-addresses: false
+      ethtool:
+        feature:
+          tx-generic-segmentation: true
+          tx-tcp-segmentation: true
+          tx-vlan-hw-insert: true
+      ipv4:
         address: []
         enabled: false
       ipv6:
         address: []
         enabled: false
-      mac-address: 1A:FC:25:BD:A6:40
+      mac-address: 8A:51:4A:1C:9A:49
       mtu: 1450
       name: br0
       state: down
       type: ovs-interface
-    - ipv4:
+    - accept-all-mac-addresses: false
+      ethernet:
+        auto-negotiation: false
+      ethtool:
+        feature:
+          tx-generic-segmentation: true
+          tx-tcp-segmentation: true
+        ring:
+          rx: 256
+          tx: 256
+      ipv4:
         address:
         - ip: 172.22.0.68
           prefix-length: 24
@@ -189,6 +205,7 @@ metadata:
         dhcp: true
         enabled: true
       ipv6:
+        addr-gen-mode: eui64
         address:
         - ip: fe80::dcad:beff:feef:4
           prefix-length: 64
