@@ -26,7 +26,7 @@ Within the lab environment you can easily click a button to paste the specified 
 
 > **NOTE**: In some browsers and operating systems you may need to use Ctrl-Shift-C / Ctrl-Shift-V to copy/paste within this lab environment!
 
-This is a continually evolving piece of work, and it has recently (March 2022) been updated for the latest OpenShift 4.9 release, therefore there may be some bugs or typo's. We welcome feedback on the content, what's missing, what would be good to have, etc. Please feel free to submit PR's or raise [GitHub issues](https://github.com/RHFieldProductManagement/openshift-aio/issues/new). We love the feedback!
+This is a continually evolving piece of work, and it has recently (February 2023) been updated for the latest OpenShift 4.12 release, therefore there may be some bugs or typo's. We welcome feedback on the content, what's missing, what would be good to have, etc. Please feel free to submit PR's or raise [GitHub issues](https://github.com/RHFieldProductManagement/openshift-aio/issues/new). We love the feedback!
 
 Lastly, you can easily switch between the OpenShift CLI and the OpenShift Web Console, without having to login separately. Simply use the two buttons at the top of the screen to switch between them whilst keeping the instructions on the left-hand side:
 
