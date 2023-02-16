@@ -30,7 +30,7 @@ This is a continually evolving piece of work, and it has recently (February 2023
 
 Lastly, you can easily switch between the OpenShift CLI and the OpenShift Web Console, without having to login separately. Simply use the two buttons at the top of the screen to switch between them whilst keeping the instructions on the left-hand side:
 
-<img src="img/terminal-window.png" style="border:2px solid black"/>
+<img  border="1" src="img/terminal-window.png"/>
 
 When you're ready, select "**Using Homeroom**" below to get started...
 
