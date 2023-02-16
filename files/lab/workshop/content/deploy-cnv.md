@@ -101,35 +101,37 @@ Together, all of these pods are responsible for various functions of running a v
 | *[cdi-operator](https://github.com/kubevirt/containerized-data-importer)*                              | The Containerized Data Importer (CDI) is a Kubernetes extension to populate PVCs with VM disk images or other data. CDI pods allow OpenShift Virtualization to import, upload and clone Virtual Machine images. |
 | *[cluster-network-addons-operator](https://github.com/kubevirt/cluster-network-addons-operator)*    | Allows the installation of additional networking plugins. |
 | *[hco-operator](https://github.com/kubevirt/hyperconverged-cluster-operator)*                       | Allows users to deploy and configure multiple operators in a single operator and via a single entry point. An "operator of operators." |
+| *[hco-webhook](https://github.com/kubevirt/hyperconverged-cluster-operator)*                       | Validates the HyperConverged custom resource contents. |
 | *[hostpath-provisioner-operator](https://github.com/kubevirt/hostpath-provisioner-operator)*      |Operator that manages the hostpath-provisioner, which provisions storage on network filesystems mounted on the host.|
-| *[ssp-operator](https://github.com/MarSik/kubevirt-ssp-operator)*              |Scheduling, Scale and Performance operator for OpenShift. The Hyperconverged Cluster Operator automatically installs the SSP operator when deploying.|
-| *[virt-api](https://github.com/kubevirt/kubevirt/tree/master/pkg/virt-api)*                           |Kubernetes Virtualization API and runtime in order to define and manage virtual machines|
-| *[virt-controller](https://kubernetes.io/blog/2018/05/22/getting-to-know-kubevirt/)*                    |The operator that’s responsible for cluster-wide virtualisation functionality|
-| *[virt-handler](https://kubernetes.io/blog/2018/05/22/getting-to-know-kubevirt/)*                       |Tracks changes to a VM's state.|
-| *[virt-template-validator](https://kubernetes.io/blog/2018/05/22/getting-to-know-kubevirt/)*            |Add-on to check the annotations on templates and reject them if invalid.|
+| *[hyperconverged-cluster-cli-download](https://github.com/kubevirt/hyperconverged-cluster-operator)*              |Provides the virtctl tool binaries making it possible to download them directly from the cluster.|
+| *[ssp-operator](https://github.com/kubevirt/ssp-operator)*              |Scheduling, Scale and Performance operator for OpenShift. The Hyperconverged Cluster Operator automatically installs the SSP operator when deploying.|
+| *[tekton-tasks-operator](https://github.com/kubevirt/kubevirt-tekton-tasks)*              |Deploys the pipelines that allow the user to create and manage VMs.|
+| *virt-operator*                           |Responsible for deploying, managing and upgrading OpenShift Virtualization without disrupting the current VMs workloads.|
 
 
-Before continuing with the installation, we will need to install the ""**NMState Operator**" which provides a Kubernetes API for performing state-driven network configuration across the OpenShift cluster’s nodes.
 
-If you're not in the Console tab, select "**Console**" in the top of your lab guide window. In case you opened earlier a dedicated web console page, switch over to it and verify you are in the "Administrator" perspective by using the drop down in the left hand corner. Then, navigate to the '**Operators**' menu entry in the left side of the web console, select '**OperatorHub**' to list all the available operators from the catalogue. You will see the search box where you need to type '**nmstate**'. Select the operator called "**Kubernetes NMState Operator**" and you will see a similar window to this one:
+Before continuing with the installation, we will need to install the "**NMState Operator**" which provides a Kubernetes API for performing state-driven network configuration across the OpenShift cluster’s nodes.
+
+If you're not in the Console tab, select "**Console**" in the top of your lab guide window or switch over your dedicated web console tab in case you opened it earlier. Verify you are in the "Administrator" perspective by using the drop down in the left hand corner. Then, navigate to the '**Operators**' menu entry in the left side of the web console and select "**OperatorHub**" to list all the available operators from the catalogue. You will see the search box where you need to type '**nmstate**'. Select the operator called "**Kubernetes NMState Operator**" and you will see a similar window to this one:
 
 <img  border="1" src="img/nmstate-operator-install.png"/>
 
-The next step will be clicking on '**Install**', which will take you to a second window to create the '*Operator Subscription*'. Leave the defaults here as they will automatically select the latest version available, install the software automatically and place it into the "**openshift-nmstate**" namespace (be careful and verify that it will be installed in the 'openshift-nmstate' project). Here you can find all the details: 
+The next step will be clicking on "**Install**", which will take you to a second window. Leave the defaults here, as they will automatically select the latest version available, install the software automatically and place it into the "**openshift-nmstate**" namespace (be careful and verify that it will be installed in the 'openshift-nmstate' project). Here you can find all the details: 
 
 <img  border="1" src="img/nmstate-operator-install-details.png"/>
 
-Once finished, press the blue '**Install**' button and wait a couple of minutes to ensure that the operator has been configured successfully:
+Once finished, press the blue "**Install**" button and wait a couple of minutes to ensure that the operator has been configured successfully:
 
 <img  border="1" src="img/nmstate-operator-install-success.png"/>
 
-Once the operator is installed, we still need to create an instance of NMState deployment by clicking on the "**Create instance**" link for the Provided API as follow:
+Once the operator is installed, we still need to create an instance of NMState. Click on ""**View Opearator**"" and then select "**Create instance**" as follows:
 
 <img  border="1" src="img/nmstate-create-instance.png"/>
 
-This will present us with a form shall we need to add any advanced configuration parameters. Just click "**Create**" and wait for a few minutes for nmstate to get installed on all our nodes
+This will present us with a form, shall we need to add any advanced configuration parameters. Just click "**Create**" and wait a few minutes for NMState to get installed on all of our nodes.
 
 <img  border="1" src="img/nmstate-create-instance-2.png"/>
+
 
 The `NodeNetworkState` (`nns`) resource provides the current network configuration of our nodes - this is used to verify whether physical networking configurations have been successfully applied by the `nmstate-handler` pods. This is useful for ensuring that the NetworkManager state on each node is configured as required. We use this for defining interfaces/bridges on each of the machines for both physical machine connectivity and for providing network access for pods (and virtual machines) within OpenShift/Kubernetes. View the NodeNetworkState state with:
 
