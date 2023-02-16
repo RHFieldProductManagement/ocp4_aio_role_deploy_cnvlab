@@ -32,5 +32,5 @@ Lastly, you can easily switch between the OpenShift CLI and the OpenShift Web Co
 
 <img src="img/terminal-window.png" style="border:2px solid black"/>
 
-When you're ready, select "**Using Homeroom**" below to get started ...
+When you're ready, select "**Using Homeroom**" below to get started...
 
