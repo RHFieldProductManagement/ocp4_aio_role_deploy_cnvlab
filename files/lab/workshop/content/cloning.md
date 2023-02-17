@@ -2,7 +2,7 @@ In this lab we're going to clone a workload and see that it's identical to the s
 
 - Download and customise a Fedora 34 image
 - Launch it as a virtual machine via OpenShift Virtualization 
-- Install a basic application inside the VM.
+- Install a basic application inside the VM
 - Clone the VM
 - Test the clone to make sure it's identical to the source
 
@@ -11,6 +11,7 @@ Before we begin we need to setup our Fedora 34 cloud image, let's first connect 
 ```execute-1
 ssh %bastion-username%@%bastion-host%
 ```
+> **NOTE**: Remember, the bastion password was provided in the email received when the laboratory was provisioned.
 
 
 Change directory to `/var/www/html` where we'll serve the image from via Apache:
@@ -46,7 +47,7 @@ It should show the following:
 -rw-r--r--. 1 root root  5368709120 Apr 23  2021 %cloud-image-name-fedora%
 ~~~
 
-Now we need to customise this image, we're going to do the following:
+Now we need to customise this image. We're going to do the following:
 
 * Permit root login over ssh
 * Reset the root password to a secure one
@@ -70,7 +71,7 @@ Now we're ready to customise the downloaded image. First we enable ssh logins fo
 virt-customize -a /var/www/html/%cloud-image-name-fedora% --run-command 'sed -i s/^#PermitRootLogin.*/PermitRootLogin\ yes/ /etc/ssh/sshd_config && touch /.autorelabel'
 ```
 
-Then remove cloud-init (as we don't need it during this lab) and set the root password to something secure:
+Then remove cloud-init (as we don't need it during this lab) and **set the root password** to something secure:
 
 ```copy-and-edit
 virt-customize -a /var/www/html/%cloud-image-name-fedora% --uninstall=cloud-init --root-password password:<set plaintext secure password here> --ssh-inject root:file:/root/.ssh/id_rsa.pub
@@ -96,7 +97,7 @@ system:serviceaccount:workbook:cnv
 
 > **NOTE**: Make sure that you've disconnected from the bastion machine before proceeding.
 
-Now that we've prepared our Fedora 34 VM and placed it on an accessible location on our bastion host (for reference it's at: http://%bastion-host%:81/%cloud-image-name-fedora%), let's build a PVC for this image allowing us to build a VM from it afterwards, **one that will become our "original" or "source" virtual machine for cloning purposes**. First, make sure you're in the default project:
+Now that we've prepared our Fedora 34 VM and placed it on an accessible location on our bastion host (for reference it's at: http://%bastion-host%:81/%cloud-image-name-fedora%), let's build a PVC for this image, allowing us to build a VM from it afterwards, **one that will become our "original" or "source" virtual machine for cloning purposes**. First, make sure you're in the default project:
 
 ```execute-1
 oc project default
@@ -146,11 +147,10 @@ And make sure the claim is `Bound` and has a matching volume:
 
 ~~~bash
 NAME            STATUS   VOLUME                                     CAPACITY   ACCESS MODES   STORAGECLASS                  AGE
-fc34-original   Bound    pvc-f335830c-d096-4ffa-8018-a1aac3b3cedf   40Gi       RWX            ocs-storagecluster-ceph-rbd   3m4s
+fc34-original   Bound    pvc-ebc89d26-13f1-45e4-82d1-be665982df36   40Gi       RWX            ocs-storagecluster-ceph-rbd   27s
 ~~~
 
-As before we can watch the process and see the pods (you'll need to be quick with the next two commands, as it's only a 10GB image):
-
+As before, we can watch the process and see the pods. You'll need to be quick with the next two commands, as it's only a 10GB image:
 
 ```execute-1
 oc get pod/importer-fc34-original
@@ -165,7 +165,7 @@ importer-fc34-original   1/1     Running   0          21s
 
 Follow the importer logs:
 
-```execute-1
+```copy
 oc logs importer-fc34-original -f
 ```
 
@@ -198,7 +198,7 @@ Name:         importer-fc34-original
 Namespace:    default
 Priority:     0
 Node:         ocp4-worker2.aio.example.com/192.168.123.105
-Start Time:   Thu, 19 Mar 2020 02:41:03 +0000
+Start Time:   Fri, 17 Feb 2023 14:32:03 +0000
 Labels:       app=containerized-data-importer
               cdi.kubevirt.io=importer
               cdi.kubevirt.io/storage.import.importPvcName=fc34-original
@@ -229,7 +229,7 @@ Volumes:
 
 ### Fedora 34 Virtual Machine
 
-Now it's time to launch a Fedora VM based on the image we just created, that will become our original VM that we'll clone in a later step. Again we are just using the same pieces we've been using throughout the labs. For review we are using the `fc34-original` PVC we just prepared (created with CDI importing the Fedora image, stored on ODF/OCS), and we are utilising the standard bridged networking on the workers via the `tuning-bridge-fixed` construct - the same as we've been using for the other two virtual machines we created previously:
+Now it's time to launch a Fedora VM based on the image we just created, that will become our original VM that we'll clone in a later step. Again we are just using the same pieces we've been using throughout the labs. For review, we are using the `fc34-original` PVC we just prepared (created with CDI importing the Fedora image, stored on ODF/OCS), and we are utilising the standard bridged networking on the workers via the `tuning-bridge-fixed` construct - the same as we've been using for the other two virtual machines we created previously:
 
 ```execute-1
 cat << EOF | oc apply -f -
@@ -301,7 +301,7 @@ You should see the following, noting that your IP address may be different, and 
 
 ~~~bash
 NAME            AGE   PHASE     IP               NODENAME                       READY
-fc34-original   65s   Running   192.168.123.65   ocp4-worker3.aio.example.com   True
+fc34-original   81s   Running   192.168.123.65   ocp4-worker1.aio.example.com   True
 ~~~
 
 > **NOTE:** The IP address for the Fedora 34 virtual machine may be missing in your output above as it takes a while for the `qemu-guest-agent` to report the data through to OpenShift. We also requested an SELinux relabel for the VM, which take some more time. You'll need to wait for the IP address to show before you can move to the next steps.
