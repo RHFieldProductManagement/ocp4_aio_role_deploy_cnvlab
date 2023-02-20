@@ -52,7 +52,7 @@ Now let's create a new OCS-based Peristent Volume Claim (PVC) - a request for a 
 
 > **NOTE**: CDI is a utility to import, upload, and clone virtual machine images for OpenShift Virtualization. The CDI controller watches for this annotation on the PVC and if found, it starts a process to import, upload, or clone. When the annotation is detected the `CDI` controller starts a pod which imports the image from that URL. Cloning and uploading follow a similar process. Read more about the Containerized Data Importer [here](https://github.com/kubevirt/containerized-data-importer).
 
-Basically we are asking OpenShift to create this Persistent Volume Claim and use the image in the endpoint to fill it. In this case we use `"http://192.168.123.100:81/rhel8-kvm.img"` in the annotation to ensure that upon instantiation of the PV it is populated with the contents of a CentOS 8 (although it's labelled "rhel8") KVM image which can be later used as a backing store for a virtual machine.
+Basically, we are asking OpenShift to create this Persistent Volume Claim and use the image in the endpoint to fill it. In this case we use `"http://192.168.123.100:81/rhel8-kvm.img"` in the annotation to ensure that upon instantiation of the PV it is populated with the contents of a CentOS 8 (although it's labelled "rhel8") KVM image which can be later used as a backing store for a virtual machine.
 
 In addition to triggering the CDI utility we also specify the storage class that OCS/ODF uses (`ocs-storagecluster-ceph-rbd`) which will dynamically create the PV in the backend Ceph storage platform. Finally note the `requests` section - we are asking for a 40GB volume size.
 
@@ -99,7 +99,7 @@ NAME                   READY   STATUS              RESTARTS   AGE
 importer-rhel8-ocs     0/1     ContainerCreating   0          1s
 ~~~
 
-Watch the logs and you can see the process, it may initially give an error about the pod waiting to start, you can retry after a few seconds:
+If you are fast enough, you can watch the logs and see the process. It may initially give an error about the pod waiting to start, but you can retry after a few seconds:
 
 ```execute-1 
 oc logs importer-rhel8-ocs -f
