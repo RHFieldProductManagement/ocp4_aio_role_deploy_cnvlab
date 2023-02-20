@@ -30,7 +30,7 @@ for csr in $(oc get csr | awk '/Pending/ {print $1}'); \
     do oc adm certificate approve $csr; done
 ```
 
-Then if there are Pending ones, you should see an output similar to below:
+If all the nodes are ready, the output will be *No resources found*. Then, if there are Pending ones, you should see an output similar to below:
 ~~~bash
 certificatesigningrequest.certificates.k8s.io/csr-26rcg approved
 certificatesigningrequest.certificates.k8s.io/csr-4k6n8 approved
@@ -177,7 +177,7 @@ Before we start looking at OpenShift Virtualization, let's just clean up the tes
 ```execute
 oc delete project test
 ```
-Then wait for project deletion
+Then, wait for project deletion:
 
 ~~~bash
 project.project.openshift.io "test" deleted
