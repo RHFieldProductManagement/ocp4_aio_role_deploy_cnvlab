@@ -6,12 +6,11 @@ In this lab we're going to clone a workload and see that it's identical to the s
 - Clone the VM
 - Test the clone to make sure it's identical to the source
 
-Before we begin we need to setup our Fedora 34 cloud image, let's first connect to our bastion host so we can process and serve the image from there. First ssh to bastion node (password is *%bastion-password%*):
+Before we begin we need to setup our Fedora 34 cloud image, let's first connect to our bastion host so we can process and serve the image from there. First ssh to bastion node (password is *%cnvlab-bastion-password%*):
 
 ```execute-1
 ssh %bastion-username%@%bastion-host%
 ```
-> **NOTE**: Remember, the bastion password was provided in the email received when the laboratory was provisioned.
 
 
 Change directory to `/var/www/html` where we'll serve the image from via Apache:
@@ -311,6 +310,7 @@ When you've got an IP address, we should be able to SSH to it from our terminal 
 ```copy
 ssh root@192.168.123.65
 ```
+> **NOTE:** It will ask for the root password you set up when we customised the downloaded image. 
 
 The following tasks should be performed from the VM's shell:
 
