@@ -2,7 +2,7 @@ Now let's bring all these configurations together and actually launch some workl
 
 > **NOTE**: We're calling most of the resources "RHEL 8" here, regardless of whether you're actually using CentOS 8 as your base image - it won't impact anything for our purposes here.
 
-The virtual machine we're going to create will have the following properties-
+The virtual machine we're going to create will have the following properties:
 
 * We are going to create a machine called `rhel8-server-ocs`.
 * We'll utilise the Persistent Volume Claim (PVC) called `rhel8-ocs` that was created using the CDI utility with a CentOS 8 base image.
@@ -195,7 +195,7 @@ NAME                                   READY   STATUS    RESTARTS   AGE
 virt-launcher-rhel8-server-ocs-7b97m   1/1     Running   0          5m49s
 ~~~
 
-Execute following to open a bash shell in the pod (if you copy from the lab remember to chnage the pod name to reflect your pod shown in the terminal):
+Execute the following to open a bash shell in the pod (if you copy from the lab remember to change the pod name to reflect your pod shown in the terminal):
 
 ```copy
 oc exec -it virt-launcher-rhel8-server-ocs-7b97m bash
