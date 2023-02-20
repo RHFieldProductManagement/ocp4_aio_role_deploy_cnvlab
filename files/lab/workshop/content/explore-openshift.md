@@ -18,7 +18,11 @@ OpenShift ships with a web-based console that will allow users to perform variou
 
 <img  border="1" src="img/console-button-new.png"/>
 
-**Entirely Optional**: However, if you want to open up an additional **dedicated** tab/window for the Web Console you can do so, simply click on [this link](http://console-openshift-console.%cluster_subdomain%/dashboards), although you will have to return to the instructions to get the "kubeadmin" (the OpenShift administrator user) password. To get the *kubeadmin-password* we'll need to grab it from the OpenShift installation directory on the server in which the cluster was installed from, or in our case the "bastion" node. Let's jump over to that machine to get it.
+With the Web Console provided in this lab environment, we will be able to execute the majority of the commands and we should be able to follow most of the lab sections. However, once we install the OpenShift Virtualization operator, this will add some "extra" graphical interfaces in the console that, unfortunately, cannot be displayed. But no need to worry, all we need to do is open a **dedicated** tab/window for the real full OpenShift Web Console.
+
+To do so, simply open a new window/tab in the browser you are using for this lab and navigate to this link: %cnvlab-console-url%. To login to the console, you will need to type "**kubeadmin**" (the OpenShift administrator user) as the user and paste its password: %cnvlab-kubeadmin-password%. 
+
+**Entireky Optional**: However, if you want, you can get the *kubeadmin-password* from the OpenShift installation directory on the server in which the cluster was installed from, or in our case the "bastion" node. Let's jump over to that machine to get it.
 
 From within this lab guide, SSH to the bastion node:
 
@@ -26,11 +30,12 @@ From within this lab guide, SSH to the bastion node:
 ssh %bastion-username%@%bastion-host%
 ```
 
-When you see the prompt, if required, agree to the SSH certificates by typing "yes", and then enter the **Bastion/CNV VMs root password** provided in the email received when the laboratory was provisioned. Then you can execute the following command to get the kubeadmin password:
+When you see the prompt, if required, agree to the SSH certificates by typing "yes", and then enter the bastion password: %cnvlab-bastion-password%. Then you can execute the following command to get the kubeadmin password:
 
 ```execute-1
 echo $(cat %kubeadmin-password-file%)
 ```
+> **NOTE**: As you can see, it is the same as the one we have provided above. 
 
 Note the password (or copy it) and exit the ssh session:
 
@@ -48,7 +53,7 @@ The above output should show "**system:serviceaccount:workbook:cnv**", if it doe
 In the new Web Console tab that you've opened up you should be presented with the OpenShift login screen, enter the following credentials:
 
 - Username: *kubeadmin*
-- Password: (the password you previously copied)
+- Password: %cnvlab-kubeadmin-password% (the password you previously copied)
 
 The first time you access the web console, you will most likely be in the *Administrator* perspective. At the top of the left navigation menu, you can toggle between the Administrator perspective and the Developer perspective.
 
