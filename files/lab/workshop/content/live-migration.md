@@ -173,9 +173,9 @@ Events:
 
 Building on-top of live migration, many organisations will need to perform node-maintenance, e.g. for software/hardware updates, or for decommissioning. During the lifecycle of a **pod**, it's almost a given that this will happen without compromising the workloads, but virtual machines can be somewhat more challenging given their nature. To address this OpenShift Virtualization works with the (optional) Node Maintenance Operator which manages the process safely by marking nodes unschedulable and migrating workloads (both containers and VMs) automatically. 
 
-Select the "**Console**" button in the top of your lab guide window, or switch over to your dedicated web console page (if you opened one up earlier) and navigate to the top-level "**Operators**" menu entry, and select "**OperatorHub**" (you'll need to make sure that you're in the "Administrator" perspective by using the drop down in the top left hand corner of the web-console). This lists all of the available operators that you can install from the operator catalogue. Start typing '**maintenance**' in the search box and you should see an entry called "**Node Maintenance Operator**". Simply select it and you'll see a window that looks like the following (the version may be slightly different, likely slightly newer):
+Select the "**Console**" button in the top of your lab guide window, or switch over to your dedicated web console page and navigate to the top-level "**Operators**" menu entry, and select "**OperatorHub**" (you'll need to make sure that you're in the "Administrator" perspective by using the drop down in the top left hand corner of the web-console). This lists all of the available operators that you can install from the operator catalogue. Start typing '**maintenance**' in the search box and you should see an entry called "**Node Maintenance Operator**", provided by Red Hat. Simply select it and you'll see a window that looks like the following (the version may be slightly different, likely slightly newer):
 
-<img  border="1" src="img/nodemaintenance-operator-install.png"/>
+<img  border="1" src="img/nodemaintenance-operator-install-new.png"/>
 
 
 Next you'll want to select the "**Install**" button, which will take you to a second window where you'll be creating an "*Operator Subscription*". Leave the defaults here as they'll automatically select the latest version of the Node Maintenance Operator, will allow the software to be installed automatically, and will be placed into a new "**openshift-operators**" project:
@@ -186,7 +186,7 @@ Next you'll want to select the "**Install**" button, which will take you to a se
 
 Make sure that the namespace it will be installed to is "**openshift-operators**" - it should be the default entry, but make sure. When you're ready, press the blue "**Install**" button. After a minute or two you'll see that the operator has been configured successfully:
 
-<img  border="1" src="img/nodemaintenance-operator-install-success.png"/>
+<img  border="1" src="img/nodemaintenance-operator-install-success-new.png"/>
 
 Back in the "**Terminal**" tab, let's now take a look at the current running virtual machines and the nodes we have available:
 
@@ -327,7 +327,7 @@ oc delete nodemaintenance/worker-maintenance
 It should return the following output:
 
 ~~~bash
-nodemaintenance.nodemaintenance.medik8s.io "worker1-maintenance" deleted
+nodemaintenance.nodemaintenance.medik8s.io "worker-maintenance" deleted
 ~~~
 
 Then check the same node again:
