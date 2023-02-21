@@ -8,7 +8,7 @@ The namespace `openshift-virtualization-os-images` houses these templates and is
 
 Boot sources are defined by using a persistent volume claim (PVC) that is populated by uploading a local file, cloning an existing PVC, importing from a registry, or by URL. Attach a boot source to a virtual machine template by using the web console. After the boot source is attached to a virtual machine template, you create any number of fully configured ready-to-use virtual machines from the template.
 
-Preconfigured Red Hat virtual machine templates are listed in the **Templates** tab within the **Virtualization** page. These templates are available for different versions of Red Hat Enterprise Linux, Fedora, Microsoft Windows 10, and Microsoft Windows Servers. Each Red Hat virtual machine template is preconfigured with the operating system image, default settings for the operating system, flavor (CPU and memory), and workload type (server).
+Back in our **dedicated Web Console tab** (%cnvlab-console-url%), we can see all the preconfigured Red Hat virtual machine templates listed in the **Templates** tab within the **Virtualization** menu entry. These templates are available for different versions of Red Hat Enterprise Linux, Fedora, Microsoft Windows 10, and Microsoft Windows Servers. Each Red Hat virtual machine template is preconfigured with the operating system image, default settings for the operating system, flavor (CPU and memory), and workload type (server).
 
 <img src="img/templates-list.png" width="100%"/></td>
 
@@ -19,13 +19,14 @@ There are four methods for selecting and adding a boot source in the web console
 - **Clone existing PVC** (creates PVC)
 - **Import via Registry** (creates PVC)
 
-In this exercise, we will use the **Import Via URL** method to import a CentOS Stream 8 qcow2 disk image from our internal http server. Whilst we've done this before with the CLI, this time we will use the OpenShift web console to designate an image and in the background a new PVC will be created and CDI will be used to import the disk image into the newly created PVC. Due to current limitations in this bookbag, the virtualization tab doesn't show up in the console tab; we will therefore have to use the full Openshift console you received the link and credentials for 
-in the lab creation email.
+In this exercise, we will use the **Import Via URL** method to import a CentOS Stream 8 qcow2 disk image from our internal http server. Whilst we've done this before with the CLI, this time we will use the OpenShift web console to designate an image and in the background a new PVC will be created and CDI will be used to import the disk image into the newly created PVC. Due to current limitations in this bookbag, the virtualization tab doesn't show up in the console tab; we will therefore have to use the full Openshift console: %cnvlab-console-url%.
 
 The new PVC will then be set as the boot source of the selected CentOS 8 template and then cloned for each new virtual machine created using that template.
 
-1. Select the **openshift-virtualization-os-images** project, then go to **Storage** side menu and create a **PersistentVolumeClaim** using the Form
-2. Select **Edit YAML** and enter the following informations :
+1. In the upper-left part of the console, select the **openshift-virtualization-os-images** project as shown below. If the project is not shown, enable **Show default projects**:
+
+3. then go to **Storage** side menu and create a **PersistentVolumeClaim** using the Form
+4. Select **Edit YAML** and enter the following informations :
 ```copy
 apiVersion: v1
 kind: PersistentVolumeClaim
