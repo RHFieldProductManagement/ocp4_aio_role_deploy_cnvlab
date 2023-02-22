@@ -43,7 +43,7 @@ To verify if the new 5GB disk is recognised and ready to use by the guest operat
 ```copy
 sudo lsblk
 ```
-<img src="img/hot-plug-disk-lsblk-new.png" width="50%"/></td>
+<img src="img/hot-plug-disk-lsblk-1-new.png" width="50%"/></td>
 
 > **NOTE**: This showed up as "**sda**", as the default interface is "**scsi**" - if we'd have chosen "virtio" this would have been a "**vd***" device.
 
