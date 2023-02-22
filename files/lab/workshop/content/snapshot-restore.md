@@ -61,7 +61,7 @@ Virtual machine (VM) snapshots can be created either by using the **Web Console 
     </tr>
     </table>
 
-Once you click "**Save**" to create snapshot, the VM controller checks that the QEMU guest agent is installed and running. If so, it freezes the VM file system before taking the snapshot, and initiates snapshot creation on actual storage system for each Container Storage Interface (CSI) volume attached to the VM, a copy of the VM specification and metadata is also created. It should take just a few seconds to actually create the snapshot and make it "**Ready**" to use. Once the snapshot becomes **Ready** then it can be used to restore the virtual machine to that specific point in time then the snapshot is taken.
+Once you click "**Save**" to create snapshot, the VM controller checks that the QEMU guest agent is installed and running. If so, it freezes the VM file system before taking the snapshot, and initiates snapshot creation on actual storage system for each Container Storage Interface (CSI) volume attached to the VM, a copy of the VM specification and metadata is also created. It should take just a few seconds to actually create the snapshot and make it "**Ready**" to use. Once the snapshot becomes **Succeeded** then it can be used to restore the virtual machine to that specific point in time then the snapshot is taken.
 
 <img src="img/vm-snapshot-ready-new.png"/>
 
@@ -102,9 +102,7 @@ In this exercise, let's restore our MongoDB database VM by using the web console
 
 7. In the confirmation pop-up window, click **Restore** to restore the VM to its previous configuration represented by the snapshot.
 
-Once you click Restore to restore vm from the snapshot, it initiates snapshot restoration on actual storage system for each Container Storage Interface (CSI) volume attached to the VM and included in the snaphot, VM specification and metadata is also restored. It should take just a few seconds to actually restore the snapshot and make the VM ready to be powered on again - don't be alarmed if this process happens instantly; we're relying on the storage capabilities of Ceph behind the scenes to do this for us and it's incredible efficient with snapshots:
-
-<img src="img/vm-snapshot-restoring.png"/><br>
+Once you click Restore to restore vm from the snapshot, it initiates snapshot restoration on actual storage system for each Container Storage Interface (CSI) volume attached to the VM and included in the snaphot, VM specification and metadata is also restored. It should take just a few seconds to actually restore the snapshot and make the VM ready to be powered on again - don't be alarmed if this process happens instantly; we're relying on the storage capabilities of Ceph behind the scenes to do this for us and it's incredible efficient with snapshots.
 
 After the snapshot was restored successfully navigate again to the **mongodb-nationalparks** virtual machine and click **Actions** → **Start** to power it on. Once the VM is powered on and boots successfully, you can refresh `ParksMap` the [web page](http://parksmap-%parksmap-project-namespace%.%cluster_subdomain%). It should now successfully load national parks locations again from the restored backend service and start displaying them on the map again, but please note it may take a few minutes for the VM to start up and for MongoDB to start serving data again.
 
