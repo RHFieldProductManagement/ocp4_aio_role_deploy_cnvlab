@@ -1,4 +1,4 @@
-Welcome to the OpenShift Virtualization self-paced lab guide. We've put this together to give you an overview and hands-on technical deep dive into how OpenShift Virtualization works, and how it continues to bring advanced virtualisation capabilities to OpenShift.
+Welcome to the OpenShift Virtualization self-paced lab guide. We've put this together to give you an overview and a hands-on technical deep dive into how OpenShift Virtualization works, and how it continues to bring advanced virtualization capabilities to OpenShift.
 
 **OpenShift Virtualization** is the product name for the Container-native Virtualization operator for OpenShift. This is often referred to as "**CNV**" and is the downstream offering for the upstream [Kubevirt project](https://kubevirt.io/). While some aspects of this lab have references to "CNV", any reference to "CNV", "Container-native Virtualization" and "OpenShift Virtualization" can be *somewhat* used interchangeably.
 
@@ -20,13 +20,12 @@ This is the self-hosted lab guide that will run you through the following topics
 - *Deploying a real-world application example with ParksMap*
 - *Performing Backup and Restore of Virtual Machines*
 - *Implementing Network Isolation for Virtual Machines*
-- *Bonus Content: Hostpath Storage*
 
-Within the lab environment you can easily click a button to paste the specified commands into the CLI; however, for some steps you will also need to manually cut and paste commands directly from the instructions. **Be sure to review all commands carefully both for functionality and syntax!**
+Within the lab environment you can easily click a button to paste the specified commands into the CLI; however, for some steps you will also need to manually cut and paste commands directly from the instructions. **Make sure to review all commands carefully both for functionality and syntax!**
 
 > **NOTE**: In some browsers and operating systems you may need to use Ctrl-Shift-C / Ctrl-Shift-V to copy/paste within this lab environment!
 
-This is a continually evolving piece of work, and it has recently (February 2023) been updated for the latest OpenShift 4.12 release, therefore there may be some bugs or typo's. We welcome feedback on the content, what's missing, what would be good to have, etc. Please feel free to submit PR's or raise [GitHub issues](https://github.com/RHFieldProductManagement/openshift-aio/issues/new). We love the feedback!
+This is a continually evolving piece of work, and it has recently (February 2023) been updated to the latest OpenShift 4.12 release, therefore there may be some bugs or typos. We welcome feedback on the content, what's missing, what would be good to have, etc. Please feel free to submit PRs or raise [GitHub issues](https://github.com/RHFieldProductManagement/openshift-aio/issues/new). We love the feedback!
 
 Lastly, you can easily switch between the OpenShift CLI and the OpenShift Web Console, without having to login separately. Simply use the two buttons at the top of the screen to switch between them whilst keeping the instructions on the left-hand side:
 
