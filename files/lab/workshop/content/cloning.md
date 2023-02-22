@@ -349,12 +349,6 @@ Then enable nginx service:
 systemctl daemon-reload && systemctl enable --now nginx
 ```
 
-Which should show:
-
-~~~bash
-Created symlink /etc/systemd/system/multi-user.target.wants/nginx.service → /etc/systemd/system/nginx.service.
-~~~
-
 Check nginx service status:
 
 ```execute-1
@@ -366,7 +360,7 @@ It should show the service as "active (running)":
 ~~~bash
 ● nginx.service - Nginx Podman container
    Loaded: loaded (/etc/systemd/system/nginx.service; enabled; vendor preset: disabled)
-   Active: active (running) since Tue 2020-03-31 01:30:48 UTC; 8s ago
+   Active: active (running) since Tue 2023-02-22 01:30:48 UTC; 8s ago
  Main PID: 9898 (podman)
     Tasks: 11 (limit: 2345)
 ~~~
@@ -400,9 +394,9 @@ curl http://192.168.123.65
 $ curl http://192.168.123.65
 Server address: 192.168.123.65:80
 Server name: fedora
-Date: 25/Nov/2021:15:09:21 +0000
+Date: 22/Feb/2023:16:25:27 +0000
 URI: /
-Request ID: 517056307646f72f6d320830b6a9dfb6
+Request ID: f0cdd44266c0495fa8aab6048736978b
 ~~~
 
 > **NOTE**: We've purposely installed a plain-text server-side option here as we cannot route to the 192.168.123.0/24 network via the internet. In a later step we'll change this to a visual one and we'll expose it via the OpenShift ingress service and it'll be available as a route.
