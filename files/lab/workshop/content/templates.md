@@ -167,7 +167,7 @@ Go to the **Disks** tab and edit the **rootdisk** definition by clicking on the 
 
 <img  border="1" src="img/rootdisk-edit.png"/>
 
-Rename it from **rootdisk** to **centos8**, so it can be linked to the VM template we created before. In the **Source** field, select **PVC (Creates PVC)** and choose **openshift-virtualization-os-images** for the **Persistent Volume Claim Project** field. Inside the **Persistent Volume Claim name* we should now see the **centos8** PVC we created earlier. Finally, set **Persistent Volume Claim size** as **20 GiB**. This will also be the size of the root disk of the VMs created by using this template. Here you have a screenshot of what the configuration should look like:
+Rename it from **rootdisk** to **centos8**, so it can be linked to the VM template we created before. In the **Source** field, select **PVC (Creates PVC)** and choose **openshift-virtualization-os-images** for the **Persistent Volume Claim Project** field. Inside the **Persistent Volume Claim name** we should now see the **centos8** PVC we created earlier. Finally, set **Persistent Volume Claim size** as **20 GiB**. This will also be the size of the root disk of the VMs created by using this template. Here you have a screenshot of what the configuration should look like:
 
 ![templates-add-boot-source](img/templates-add-boot-source.png)
 
