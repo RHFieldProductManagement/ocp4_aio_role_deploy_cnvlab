@@ -1,11 +1,11 @@
 Since OpenShift 4.5, OpenShift Virtualization has been fully supported by Red Hat as a component of OpenShift itself. The mechanism for installation is to utilise the operator model and deploy via the OpenShift Operator Hub in the OpenShift Web Console. It's entirely possible to deploy via the CLI should you wish to do so, but we're not documenting that mechanism here.
 
-Select the "**Console**" button in the top of your lab guide window, or switch over to your dedicated web console page and navigate to the top-level '**Operators**' menu entry, and select '**OperatorHub**' (you'll need to make sure that you're in the "Administrator" perspective by using the drop down in the top left hand corner of the web-console). This lists all of the available operators that you can install from the operator catalogue. Start typing '**virtualization**' in the search box and you should see an entry called "**OpenShift Virtualization**". Simply select it and you'll see a window that looks like the following (the version may be slightly different, likely slightly newer):
+Select the "**Console**" button in the top of your lab guide window, or switch over to your dedicated web console page (%cnvlab-console-url%) and navigate to the top-level "**Operators**" menu entry, and select "**OperatorHub**" (you'll need to make sure that you're in the "Administrator" perspective by using the drop down in the top left hand corner of the web-console). This lists all of the available operators that you can install from the operator catalogue. Start typing '**virtualization**' in the search box and you should see an entry called "**OpenShift Virtualization**". Simply select it and you'll see a window that looks like the following:
 
 <img  border="1" src="img/ocp-virt-operator-install-new.png"/>
 
 
-Next you'll want to select the '**Install**' button, which will take you to a second window where you'll be creating an '*Operator Subscription*'. Leave the defaults here as they'll automatically select the latest version of OpenShift Virtualization, will allow the software to be installed automatically, and will be placed into a new "**openshift-cnv**" project:
+Next you'll want to select the "**Install**" button, which will take you to a second window where you'll be creating an '*Operator Subscription*'. Leave the defaults here as they'll automatically select the latest version of OpenShift Virtualization, will allow the software to be installed automatically, and will be placed into a new "**openshift-cnv**" project:
 
 <img  border="1" src="img/ocp-virt-operator-install-details-new.png"/>
 
@@ -123,7 +123,7 @@ Together, all of these pods are responsible for various functions of running a v
 
 Before continuing with the installation, we will need to install the "**NMState Operator**" which provides a Kubernetes API for performing state-driven network configuration across the OpenShift cluster’s nodes.
 
-If you're not in the Console tab, select "**Console**" in the top of your lab guide window or switch over your dedicated web console tab. Verify you are in the "Administrator" perspective by using the drop down in the left hand corner. Then, navigate to the "**Operators**" menu entry in the left side of the web console and select "**OperatorHub**" to list all the available operators from the catalogue. You will see the search box where you need to type '**nmstate**'. Select the operator called "**Kubernetes NMState Operator**" and you will see a similar window to this one:
+If you're not in the Console tab, select "**Console**" in the top of your lab guide window or switch over your dedicated web console tab (%cnvlab-console-url%). Verify you are in the "Administrator" perspective by using the drop down in the left hand corner. Then, navigate to the "**Operators**" menu entry in the left side of the web console and select "**OperatorHub**" to list all the available operators from the catalogue. You will see the search box where you need to type '**nmstate**'. Select the operator called "**Kubernetes NMState Operator**" and you will see a similar window to this one:
 
 <img  border="1" src="img/nmstate-operator-install.png"/>
 
@@ -251,7 +251,7 @@ No resources found
 
 ### Viewing the OpenShift Virtualization Dashboard
 
-As mentioned at the beginning of this lab, when OpenShift Virtualization is deployed, it adds additional components to OpenShift's web console, but those cannot be displayed in the web console provided in the lab environment. That's why you need to go to your **dedicated Web Console tab/window**, so you can interact with objects and custom resources defined by OpenShift Virtualization, including `VirtualMachine` types.
+As mentioned at the beginning of this lab, when OpenShift Virtualization is deployed, it adds additional components to OpenShift's web console, but those cannot be displayed in the web console provided in the lab environment. That's why you need to go to your **dedicated Web Console tab/window** (%cnvlab-console-url%), so you can interact with objects and custom resources defined by OpenShift Virtualization, including `VirtualMachine` types.
 
 There, click on the new "**Virtualization**" entry created on the left-hand side panel. Note that you shouldn't have any virtual machines defined:
 
