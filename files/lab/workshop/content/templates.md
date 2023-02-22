@@ -19,14 +19,16 @@ There are four methods for selecting and adding a boot source in the web console
 - **Clone existing PVC** (creates PVC)
 - **Import via Registry** (creates PVC)
 
-In this exercise, we will use the **Import Via URL** method to import a CentOS Stream 8 qcow2 disk image from our internal http server. Whilst we've done this before with the CLI, this time we will use the OpenShift web console to designate an image and in the background a new PVC will be created and CDI will be used to import the disk image into the newly created PVC. Due to current limitations in this bookbag, the virtualization tab doesn't show up in the console tab; we will therefore have to use the full Openshift console: %cnvlab-console-url%.
+In this exercise, we will use the "**Import Via URL**" method to import a CentOS Stream 8 qcow2 disk image from our internal http server. Whilst we've done this before with the CLI, this time we will use the OpenShift web console to designate an image and in the background a new PVC will be created and CDI will be used to import the disk image into the newly created PVC. Due to current limitations in this bookbag, the virtualization tab doesn't show up in the console tab; we will therefore have to use the full Openshift console: %cnvlab-console-url%.
 
 The new PVC will then be set as the boot source of the selected CentOS 8 template and then cloned for each new virtual machine created using that template.
 
-1. In the upper-left part of the console, select the **openshift-virtualization-os-images** project as shown below. If the project is not shown, enable **Show default projects**:
+In the upper-left part of the console, select the **openshift-virtualization-os-images** project as shown below. If the project is not listed, enable **Show default projects**:
 
-3. then go to **Storage** side menu and create a **PersistentVolumeClaim** using the Form
-4. Select **Edit YAML** and enter the following informations :
+<img  border="1" src="img/storage-project.png"/>
+
+Then, go to "**Storage → PersistentVolumeClaims**" side menu and select "**Create PersistentVolumeClaim → With Form**". There, select "**Edit YAML**". We're going to change the YAML by adding a couple of more parameters. To do so, delete the content displayed and enter the following informations :
+
 ```copy
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -46,9 +48,9 @@ spec:
       storage: 20Gi
 ```
 
-Once you click **Save** a new `PersistentVolumeClaim` of the specified size is automatically provisioned using the selected storage class, which is ceph-rbd in this exercise.
+Once you click "**Create**" a new `PersistentVolumeClaim` of the specified size (20Gi) is automatically provisioned using the selected storage class, which is `ceph-rbd` in this exercise.
 
-After creating the new `PersistentVolumeClaim`, a CDI (Containerized Data Importer) pod is started in the `openshift-virtualization-os-images` namespace. This CDI pod downloads the specified disk image from the http URL and populates the newly created `PersistentVolumeClaim` with the contents of that disk image. You can see this CDI pod by switching into the `openshift-virtualization-os-images` project and selecting **Workloads** → **Pods** from the side menu.
+After creating the new `PersistentVolumeClaim`, a CDI (Containerized Data Importer) pod is started in the `openshift-virtualization-os-images` namespace. This CDI pod downloads the specified disk image from the http URL (http://192.168.123.100:81/rhel8-kvm.img) and populates the newly created `PersistentVolumeClaim` with the contents of that disk image. You can see this CDI pod by switching into the `openshift-virtualization-os-images` project and selecting "**Workloads** → **Pods**" from the side menu.
 
 ![CDI Pod](img/templates-cdi-pod.png)
 
@@ -65,10 +67,7 @@ NAME        PHASE              PROGRESS   RESTARTS   AGE
 centos8     ImportInProgress   2.00%                 7m28s
 ~~~
 
-3. Click **Create** then wait a few minutes for the volume to get created from the provided image
-4. In the OpenShift Virtualization console, click **Virtualization** from the side menu.
-5. Click the **Templates** tab.
-6. Click **Create Template** and paste the following content, then click **Create** :
+Now, navigate to your **dedicated OpenShift Web Console** (%cnvlab-console-url%), as we're going to perform some steps in the `Virtualization` interface. Click **Virtualization** from the side menu and select the **Templates** tab. Click **Create Template**, delete the code shown and paste the following content:
 ```copy
 apiVersion: template.openshift.io/v1
 kind: Template
@@ -163,21 +162,17 @@ parameters:
     generate: expression
     from: '[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{4}'
 ```
-7. Go to the **Disks** tab and edit the rootdisk definition
-8. Rename it from **rootdisk** to **centos8**
-9. in the **Source** field, select **PVC (Creates PVC)**
-10. In the **Persistent Volume Claim Project** field select **openshift-virtualization-os-images**
-11. In the **Persistent Volume Claim Name** you shouild nbow find the centos8 pvc we created earlyer
-12. Set **Persistent Volume Claim size** as **20 GiB**. This will also be the size of the root disk of the VMs created by using this template.
 
+Select **Create** to save the new VM template. This will add the new `centos8` template we have just created to the **Virtualization → Templates**. By clicking in **centos8**, we can obtain further details.
+
+Go to the **Disks** tab and edit the **rootdisk** definition by clicking on the three dots on the right side of the screen as follows:
+
+<img  border="1" src="img/rootdisk-edit.png"/>
+
+Rename it from **rootdisk** to **centos8**, so it can be linked to the VM template we created before. In the **Source** field, select **PVC (Creates PVC)** and choose **openshift-virtualization-os-images** for the **Persistent Volume Claim Project** field. Inside the **Persistent Volume Claim name* we should now see the **centos8** PVC we created earlier. Finally, set **Persistent Volume Claim size** as **20 GiB**. This will also be the size of the root disk of the VMs created by using this template. Here you have a screenshot of what the configuration should look like:
 
 ![templates-add-boot-source](img/templates-add-boot-source.png)
 
-8. Click **Save**.
+If it is correct, click **Save**.
 
-
-
-
-You can now use this template to create CentOS 8 virtual machines.
-
-That's it for adding boot sources to a template. We have imported a CentOS 8 cloud disk image into a new PVC and attached that onto a CentOS 8 virtual machine template which we will use to create new virtual machines in the next labs. Let's continue on by selecting the "**Parksmap Application**" button below.
+You can now use this template to create CentOS 8 virtual machines. That's it for adding boot sources to a template. We have imported a CentOS 8 cloud disk image into a new PVC and attached that onto a CentOS 8 virtual machine template which we will use to create new virtual machines in the next labs. Let's continue on by selecting the "**Parksmap Application**" button below.
