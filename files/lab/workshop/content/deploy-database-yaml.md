@@ -24,7 +24,7 @@ It will take some time for the MongoDB VM to start and initialise, just like the
 oc get vm
 ```
 
-We should now see two VM's running:
+We should now see two VM's running. If not, re-run the command again after a few seconds:
 
 ~~~bash
 NAME                    AGE   STATUS    READY
@@ -36,11 +36,11 @@ Like before, this template is setup to utilise cloud-init to automatically boots
 
 ### 3. Verify Mlbparks Application
 
-If you go back to the OpenShift web-console by selecting the "**Console**" button at the top of your screen, and switch back to the *Developer* perspective, you should be able to see all `parksmap application` components including the two MongoDB Virtual Machines:
+If you go back to the OpenShift web-console by selecting the "**Console**" button at the top of your screen, and switch back to the **Developer** perspective, you should be able to see all `parksmap application` components including the two MongoDB Virtual Machines:
 
  <br/>
 
-![Parksmap Topology View](img/parksmap-topology-full.png)  
+![Parksmap Topology View](img/parksmap-topology-full-new.png)  
 
 
 Now that we have the database deployed for `mlbparks` , we can again visit the mlbparks web service to query for existing data:
