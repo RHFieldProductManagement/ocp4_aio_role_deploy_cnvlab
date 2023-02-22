@@ -28,7 +28,7 @@ Continue the installation by clicking on "**Create**" at the bottom.
 <img  border="1" src="img/ocp-virt-operator-create-HyperC-new.png"/>
 
 
-Whilst this does its thing, you can move to the '**Workloads**' --> '**Pods**' menu entry on the left side of the console and watch it start all of its resources:
+Whilst this does its thing, you can move to the '**Workloads**' → '**Pods**' menu entry on the left side of the console and watch it start all of its resources:
 
 <img  border="1" src="img/ocp-vrt-hco-4-new.png"/>
 
