@@ -40,11 +40,11 @@ The *oc policy* command above is giving a defined _role_ (*view*) to the default
 
 ### 3. Navigate to the OpenShift Web Console
 
-Go to your **full OpenShift Web Console tab" (%cnvlab-console-url%) to follow the steps below in the OpenShift web console as part of this lab guide.
+Select the **Console** button in the lab environment or go to your **full OpenShift Web Console tab** (%cnvlab-console-url%) to follow the steps below in the OpenShift web console as part of this lab guide.
 
 ### 4.  Search for the Application Template
 
-If you are in the in the Administrator perspective, switch to Developer perspective and select **Project: %parksmap-project-namespace%**.
+If you are in the Administrator perspective, switch to **Developer** perspective and select **Project: %parksmap-project-namespace%**.
 
 ![parksmap-developer-persepctive](img/explore-dev-view-new.png)
 
