@@ -575,7 +575,7 @@ NAME         AGE   PHASE     IP               NODENAME                       REA
 fc34-clone   88s   Running   192.168.123.66   ocp4-worker2.aio.example.com   True
 ~~~
 
-This machine will also be visible from the OpenShift Virtualization console, which you can navigate to using the top "**Console**" button, or by using your dedicated tab if you've created one. You can login using the "**root**" user with the password you've set earliyer, by going into the "**Workloads**" → "**Virtualization**" → "**fc34-clone**" → "**Console**", if you want to try:
+This machine will also be visible from the OpenShift Virtualization tab. Switch to the **full OpenShift console** (%cnvlab-console-url%). There, you can login using the "**root**" user with the password you've set earlier, by going into the "**Virtualization**" → "**Virtual Machines**" → "**fc34-clone**" → "**Console**", if you want to try:
 
 <img src="img/fc31-clone-console.png"/>
 
@@ -592,7 +592,7 @@ Which should show similar to the following, if our clone was successful:
 ~~~bash
 Server address: 192.168.123.66:80
 Server name: fedora
-Date: 25/Nov/2021:15:58:20 +0000
+Date: 22/Feb/2023:15:58:20 +0000
 URI: /
 Request ID: 30d16f4250df0d0d82ec2af2ebb60728
 ~~~
@@ -611,17 +611,17 @@ datavolume.cdi.kubevirt.io "fc34-clone" deleted
 persistentvolumeclaim "fc34-clone" deleted
 ~~~
 
-Now, if we navigate to the OpenShift Console, and ensure that we're in the list of Virtual Machines by selecting "**Workloads**" → "**Virtualization**", we should see our "*fc34-original*" VM as stopped:
+Now, if we navigate to the OpenShift Console, and ensure that we're in the list of **Virtual Machines** by selecting "**Virtualization**", we should see our "*fc34-original*" VM as stopped:
 
 <img src="img/vm-stopped.png"/>
 
-Select "*fc34-original*" and then from the "**Actions**" drop-down on the right hand side, select "**Clone Virtual Machine**". This will bring up a new window where we can confirm our requirements:
+Select "*fc34-original*" and then from the "**Actions**" drop-down on the right hand side, select "**Clone**". This will bring up a new window where we can confirm our requirements:
 
 <img src="img/clone-vm.png"/>
 
 We'll leave the defaults here, but make sure to select "**Start virtual machine on clone**" as this will ensure that our freshly cloned VM is automatically started for us. When you're ready, select the blue "**Clone Virtual Machine**" button at the bottom; this will create an identical virtual machine for us, just with a new name, "*fc34-original-clone*".
 
-As soon as this happens, a new virtual machine will be created and started for you. You can see this in "**Workloads**" → "**Virtualization**" or via the CLI:
+As soon as this happens, a new virtual machine will be created and started for you. You can see this in "**Virtualization**" → "**Virtual Machines**" or via the CLI:
 
 
 ```execute-1
@@ -651,7 +651,7 @@ fc34-original-clone   89s   Running   192.168.123.66   ocp4-worker3.aio.example.
 
 Like before, we should be able to confirm that it really is our clone:
 
-~~~bash
+~~~copy
 $ curl http://192.168.123.66
 ~~~
 
