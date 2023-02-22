@@ -135,7 +135,6 @@ Namespace:        default
 Priority:         0
 Service Account:  default
 Node:             ocp4-worker3.%node-network-domain%/192.168.123.106
-Node:         ocp4-worker3.%node-network-domain%/192.168.123.106
 Start Time:       Thu, 16 Feb 2023 20:44:17 +0000
 Labels:           kubevirt.io=virt-launcher
                   kubevirt.io/created-by=b0b13a7d-239d-4b2c-b3b2-9e455c3d8a6e
@@ -346,7 +345,7 @@ Then connect to it and track back the link - here you'll need to adjust the comm
 
 To do this we need to get to the worker running our virtual machine, and we can use the `oc debug node` function to do this (adjust to suit the host of your virtual machine from the previous command):
 
-```execute-1
+```copy-and-edit
 oc debug node/ocp4-worker3.%node-network-domain%
 ```
 
@@ -367,7 +366,7 @@ chroot /host
 
 Then execute the following, **but remember to replace the ifindex with the number you recorded above**:
 
-```copy
+```copy-and-edit
 export ifindex=222
 ```
 
@@ -386,7 +385,7 @@ vethf2dafc08@if4
 
 Therefore, the other side of the link, in the example above, is "**vethf2dafc08@if4**". Run the following command replacing it with the veth value you found:
 
-```copy
+```copy-and-edit
 ip link show vethf2dafc08
 ```
 
