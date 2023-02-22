@@ -51,11 +51,7 @@ spec:
 
 Once you click "**Create**" a new `PersistentVolumeClaim` of the specified size (20Gi) is automatically provisioned using the selected storage class, which is `ceph-rbd` in this exercise.
 
-After creating the new `PersistentVolumeClaim`, a CDI (Containerized Data Importer) pod is started in the `openshift-virtualization-os-images` namespace. This CDI pod downloads the specified disk image from the http URL (http://192.168.123.100:81/rhel8-kvm.img) and populates the newly created `PersistentVolumeClaim` with the contents of that disk image. You can see this CDI pod by switching into the `openshift-virtualization-os-images` project and selecting "**Workloads** → **Pods**" from the side menu.
-
-![CDI Pod](img/templates-cdi-pod.png)
-
-You can also view the import progress by listing the data volumes in the `openshift-virtualization-os-images` namespace.
+After creating the new `PersistentVolumeClaim`, a CDI (Containerized Data Importer) pod is started in the `openshift-virtualization-os-images` namespace. This CDI pod downloads the specified disk image from the http URL (http://192.168.123.100:81/rhel8-kvm.img) and populates the newly created `PersistentVolumeClaim` with the contents of that disk image. If you are fast enough, you can view the import progress by listing the data volumes in the `openshift-virtualization-os-images` namespace.
 
 ```execute
 oc get datavolumes -n openshift-virtualization-os-images
