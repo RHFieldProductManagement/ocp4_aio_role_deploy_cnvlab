@@ -581,7 +581,7 @@ NAME         AGE   PHASE     IP               NODENAME                       REA
 fc34-clone   88s   Running   192.168.123.66   ocp4-worker2.aio.example.com   True
 ~~~
 
-This machine will also be visible from the OpenShift Virtualization console, which you can navigate to using the top "**Console**" button, or by using your dedicated tab if you've created one. You can login using the "**root**" user with the password you've set earliyer, by going into the "**Workloads**" --> "**Virtualization**" --> "**fc34-clone**" --> "**Console**", if you want to try:
+This machine will also be visible from the OpenShift Virtualization console, which you can navigate to using the top "**Console**" button, or by using your dedicated tab if you've created one. You can login using the "**root**" user with the password you've set earliyer, by going into the "**Workloads**" → "**Virtualization**" → "**fc34-clone**" → "**Console**", if you want to try:
 
 <img src="img/fc31-clone-console.png"/>
 
@@ -617,7 +617,7 @@ datavolume.cdi.kubevirt.io "fc34-clone" deleted
 persistentvolumeclaim "fc34-clone" deleted
 ~~~
 
-Now, if we navigate to the OpenShift Console, and ensure that we're in the list of Virtual Machines by selecting "**Workloads**" --> "**Virtualization**", we should see our "*fc34-original*" VM as stopped:
+Now, if we navigate to the OpenShift Console, and ensure that we're in the list of Virtual Machines by selecting "**Workloads**" → "**Virtualization**", we should see our "*fc34-original*" VM as stopped:
 
 <img src="img/vm-stopped.png"/>
 
@@ -627,7 +627,7 @@ Select "*fc34-original*" and then from the "**Actions**" drop-down on the right 
 
 We'll leave the defaults here, but make sure to select "**Start virtual machine on clone**" as this will ensure that our freshly cloned VM is automatically started for us. When you're ready, select the blue "**Clone Virtual Machine**" button at the bottom; this will create an identical virtual machine for us, just with a new name, "*fc34-original-clone*".
 
-As soon as this happens, a new virtual machine will be created and started for you. You can see this in "**Workloads**" --> "**Virtualization**" or via the CLI:
+As soon as this happens, a new virtual machine will be created and started for you. You can see this in "**Workloads**" → "**Virtualization**" or via the CLI:
 
 
 ```execute-1
