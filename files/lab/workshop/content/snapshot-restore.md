@@ -152,6 +152,8 @@ spec:
     name: mongodb-nationalparks 
 EOF
 ```
+> **NOTE**: If the formatting breaks in the output below and it doesn't validate properly in the UI, a better place to copy these from might be the original source page, [here](https://github.com/RHFieldProductManagement/ocp4_aio_role_deploy_cnvlab/blob/main/files/lab/workshop/content/snapshot-restore.md).
+
 Which should then show:
 
 ~~~bash
@@ -325,6 +327,8 @@ spec:
   virtualMachineSnapshotName: mongodb-nationalparks-snap1
 EOF
 ```
+> **NOTE**: If the formatting breaks in the output below and it doesn't validate properly in the UI, a better place to copy these from might be the original source page, [here](https://github.com/RHFieldProductManagement/ocp4_aio_role_deploy_cnvlab/blob/main/files/lab/workshop/content/snapshot-restore.md).
+
 Which should show that the `virtualmachinerestore` object has been created:
 
 ~~~bash
