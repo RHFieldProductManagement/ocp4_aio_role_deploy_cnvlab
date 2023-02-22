@@ -1,4 +1,4 @@
-In this section we will deploy and connect a MongoDB database where the`nationalparks` application will store the location information. This time we are going to deploy the MongoDB application in a Virtual Machine by leveraging OpenShift Virtualization; that way we're demonstrating the capability for OpenShift to connect multiple types of workloads, regardless of whether they're containerised, or virtualised.
+In this section we will deploy and connect a MongoDB database where the `nationalparks` application will store the location information. This time we are going to deploy the MongoDB application in a Virtual Machine by leveraging OpenShift Virtualization; that way we're demonstrating the capability for OpenShift to connect multiple types of workloads, regardless of whether they're containerised, or virtualised.
 
 
 ### 1.  Search for the Virtual Machine Template
@@ -6,23 +6,23 @@ In this section we will deploy and connect a MongoDB database where the`national
 
 In this module we will create a MongoDB instance from a *Template*, again based on a template that we've already pre-loaded, which contains all the necessary Kubernetes resources and configuration to deploy and run MongoDB in a VM, based on CentOS 8 - as part of a VM template that we created in an earlier step.
 
-For this, make sure that you're still in the web console view, and if you are in the in the *Administrator* perspective, switch to Developer perspective and go to the *%parksmap-project-namespace%* project. 
+For this, make sure that you're still in the **Console** view, and if you are in the in the *Administrator* perspective, switch to the **Developer** perspective and go to the **%parksmap-project-namespace%** project. 
 
-- From the left menu, click *+Add*. You will see a screen where you have multiple options to deploy application. 
+- From the left menu, click **+Add**. You will see a screen where you have multiple options to deploy application. 
 
-- Then Click *All Services* and in the *Search* text box and enter *mongo* to find the MongoDB VM template. 
+- Then Click **All Services**, as we did in the previous section and in the *Search* text box and enter *mongo* to find the **MongoDB Virtual Machine Template**. 
 
  <br/>
 
-![Search Template](img/parksmap-mongodb-search.png)  
+![Search Template](img/parksmap-mongodb-search-new.png)  
 
 <br/>
 
 ### 2. Instantiate the Virtual Machine Template
 
-In order to instantiate the template, first click on the `MongoDB Virtual Machine` template to open the popup menu 
-and then click on the *Instantiate Template* button as you did when you deployed the parksmap application components.
-This will open a dialog that will allow you to configure the template. This template allows you to configure the following parameters:
+In order to instantiate the template, first click on the **MongoDB Virtual Machine Template** to open the popup menu 
+and then click on the **Instantiate Template** button as you did when you deployed the `parksmap` application components.
+This will open a dialog that will allow you to configure the template:
 
 - *MongoDB Application Name*
 - *Virtual Machine Username*
@@ -32,19 +32,19 @@ This will open a dialog that will allow you to configure the template. This temp
 - *Database Admin Password*
   
 
-Enter ***mongodb-nationalparks*** in  **MongoDB Application Name** field and leave other parameter values default.
+Enter ***mongodb-nationalparks*** in **MongoDB Application Name** field and leave other parameter values default.
 
  <br/>
 
-![Configure Template](img/parksmap-mongodb-nationalparks.png)  
+![Configure Template](img/parksmap-mongodb-nationalparks-new.png)  
 
  <br/>
 
 > **NOTE**: Make sure that you update the MongoDB Application Name before clicking "Create".
 
-Next click the blue ***Create*** button. 
+Next click the blue "**Create**" button. 
 
-You will be directed to the *Topology* page, where you should see the visualisation for the `mongodb-nationalparks` virtual machine in the `workshop` application, i.e. we're extending the existing application that we have. OpenShift creates both *VirtualMachine* and *Service* objects. The `nationalparks` backend application will use this *mongodb-nationalparks service* to communicate with MongoDB.
+You will be directed to the **Topology** page, where you should see the visualisation for the `mongodb-nationalparks` virtual machine in the `workshop` application, i.e. we're extending the existing application that we have. OpenShift creates both *VirtualMachine* and *Service* objects. The `nationalparks` backend application will use this *mongodb-nationalparks service* to communicate with MongoDB.
 
 ### 3. Verify the Database Service in Virtual Machine  
 
@@ -61,7 +61,7 @@ NAME                    AGE   STATUS     READY
 mongodb-nationalparks   45s   Running    True
 ~~~
 
-Once the MongoDB Virtual Machine is in a Running state, open the *Virtual Machine Console* by switching to the "**Administrator**" perspective in the top left hand corner, and then navigating to "**Workloads**" --> "**Virtualization**" and selecting "**mongodb-nationalparks**". Once there, select the "**Console**" tab and you should be able to see the virtual machine console. On the login screen, enter the following credentials:
+Once the MongoDB Virtual Machine is in a Running state, go back to the **dedicated full Web Console** (%cnvlab-console-url%). Open the *Virtual Machine Console* by switching to the "**Administrator**" perspective in the top left hand corner, and then navigating to "**Virtualization → VirtualMachines**" and selecting "**mongodb-nationalparks**". Once there, select the "**Console**" tab and you should be able to see the virtual machine console. On the login screen, enter the following credentials:
 
 ~~~bash
 Login: %mongodb-vm-username%
@@ -70,7 +70,7 @@ Password: %mongodb-vm-password%
 
 Check whether *mongod* service is running by executing following:
 
-```execute-1
+```copy
 systemctl status mongod
 ```
 
@@ -171,13 +171,13 @@ name: cloudinitdisk
 ...
 ~~~
 
-In the above output, you'll notice that there are placeholders for variables, if we check the VirtualMachine object now...
+In the above output, you'll notice that there are placeholders for variables like ${VM_USER_NAME} or ${VM_PASSWORD}, but if we check the VirtualMachine object now...
 
 ```execute-1
  oc get vm mongodb-nationalparks -n %parksmap-project-namespace% -o yaml
 ```
 
-... we will see that when we instantiate the template, OpenShift replaces the parameters with the values provided :
+... we will see that when we instantiate the template, OpenShift replaces the parameters with the values provided (user: redhat and password: openshift):
 
 ~~~yaml
 ...
