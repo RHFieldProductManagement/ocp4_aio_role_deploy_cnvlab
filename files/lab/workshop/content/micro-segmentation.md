@@ -43,7 +43,7 @@ By default, all pods in a project are accessible from other Pods and network end
 <img src="img/network-policy-1.png" height=300> 
 <img src="img/network-policy-2.png" height=300>
 
-Let's verify that we currently have full unrestricted network access within our project, i.e. our "nationalparks" application can access "mongodb-mlbparks" database VM and "mlbparks" application can access to "mongodb-nationalparks" database VM - something that you may not *actually* want in a production environment, as it's an application talking to the wrong database:
+Let's verify that we currently have full unrestricted network access within our project, i.e. our "nationalparks" application can access "mongodb-mlbparks" database VM and "mlbparks" application can access to "mongodb-nationalparks" database VM - something that you may not *actually* want in a production environment, as it's an application talking to the wrong database. Switch to the **Console** tab of this laboratory and follow the next steps:
 
 1. Make sure that you're in the "Administrator perspective", and click **Workloads** → **Pods** from the side menu.
 
@@ -59,7 +59,7 @@ sh-4.4$ curl mongodb-nationalparks:27017
 It looks like you are trying to access MongoDB over HTTP on the native driver port.
 ~~~
 
-5. Repeat above steps for **mlbparks** pod.
+5. Repeat above steps for **mlbparks** pod (again, not the deploy pod, the one that's running).
 ~~~bash
 sh-4.4$ curl mongodb-mlbparks:27017
 It looks like you are trying to access MongoDB over HTTP on the native driver port.
@@ -77,10 +77,10 @@ Now, let's apply following network policy to restrict access to **mongodb-mlbpar
 
 2. Click the **CreateNetworkPolicy** button.
 
-3. Click **Edit YAML**.
+3. Click **YAML view**.
 
 4. Paste the following policy and click **Create**.
-~~~yml
+~~~copy
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
@@ -109,11 +109,11 @@ Then apply following network policy to restrict access to **mongodb-nationalpark
 
 2. Click the **CreateNetworkPolicy** button.
 
-3. Click **Edit YAML**.
+3. Click **YAML view**.
 
 4. Paste the following policy and click **Create**.
 
-~~~yml
+~~~copy
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
@@ -139,29 +139,27 @@ Finally, let's verify that the "nationalparks" application can only access the "
 
 1. Click **Workloads** → **Pods** from the side menu.
 
-2. Click **nationalparks** pod (not the deploy VM - the one that's running)
+2. Click **nationalparks** pod (not the deploy VM - the one that's running).
 
 3. Click the **Terminal** tab.
 
 4. Run following commands and verify both mongodb services are accessible.
-
-   > Note: curl's timeout is greater than 60 seconds. If you'd like to increase that add a `-m 5` to change it to five seconds (or another value of your choosing).
 ~~~bash
 sh-4.4$ curl mongodb-nationalparks:27017
 It looks like you are trying to access MongoDB over HTTP on the native driver port.
 sh-4.4$ curl mongodb-mlbparks:27017
 curl: (7) Failed to connect to mongodb-mlbparks port 27017: Connection timed out
-sh-4.4$ 
 ~~~
+> Note: curl's timeout is greater than 60 seconds. If you'd like to increase that add a `-m 5` to change it to five seconds (or another value of your choosing).
 
-5. Repeat above steps for **mlbparks** pod.
+
+5. Repeat above steps for **mlbparks** pod (not the deploy VM - the one that's running).
 
 ```bash
 sh-4.2$ curl mongodb-mlbparks:27017
 It looks like you are trying to access MongoDB over HTTP on the native driver port.
 sh-4.2$ curl mongodb-nationalparks:27017
 curl: (7) Failed connect to mongodb-nationalparks:27017; Connection timed out
-sh-4.2$ 
 ```
 
 That's it! We're done! I hope you've enjoyed attending this lab. Any questions, please let us know! :-)
