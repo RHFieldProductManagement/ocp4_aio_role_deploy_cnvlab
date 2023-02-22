@@ -40,49 +40,37 @@ The *oc policy* command above is giving a defined _role_ (*view*) to the default
 
 ### 3. Navigate to the OpenShift Web Console
 
-Select the blue "**Console**" button at the top of the window to follow the steps below in the OpenShift web console as part of this lab guide.
+Go to your **full OpenShift Web Console tab" (%cnvlab-console-url%) to follow the steps below in the OpenShift web console as part of this lab guide.
 
 ### 4.  Search for the Application Template
 
-> **NOTE:** We recommended making the lab instructions pane in the lab environment larger by sliding the handle to the right. This will reduce the size of the terminal and in-lab web console but will better display the lab instructions and images.
+If you are in the in the Administrator perspective, switch to Developer perspective and select **Project: %parksmap-project-namespace%**.
 
-If you are in the in the Administrator perspective, switch to Developer perspective and go to the `%parksmap-project-namespace%` project. 
+![parksmap-developer-persepctive](img/explore-dev-view-new.png)
 
-![parksmap-developer-persepctive](img/parksmap-developer-persepctive.png)
+From the menu, select the **+Add** panel. Find the **%parksmap-project-namespace%** project and select it (if you're not asked to choose a project, it's probably because you've already selected one.
 
-From the menu, select the `+Add` panel. Find the **parksmap-demo** project and select it (if you're not asked to choose a project, it's probably because you've already selected one, simply go to the "**Project**" drop down at the top and select "**All Projects**" to continue):
-
-![parksmap-choose-project](img/parksmap-choose-project.png)
-
-You will see a screen where you have multiple options to deploy applications to OpenShift. Click `All Services` as shown below.
+You will see a screen where you have multiple options to deploy applications to OpenShift. Click **All Services** as shown below.
 
  <br/>
 
-![Service Catalog](img/parksmap-all-services-new.png)  
+![Service Catalog](img/parksmap-all-servces-new.png)  
 
  <br/>
 
 We will be using `Templates` to deploy the application components. A template describes a set of objects that can be parameterised and processed to produce a list of objects for creation by OpenShift Container Platform. A template can be processed to create anything you have permission to create within a project, for example services, build configurations, and deployment configurations. A template can also define a set of labels to apply to every object defined in the template.
 
-You can create a list of objects from a template using the CLI or, if a template has been uploaded to your project or the global template library, using the web console. In the `Search` text box, enter *parksmap* to find the application template that we've already pre-loaded for you: 
+You can create a list of objects from a template using the CLI or, if a template has been uploaded to your project or the global template library, using the web console. In the `Search` text box, enter **parksmap** to find the application template that we've already pre-loaded for you: 
 
  <br/>
 
-![Search Template](img/parksmap-search-template.png)  
+![Search Template](img/parksmap-search-template-new.png)  
 
  <br/>
 
 ### 5. Instantiate the Application Template
 
-Then click on the `Parksmap` template to open the popup menu and then click on the `Instantiate Template` button as shown below.
-
- <br/>
-
-![Instantiate Template](img/parksmap-instantiate-template.png)  
-
- <br/>
-
-This will open a dialog that will *allow* you to configure the template. This template allows you to configure the following parameters:
+Then click on the **Parksmap** template to open the popup menu and then click on the **Instantiate Template** button. This will open a dialog that will *allow* you to configure the following parameters:
 
 - Parksmap Web Application Name
 - Mlbparks Application Name
@@ -91,11 +79,11 @@ This will open a dialog that will *allow* you to configure the template. This te
 - Nationalparks MongoDB Application Name
  <br/>
 
-![Configure Template](img/parksmap-application-template.png)  
+![Configure Template](img/parksmap-application-template-new.png)  
 
  <br/>
 
-Next click the blue *Create* button **without changing default parameters**. You will be directed to the *Topology* page, where you should see the visualization for the `parksmap` deployment config in the `workshop` application. OpenShift now creates all the Kubernetes resources to deploy the application, including *Deployment*, *Service*, and *Route*.
+Next click the blue **Create** button **without changing default parameters**. You will be directed to the **Topology** page, where you should see the visualization for the `parksmap` deployment config in the `workshop` application. OpenShift now creates all the Kubernetes resources to deploy the application, including *Deployment*, *Service*, and *Route*.
 
 
 ### 6. Check the Application
@@ -105,11 +93,11 @@ These few steps are the only ones you need to run to all 3 application component
 Your screen will end up looking something like this:
  <br/> 
 
-![Configure Template](img/parksmap-topology-1.png)   
+![Configure Template](img/parksmap-topology-1-new.png)   
 
  <br/>
 
-This is the *Topology* page, where you should see the visualisation for the `parksmap` ,`nationalparks`  and `mlbparks` deployments in the `workshop` application.
+This is the **Topology** page, where you should see the visualisation for the `parksmap` ,`nationalparks`  and `mlbparks` deployments in the `workshop` application.
 
 
 ### 7. Access the Application
@@ -118,15 +106,11 @@ If you click on the `parksmap` entry in the Topology view, you will see some inf
 
  <br/>
 
-![Details Tab image](img/parksmap-topology-route.png)
+![Details Tab image](img/parksmap-topology-route-new.png)
 
  <br/>
 
-On the "**Resources**" tab, you will see that there is a single *Route* which allows external access to the `parksmap` application. While the *Services* panel provide internal abstraction and load balancing information within the OpenShift environment. The way that external clients are able to access applications running in OpenShift is through the OpenShift routing layer. And the data object behind that is a *Route*. Also note that there is a decorator icon on the `parksmap` visualisation now. If you click that, it will open the URL for your *Route* in a browser:
-
-![parksmap-decorator](img/parksmap-decorator.png) 
-
-This application is now available at the URL shown in the Developer Perspective. Click the link and you will see the following:
+On the "**Resources**" tab, you will see that there is a single *Route* which allows external access to the `parksmap` application. While the *Services* panel provide internal abstraction and load balancing information within the OpenShift environment. The way that external clients are able to access applications running in OpenShift is through the OpenShift routing layer. And the data object behind that is a *Route*. Also note that there is a decorator icon showing `OpenURL` on the `parksmap` visualisation now. If you click that, it will open the URL for your *Route* in a browser:
 
  <br/>
 
