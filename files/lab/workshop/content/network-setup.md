@@ -11,7 +11,7 @@ The first step is to use the new Kubernetes NetworkManager state configuration t
 oc get nns/ocp4-worker1.aio.example.com -o yaml
 ```
 
-This will display the NodeNetworkState in yaml format
+This will display the NodeNetworkState in yaml format:
 
 ~~~yaml
 apiVersion: nmstate.io/v1beta1
@@ -124,7 +124,7 @@ spec:
 EOF
 ```
 
-Check the output
+Check the output:
 
 ~~~bash
 nodenetworkconfigurationpolicy.nmstate.io/br1-enp3s0-policy-workers created
