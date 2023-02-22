@@ -114,8 +114,8 @@ none>           <none>
 
 We can also check the *pod* for the networks-status, showing the same IP address. Remember to change the pod name to reflect your environment:
 
-```copy
-$ oc describe pod/virt-launcher-fc34-podnet-cxztw | grep -A 9 networks-status
+```copy-and-edit
+oc describe pod/virt-launcher-fc34-podnet-cxztw | grep -A 9 networks-status
 ```
 
 ~~~bash
@@ -134,7 +134,7 @@ $ oc describe pod/virt-launcher-fc34-podnet-cxztw | grep -A 9 networks-status
 As this lab guide is running within a pod itself and being hosted within the same cluster, you should be able to ping and connect into this VM directly from the terminal window on this IP, adjust to suit your config:
 
 
-```copy
+```copy-and-edit
 ping -c4 10.128.2.210
 ```
 
@@ -155,12 +155,17 @@ rtt min/avg/max/mdev = 1.692/1.692/1.692/0.000 ms
 
 You can also SSH to the machine (password is *%bastion-password%*):
 
-```copy
-$ ssh root@10.129.2.210
+```copy-and-edit
+ssh root@10.129.2.210
 ```
 
 Once in, take a look around and view the networking configuration that the guest sees:
 
+```execute-1
+ip a s eth0
+```
+
+The output should be similar to:
 ~~~bash
 [root@fc34-podnet ~]# ip a s eth0
 2: eth0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1450 qdisc fq_codel state UP group default qlen 1000
@@ -169,7 +174,6 @@ Once in, take a look around and view the networking configuration that the guest
        valid_lft 86309257sec preferred_lft 86309257sec
     inet6 fe80::b1:ceff:fe00:5/64 scope link
        valid_lft forever preferred_lft forever
-
 ~~~
 
 *Wait*, why is this IP address **10.0.2.2** inside of the guest?! Well, in OpenShift Virtualization, every VM has the "same IP" inside the guest, and the hypervisor is bridging (**masquerading**) the pod network into the guest via a tap device. So don't be alarmed when you see the IP address being different here.
@@ -194,8 +198,8 @@ system:serviceaccount:workbook:cnv
 
 Now if we curl the IP address on the pod network (making sure you change this IP for the one that your VM is using on the pod network, **not** **10.0.2.2**.):
 
-~~~bash
-$ curl http://10.129.2.210
+~~~copy-and-edit
+curl http://10.129.2.210
 ~~~
 
 Which should show the following:
@@ -203,7 +207,7 @@ Which should show the following:
 ~~~
 Server address: 10.0.2.2:80
 Server name: fc34-podnet
-Date: 06/Dec/2021:13:06:04 +0000
+Date: 22/Feb/2023:13:06:04 +0000
 URI: /
 Request ID: ae6332e46227c84fe604b6f5c9ec0822
 ~~~
@@ -268,7 +272,7 @@ fc34-service   fc34-service-default.apps.%cluster_subdomain%        fc34-service
 
 You can now visit the endpoint at [https://fc34-service-default.%cluster_subdomain%/](https://fc34-service-default.%cluster_subdomain%/) in a new browser tab and find the NGINX server from your Fedora based VM - you should see the same content that we curl'd in a previous step, just now it's exposed on the internet:
 
-<img src="img/masq-https.png"/>
+<img src="img/masq-https-new.png"/>
 
 > **NOTE**: If you get an "Application is not available" message, make sure that you're accessing the route with **https** - the router performs TLS termination for us, and therefore there's not actually anything listening on port 80 on the outside world, it just forwards 443 (OpenShift ingress) -> 80 (pod network).
 
