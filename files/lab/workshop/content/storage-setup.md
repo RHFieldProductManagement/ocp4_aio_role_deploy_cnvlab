@@ -32,7 +32,7 @@ odf-csi-addons-operator.v4.11.5   CSI Addons                    4.11.5     odf-c
 odf-operator.v4.11.5              OpenShift Data Foundation     4.11.5     odf-operator.v4.11.4              Succeeded
 ~~~
 
-We're going to use the already-deployed OCS/ODF based shared storage for the majority of the tasks, and depending on how much time you have left there's a bonus lab section at the end that sets up `hostpath` storage which uses the hypervisor's local disk(s), which can be useful when there's plenty of fast storage available to the host.
+We're going to use the already-deployed OCS/ODF based shared storage for the majority of the tasks, but there are some other alternatives like `hostpath` storage that uses the hypervisor's local disk(s), which can be useful when there's plenty of fast storage available to the host.
 
 In the next few steps we're going to be creating a storage volume for a virtual machine that we'll create in a later lab section, and for this we'll pull in the contents of an existing disk image, so there's an operating system for our virtual machine to boot up. First, make sure you're in the default project:
 
