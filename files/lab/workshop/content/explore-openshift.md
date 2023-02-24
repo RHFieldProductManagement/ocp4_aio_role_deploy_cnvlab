@@ -22,39 +22,6 @@ With the Web Console provided in this lab environment, we will be able to execut
 
 To do so, simply open a new window/tab in the browser you are using for this lab and navigate to this link: %cnvlab-console-url%. To login to the console, you will need to type "**kubeadmin**" (the OpenShift administrator user) as the user and paste its password: %cnvlab-kubeadmin-password%. 
 
-**Entirely Optional**: However, if you want, you can get the *kubeadmin-password* from the OpenShift installation directory on the server in which the cluster was installed from, or in our case the "bastion" node. Let's jump over to that machine to get it.
-
-From within this lab guide, SSH to the bastion node:
-
-```execute-1
-ssh %bastion-username%@%bastion-host%
-```
-
-When you see the prompt, if required, agree to the SSH certificates by typing "yes", and then enter the bastion password: %cnvlab-bastion-password%. Then you can execute the following command to get the kubeadmin password:
-
-```execute-1
-echo $(cat %kubeadmin-password-file%)
-```
-> **NOTE**: As you can see, it is the same as the one we have provided above. 
-
-Note the password (or copy it) and exit the ssh session:
-
-```execute-1
-exit
-```
-
-> **NOTE**: Make sure that you exit from this session before proceeding!
-
-```execute-1
-oc whoami
-```
-The above output should show "**system:serviceaccount:workbook:cnv**", if it doesn't or it shows "**system:admin**" you've not yet disconnected from the session.
-
-In the new Web Console tab that you've opened up you should be presented with the OpenShift login screen, enter the following credentials:
-
-- Username: *kubeadmin*
-- Password: %cnvlab-kubeadmin-password% (the password you previously copied)
-
 The first time you access the web console, you will most likely be in the *Administrator* perspective. At the top of the left navigation menu, you can toggle between the Administrator perspective and the Developer perspective.
 
 <img  border="1" src="img/explore-dev-view-new.png"/>
