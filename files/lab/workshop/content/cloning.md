@@ -349,6 +349,12 @@ Then enable nginx service:
 systemctl daemon-reload && systemctl enable --now nginx
 ```
 
+Which should show:
+
+~~~bash
+Created symlink /etc/systemd/system/multi-user.target.wants/nginx.service → /etc/systemd/system/nginx.service.
+~~~
+
 Check nginx service status:
 
 ```execute-1
@@ -466,18 +472,15 @@ datavolume.cdi.kubevirt.io/fc34-clone created
 
 Usually, a clone goes through a number of stages, and you can watch the progress through `CloneScheduled` and `CloneInProgress` phases. However in our case we're using OpenShift Container Storage which makes an instant clone of a volume within the storage platform and doesn't require this process. 
 
-You'll be able to view the status of the clone and its `PHASE` as "**Succeeded**". We are also able to view all PVCs including the new clone:
+You'll be able to view the status of the new PVC:
 
 ```execute-1
-oc get dv/fc34-clone pvc/fc34-clone
+oc get pvc/fc34-clone
 ```
 
 This should show both objects:
 
 ~~~bash
-NAME         PHASE       PROGRESS   RESTARTS   AGE
-fc34-clone   Succeeded                         4m
-
 NAME            STATUS   VOLUME                                     CAPACITY   ACCESS MODES   STORAGECLASS                  AGE
 fc34-clone      Bound    pvc-3c3943f9-0a5c-4ce9-a913-782f8754f418   40Gi       RWX            ocs-storagecluster-ceph-rbd   83s
 ~~~
@@ -575,16 +578,16 @@ NAME         AGE   PHASE     IP               NODENAME                       REA
 fc34-clone   88s   Running   192.168.123.66   ocp4-worker2.aio.example.com   True
 ~~~
 
-This machine will also be visible from the OpenShift Virtualization tab. Switch to the **full OpenShift console** (%cnvlab-console-url%). There, you can login using the "**root**" user with the password you've set earlier, by going into the "**Virtualization**" → "**Virtual Machines**" → "**fc34-clone**" → "**Console**", if you want to try:
+This machine will also be visible from the OpenShift Virtualization tab. Switch to the **full OpenShift console** (%cnvlab-console-url%). In case you are not logged in, use the *kubeadmin* user and the password: %cnvlab-kubeadmin-password%. Once logged in, navigate to "**Virtualization**" → "**Virtual Machines**" → "**fc34-clone**" → "**Console**". There, you can login using the "**root**" user with the password you've set earlier:
 
-<img src="img/fc31-clone-console.png"/>
+<img src="img/fc31-clone-console-new.png"/>
 
 ### Test the clone
 
 Like before, we should be able to just directly connect to the VM on port 80 via `curl` and view our simple NGINX based application responding. Let's try it! Remember to use to the IP address from **your** environment as the example below may be different:
 
 ~~~copy
-$ curl http://192.168.123.66
+curl http://192.168.123.66
 ~~~
 
 Which should show similar to the following, if our clone was successful:
@@ -600,24 +603,23 @@ Request ID: 30d16f4250df0d0d82ec2af2ebb60728
 Our VM was cloned! At least the backend storage volume was cloned and we created a new virtual machine from it. Now you're probably thinking "wow, that was a lot of work just to clone a VM", and you'd be right! There's a much more simple workflow via the UI, and one that copies over all of the same configuration without us having to define a new VM ourselves. Let's first delete our clone, and then we'll move onto re-cloning the original via the UI:
 
 ```execute-1
-oc delete vm/fc34-clone dv/fc34-clone pvc/fc34-clone
+oc delete vm/fc34-clone pvc/fc34-clone
 ```
 
 This should delete all objects at the same time:
 
 ~~~bash
 virtualmachine.kubevirt.io "fc34-clone" deleted
-datavolume.cdi.kubevirt.io "fc34-clone" deleted
 persistentvolumeclaim "fc34-clone" deleted
 ~~~
 
-Now, if we navigate to the OpenShift Console, and ensure that we're in the list of **Virtual Machines** by selecting "**Virtualization**", we should see our "*fc34-original*" VM as stopped:
+Now, if we navigate to the OpenShift Console again, and ensure that we're in the list of **Virtual Machines** by selecting "**Virtualization**", we should see our "*fc34-original*" VM as stopped:
 
-<img src="img/vm-stopped.png"/>
+<img src="img/vm-stopped-new.png"/>
 
 Select "*fc34-original*" and then from the "**Actions**" drop-down on the right hand side, select "**Clone**". This will bring up a new window where we can confirm our requirements:
 
-<img src="img/clone-vm.png"/>
+<img src="img/clone-vm-new.png"/>
 
 We'll leave the defaults here, but make sure to select "**Start virtual machine on clone**" as this will ensure that our freshly cloned VM is automatically started for us. When you're ready, select the blue "**Clone Virtual Machine**" button at the bottom; this will create an identical virtual machine for us, just with a new name, "*fc34-original-clone*".
 
@@ -642,7 +644,7 @@ Let's check our VMI list:
 oc get vmi
 ```
 
-Here our running VM is showing with our new IP address, in the example case it's "*192.168.123.71*":
+Here our running VM is showing with our new IP address, in the example case it's "*192.168.123.66*":
 
 ~~~bash
 NAME                  AGE   PHASE     IP               NODENAME                       READY
@@ -652,7 +654,7 @@ fc34-original-clone   89s   Running   192.168.123.66   ocp4-worker3.aio.example.
 Like before, we should be able to confirm that it really is our clone:
 
 ~~~copy
-$ curl http://192.168.123.66
+curl http://192.168.123.66
 ~~~
 
 Which should show something similar to this:
@@ -660,7 +662,7 @@ Which should show something similar to this:
 ~~~bash
 Server address: 192.168.123.66:80
 Server name: fedora
-Date: 25/Nov/2021:16:26:05 +0000
+Date: 22/Feb/2023:17:25:27 +0000
 URI: /
 Request ID: a966b369edd1941e931d5caddcb099df
 ~~~
