@@ -30,7 +30,7 @@
   git:
     repo: "https://github.com/RHFieldProductManagement/ocp4_aio_role_deploy_cnvlab.git"
     dest: "/root/cnvlab"
-    version: "v0.0.14"
+    version: "v0.0.15"
 
 - name: Deploy Workbook Instance for CNV Labs
   block:
@@ -70,10 +70,17 @@
     delay: 30
     until: build_success is not failed
 
+  - name: Templating workshop vars
+    template:
+      src: "./files/workshop-vars.json.j2"
+      dest: "/root/cnvlab/workshop-vars.json"
+      owner: "root"
+      mode: 0777
+
   - name: Configure and deploy the deploy template
     shell: >-
       oc -n workbook process
-      -f /root/cnvlab/files/lab/deploy-template.yaml -p NAME=cnv -p IMAGE_STREAM_NAME=cnv
+      -f /root/cnvlab/files/lab/deploy-template.yaml -p NAME=cnv -p IMAGE_STREAM_NAME=cnv -p WORKSHOP_VARS="$(cat /root/cnvlab/workshop-vars.json)"
       | oc -n workbook apply -f -
     register: deploy_success
     retries: 3
