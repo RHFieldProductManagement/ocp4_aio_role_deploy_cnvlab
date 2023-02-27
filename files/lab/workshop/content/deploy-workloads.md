@@ -2,7 +2,7 @@ Now let's bring all these configurations together and actually launch some workl
 
 > **NOTE**: We're calling most of the resources "RHEL 8" here, regardless of whether you're actually using CentOS 8 as your base image - it won't impact anything for our purposes here.
 
-The virtual machine we're going to create will have the following properties-
+The virtual machine we're going to create will have the following properties:
 
 * We are going to create a machine called `rhel8-server-ocs`.
 * We'll utilise the Persistent Volume Claim (PVC) called `rhel8-ocs` that was created using the CDI utility with a CentOS 8 base image.
@@ -118,59 +118,66 @@ Check whether `virt-launcher` is running:
 
 ~~~bash
 NAME                                   READY   STATUS    RESTARTS   AGE
-virt-launcher-rhel8-server-ocs-z5rmr   1/1     Running   0          3m5s
+virt-launcher-rhel8-server-ocs-7b97m   1/1     Running   0          110s
 ~~~
 
 Then execute following to describe the details (if you copy from the lab remember to change the pod name to reflect your pod shown in the terminal):
 
 ```copy
-oc describe pod virt-launcher-rhel8-server-ocs-z5rmr
+oc describe pod virt-launcher-rhel8-server-ocs-7b97m
 ```
 
 This command will list pod details in yaml format:
 
 ~~~yaml
-Name:         virt-launcher-rhel8-server-ocs-z5rmr
-Namespace:    default
-Priority:     0
-Node:         ocp4-worker3.%node-network-domain%/192.168.123.106
-Start Time:   Mon, 08 Nov 2021 13:47:23 +0000
-Labels:       kubevirt.io=virt-launcher
-              kubevirt.io/created-by=8d58ce9f-61bd-4c5f-82d1-15dbc9c3897e
-              vm.kubevirt.io/name=rhel8-server-ocs
-Annotations:  k8s.v1.cni.cncf.io/network-status:
-                [{
-                    "name": "openshift-sdn",
-                    "interface": "eth0",
-                    "ips": [
-                        "10.129.2.16"
-                    ],
-                    "default": true,
-                    "dns": {}
-                },{
-                    "name": "default/tuning-bridge-fixed",
-                    "interface": "net1",
-                    "mac": "02:7c:a4:00:00:00",
-                    "dns": {}
-                }]
-              k8s.v1.cni.cncf.io/networks: [{"interface":"net1","mac":"02:7c:a4:00:00:00","name":"tuning-bridge-fixed","namespace":"default"}]
-              k8s.v1.cni.cncf.io/networks-status:
-                [{
-                    "name": "openshift-sdn",
-                    "interface": "eth0",
-                    "ips": [
-                        "10.129.2.16"
-                    ],
-                    "default": true,
-                    "dns": {}
-                },{
-                    "name": "default/tuning-bridge-fixed",
-                    "interface": "net1",
-                    "mac": "02:7c:a4:00:00:00",
-                    "dns": {}
-                }]
-              kubevirt.io/domain: rhel8-server-ocs
-Status:       Running
+Name:             virt-launcher-rhel8-server-ocs-7b97m
+Namespace:        default
+Priority:         0
+Service Account:  default
+Node:             ocp4-worker3.%node-network-domain%/192.168.123.106
+Start Time:       Thu, 16 Feb 2023 20:44:17 +0000
+Labels:           kubevirt.io=virt-launcher
+                  kubevirt.io/created-by=b0b13a7d-239d-4b2c-b3b2-9e455c3d8a6e
+                  vm.kubevirt.io/name=rhel8-server-ocs
+Annotations:      k8s.v1.cni.cncf.io/network-status:
+                    [{
+                        "name": "openshift-sdn",
+                        "interface": "eth0",
+                        "ips": [
+                            "10.131.0.213"
+                        ],
+                        "default": true,
+                        "dns": {}
+                    },{
+                        "name": "default/tuning-bridge-fixed",
+                        "interface": "net1",
+                        "mac": "02:e3:17:00:00:00",
+                        "dns": {}
+                    }]
+                  k8s.v1.cni.cncf.io/networks: [{"interface":"net1","mac":"02:e3:17:00:00:00","name":"tuning-bridge-fixed","namespace":"default"}]
+                  k8s.v1.cni.cncf.io/networks-status:
+                    [{
+                        "name": "openshift-sdn",
+                        "interface": "eth0",
+                        "ips": [
+                            "10.131.0.213"
+                        ],
+                        "default": true,
+                        "dns": {}
+                    },{
+                        "name": "default/tuning-bridge-fixed",
+                        "interface": "net1",
+                        "mac": "02:e3:17:00:00:00",
+                        "dns": {}
+                    }]
+                  kubectl.kubernetes.io/default-container: compute
+                  kubevirt.io/domain: rhel8-server-ocs
+                  kubevirt.io/migrationTransportUnix: true
+                  post.hook.backup.velero.io/command: ["/usr/bin/virt-freezer", "--unfreeze", "--name", "rhel8-server-ocs", "--namespace", "default"]
+                  post.hook.backup.velero.io/container: compute
+                  pre.hook.backup.velero.io/command: ["/usr/bin/virt-freezer", "--freeze", "--name", "rhel8-server-ocs", "--namespace", "default"]
+                  pre.hook.backup.velero.io/container: compute
+Status:           Running
 (...)
 ~~~
 
@@ -180,17 +187,17 @@ When you look into this launcher pod, you'll see that it has the same libvirt fu
 oc get pods
 ```
 
-See the pod is running
+See the pod is running:
 
 ~~~bash
 NAME                                   READY   STATUS    RESTARTS   AGE
-virt-launcher-rhel8-server-ocs-z5rmr   1/1     Running   0          30h
+virt-launcher-rhel8-server-ocs-7b97m   1/1     Running   0          5m49s
 ~~~
 
-Execute following to open a bash shell in the pod (if you copy from the lab remember to chnage the pod name to reflect your pod shown in the terminal):
+Execute the following to open a bash shell in the pod (if you copy from the lab remember to change the pod name to reflect your pod shown in the terminal):
 
 ```copy
-oc exec -it virt-launcher-rhel8-server-ocs-z5rmr bash
+oc exec -it virt-launcher-rhel8-server-ocs-7b97m bash
 ```
 And then you can run the usual virsh commands:
 
@@ -199,7 +206,7 @@ And then you can run the usual virsh commands:
 virsh list --all
 ```
 
-Verify the process is running
+Verify the process is running:
 
 ~~~bash
  Id   Name                       State
@@ -231,8 +238,8 @@ This command will list information about specified block device:
 
 ~~~bash
 NAME     MAJ:MIN RM  SIZE RO TYPE MOUNTPOINT
-rbd1     251:16   0   40G  0 disk 
-└─rbd1p1 251:17   0  7.8G  0 part
+rbd0     251:0    0   40G  0 disk 
+└─rbd0p1 251:1    0  7.8G  0 part
 ~~~
 
 And for networking:
@@ -246,7 +253,7 @@ This command will list information about network interfaces:
 ~~~bash
  Interface   Type     Source     Model   MAC
 ------------------------------------------------------------
- tap1        ethernet   -        e1000   02:7c:a4:00:00:00
+ tap1        ethernet   -        e1000   02:e3:17:00:00:00
 ~~~
 
 But let's go a little deeper with the following command:
@@ -259,7 +266,7 @@ If we look at tap1 we'll see that it's part of a bridge called "*k6t-net1*":
 
 ~~~bash
 6: tap1: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc fq_codel master k6t-net1 state UP mode DEFAULT group default qlen 1000
-    link/ether ca:e9:2f:35:2c:a1 brd ff:ff:ff:ff:ff:ff
+    link/ether aa:d2:cd:df:26:72 brd ff:ff:ff:ff:ff:ff
 ~~~
 
 Let's look more deeply at that bridge:
@@ -271,17 +278,17 @@ ip link | grep -A2 k6t-net1
  You should see the details:
 
 ~~~bash
-4: net1@if29: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue master k6t-net1 state UP mode DEFAULT group default 
-    link/ether 02:7c:a4:12:0d:6f brd ff:ff:ff:ff:ff:ff link-netnsid 0
-5: k6t-net1: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue state UP mode DEFAULT group default 
-    link/ether 02:7c:a4:12:0d:6f brd ff:ff:ff:ff:ff:ff
+4: net1@if222: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue master k6t-net1 state UP mode DEFAULT group default
+    link/ether ae:dc:76:11:72:58 brd ff:ff:ff:ff:ff:ff link-netnsid 0
+5: k6t-net1: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue state UP mode DEFAULT group default
+    link/ether aa:d2:cd:df:26:72 brd ff:ff:ff:ff:ff:ff
 6: tap1: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc fq_codel master k6t-net1 state UP mode DEFAULT group default qlen 1000
-    link/ether ca:e9:2f:35:2c:a1 brd ff:ff:ff:ff:ff:ff
+    link/ether aa:d2:cd:df:26:72 brd ff:ff:ff:ff:ff:ff
 ~~~
 
-In this example that bridge device has an interface called **"*net1@if29*"** (yours may be slightly different - **note it down now for the next few steps**):
+In this example that bridge device has an interface called *"**net1@if222**"* (yours may be slightly different - **note it down now for the next few steps**).
 
-That's showing that there's a bridge inside of the pod called "**k6t-net1**" with both the **"tap1"** (the device attached to the VM), and the **"net1@if29"** device being how the packets get out onto the bridge on the hypervisor (more shortly):
+That's showing that there's a bridge inside of the pod called "**k6t-net1**" with both the **"tap1"** (the device attached to the VM), and the "**net1@if222**" device being how the packets get out onto the bridge on the hypervisor (more shortly):
 
 ```execute-1
 virsh dumpxml default_rhel8-server-ocs | grep -A8 "interface type"
@@ -291,7 +298,7 @@ This will show interface information in XML format:
 
 ~~~xml
     <interface type='ethernet'>
-      <mac address='02:7c:a4:00:00:00'/>
+      <mac address='02:e3:17:00:00:00'/>
       <target dev='tap1' managed='no'/>
       <model type='e1000'/>
       <mtu size='1500'/>
@@ -321,7 +328,7 @@ system:serviceaccount:workbook:cnv
 
 Now, how is this plugged on the underlying host? 
 
-The key to this is the **"net1@if29"** device (it may be slightly different in your environment); this is one half of a **"veth pair"** that allows network traffic to be bridged between network namespaces, which is exactly how containers segregate their network traffic between each other on a container host. In this example the **"cnv-bridge"** is being used to connect the bridge for the virtual machine (**"k6t-net1"**) out to the bridge on the underlying host (**"br1"**), via a veth pair. The other side of the veth pair can be discovered as follows. First find the host of our virtual machine:
+The key to this is the "**net1@if222**" device (it may be slightly different in your environment); this is one half of a "**veth pair**" that allows network traffic to be bridged between network namespaces, which is exactly how containers segregate their network traffic between each other on a container host. In this example the "**cnv-bridge**" is being used to connect the bridge for the virtual machine ("**k6t-net1**") out to the bridge on the underlying host ("**br1**"), via a veth pair. The other side of the veth pair can be discovered as follows. First find the host of our virtual machine:
 
 ```execute-1
 oc get vmi
@@ -331,14 +338,14 @@ Your host is listed under `NODENAME` and may be different than the one below:
 
 ~~~bash
 NAME               AGE   PHASE     IP               NODENAME                       READY
-rhel8-server-ocs   30h   Running   192.168.123.64   ocp4-worker3.%node-network-domain%   True
+rhel8-server-ocs   17m   Running   192.168.123.64   ocp4-worker3.%node-network-domain%   True
 ~~~
 
-Then connect to it and track back the link - here you'll need to adjust the commands below - if your veth pair on the pod side was **"net1@if29"** (yours may be different, if it use the value we asked you to record above) then the **ifindex** in the command below will be **"29"**, if it was **"net1@if5"** then **"ifindex"** will be **"5"** and if it was **net1@if109** it's "**109**", etc.
+Then connect to it and track back the link - here you'll need to adjust the commands below - if your veth pair on the pod side was "**net1@if222**" (yours may be different, if it use the value we asked you to record above) then the **ifindex** in the command below will be "**222**", if it was "**net1@if5**" then **ifindex** will be "**5**" and if it was **net1@if109** it's "**109**", etc.
 
 To do this we need to get to the worker running our virtual machine, and we can use the `oc debug node` function to do this (adjust to suit the host of your virtual machine from the previous command):
 
-```execute-1
+```copy-and-edit
 oc debug node/ocp4-worker3.%node-network-domain%
 ```
 
@@ -359,8 +366,8 @@ chroot /host
 
 Then execute the following, **but remember to replace the ifindex with the number you recorded above**:
 
-```
-export ifindex=29
+```copy-and-edit
+export ifindex=222
 ```
 
 After that check netns and find the veth name:
@@ -373,21 +380,21 @@ ip -o link | grep ^$ifindex: | sed -n -e 's/.*\(veth[[:alnum:]]*@if[[:digit:]]*\
 Which returns something like:
 
 ~~~bash
-veth9d567769@if4
+vethf2dafc08@if4
 ~~~
 
-Therefore, the other side of the link, in the example above, is **"veth9d567769@if4"**. Run the following command replacing it with the veth value you found:
+Therefore, the other side of the link, in the example above, is "**vethf2dafc08@if4**". Run the following command replacing it with the veth value you found:
 
-```copy
-ip link show veth9d567769  
+```copy-and-edit
+ip link show vethf2dafc08
 ```
 
 You should see that it is attached to **"br1"** as in this example:
 
 ~~~bash
-29: veth9d567769@if4: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue master br1 state UP mode DEFAULT group default 
-Error: Peer netns reference is invalid.
-    link/ether 16:6b:ba:90:da:87 brd ff:ff:ff:ff:ff:ff link-netns c3dde5db-32f3-47a7-b7a8-3705dd17f8e1
+222: vethf2dafc08@if4: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue master br1 state UP mode DE
+FAULT group default
+    link/ether 3a:28:a4:40:ab:79 brd ff:ff:ff:ff:ff:ff link-netns dbe4ccb3-fcdf-4591-a175-1abb9315f9e5
 ~~~
 
 Note the "**master br1**" in the above output.

@@ -11,27 +11,30 @@ The first step is to use the new Kubernetes NetworkManager state configuration t
 oc get nns/ocp4-worker1.aio.example.com -o yaml
 ```
 
-This will display the NodeNetworkState in yaml format
+This will display the NodeNetworkState in yaml format:
 
 ~~~yaml
-apiVersion: nmstate.io/v1
+apiVersion: nmstate.io/v1beta1
 kind: NodeNetworkState
 metadata:
-  creationTimestamp: "2021-11-08T12:11:09Z"
+  creationTimestamp: "2023-02-16T16:46:29Z"
   generation: 1
-  labels:
-    app.kubernetes.io/component: network
-    app.kubernetes.io/managed-by: hco-operator
-    app.kubernetes.io/part-of: hyperconverged-cluster
-    app.kubernetes.io/version: v4.9.3
   name: ocp4-worker1.%node-network-domain%
 (...)
-    - ipv4:
+    - accept-all-mac-addresses: false
+      ethernet:
+        auto-negotiation: false
+      ethtool:
+        feature:
+          tx-generic-segmentation: true
+          tx-tcp-segmentation: true
+        ring:
+          rx: 256
+          tx: 256
+      ipv4:
         address:
         - ip: 192.168.123.104
           prefix-length: 24
-        - ip: 192.168.123.11
-          prefix-length: 32
         auto-dns: true
         auto-gateway: true
         auto-route-table-id: 0
@@ -39,6 +42,7 @@ metadata:
         dhcp: true
         enabled: true
       ipv6:
+        addr-gen-mode: eui64
         address:
         - ip: fe80::5054:ff:fe00:4
           prefix-length: 64
@@ -56,7 +60,17 @@ metadata:
       name: enp2s0
       state: up
       type: ethernet
-    - ipv4:
+    - accept-all-mac-addresses: false
+      ethernet:
+        auto-negotiation: false
+      ethtool:
+        feature:
+          tx-generic-segmentation: true
+          tx-tcp-segmentation: true
+        ring:
+          rx: 256
+          tx: 256
+      ipv4:
         address: []
         dhcp: false
         enabled: false
@@ -110,7 +124,7 @@ spec:
 EOF
 ```
 
-Check the output
+Check the output:
 
 ~~~bash
 nodenetworkconfigurationpolicy.nmstate.io/br1-enp3s0-policy-workers created
@@ -125,10 +139,10 @@ oc get nnce
 Check the status (it may take a few checks before all show as "**Available**", i.e. applied the requested configuration, it will go from "Pending" --> "Progressing" --> "Available"):
 
 ~~~bash
-NAME                                                     STATUS
-ocp4-worker1.%node-network-domain%.br1-enp3s0-policy-workers   Available
-ocp4-worker2.%node-network-domain%.br1-enp3s0-policy-workers   Available
-ocp4-worker3.%node-network-domain%.br1-enp3s0-policy-workers   Available
+NAME                                                           STATUS      REASON
+ocp4-worker1.%node-network-domain%.br1-enp3s0-policy-workers   Available   SuccessfullyConfigured
+ocp4-worker2.%node-network-domain%.br1-enp3s0-policy-workers   Available   SuccessfullyConfigured
+ocp4-worker3.%node-network-domain%.br1-enp3s0-policy-workers   Available   SuccessfullyConfigured
 ~~~
 
 You can also request the status of the overall policy:
@@ -140,8 +154,8 @@ oc get nncp
 Check the result, again we're expecting to see "**Available**":
 
 ~~~bash
-NAME                        STATUS
-br1-enp3s0-policy-workers   Available
+NAME                        STATUS      REASON
+br1-enp3s0-policy-workers   Available   SuccessfullyConfigured
 ~~~
 
 We can also dive into the `NetworkNodeConfigurationPolicy` (**nncp**) a little further:
@@ -160,12 +174,12 @@ metadata:
   annotations:
     kubectl.kubernetes.io/last-applied-configuration: |
       {"apiVersion":"nmstate.io/v1","kind":"NodeNetworkConfigurationPolicy","metadata":{"annotations":{},"name":"br1-enp3s0-policy-workers"},"spec":{"desiredState":{"interfaces":[{"bridge":{"options":{"stp":{"enabled":false}},"port":[{"name":"enp3s0"}]},"description":"Linux bridge with enp3s0 as a port","ipv4":{"enabled":false},"name":"br1","state":"up","type":"linux-bridge"}]},"nodeSelector":{"node-role.kubernetes.io/worker":""}}}
-    nmstate.io/webhook-mutating-timestamp: "1636377787953660263"
-  creationTimestamp: "2021-11-08T13:23:08Z"
+    nmstate.io/webhook-mutating-timestamp: "1676579506531529979"
+  creationTimestamp: "2023-02-16T20:31:46Z"
   generation: 1
   name: br1-enp3s0-policy-workers
-  resourceVersion: "133303"
-  uid: 893f9f6e-c447-44b8-821d-73217341c6d6
+  resourceVersion: "1503181"
+  uid: fff14e27-d550-4309-8150-b49994e1538a
 spec:
   desiredState:
     interfaces:
@@ -185,17 +199,23 @@ spec:
     node-role.kubernetes.io/worker: ""
 status:
   conditions:
-  - lastHearbeatTime: "2021-11-08T13:23:34Z"
-    lastTransitionTime: "2021-11-08T13:23:34Z"
+  - lastHeartbeatTime: "2023-02-16T20:32:13Z"
+    lastTransitionTime: "2023-02-16T20:32:13Z"
     message: 3/3 nodes successfully configured
     reason: SuccessfullyConfigured
     status: "True"
     type: Available
-  - lastHearbeatTime: "2021-11-08T13:23:34Z"
-    lastTransitionTime: "2021-11-08T13:23:34Z"
+  - lastHeartbeatTime: "2023-02-16T20:32:13Z"
+    lastTransitionTime: "2023-02-16T20:32:13Z"
     reason: SuccessfullyConfigured
     status: "False"
     type: Degraded
+  - lastHeartbeatTime: "2023-02-16T20:32:13Z"
+    lastTransitionTime: "2023-02-16T20:32:13Z"
+    reason: ConfigurationProgressing
+    status: "False"
+    type: Progressing
+  lastUnavailableNodeCountUpdate: "2023-02-16T20:32:13Z"
 ~~~
 
 If you'd like to fully verify that this has been successfully configured on the host, we can do that easily via the `oc debug node` command (pick any of your workers):
@@ -300,4 +320,4 @@ networkattachmentdefinition.k8s.cni.cncf.io/tuning-bridge-fixed created
 
 > **NOTE**: The important flags to recognise here are the **type**, being **cnv-bridge** which is a specific implementation that links in-VM interfaces to a counterpart on the underlying host for **full-passthrough** of networking. Also note that there is no **IPAM** listed - we don't want the CNI to manage the network address allocation for us instead the network we want to attach to has DHCP enabled.
 
-That's it! We're good to go, next step is to deploy a virtual machine! Click on "**Deploy Workloads**" to continue with the lab.
+That's it! We're good to go. Next step is to deploy a virtual machine! Click on "**Deploy Workloads**" to continue with the lab.

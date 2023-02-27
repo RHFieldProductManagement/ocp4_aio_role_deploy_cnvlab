@@ -14,23 +14,23 @@ oc get nodes
 You should be able to see the list of nodes as below:
 
 ~~~bash
-NAME                           STATUS   ROLES    AGE   VERSION
-ocp4-master1.aio.example.com   Ready    master   18h   v1.22.3+b93fd35
-ocp4-master2.aio.example.com   Ready    master   18h   v1.22.3+b93fd35
-ocp4-master3.aio.example.com   Ready    master   18h   v1.22.3+b93fd35
-ocp4-worker1.aio.example.com   Ready    worker   18h   v1.22.3+b93fd35
-ocp4-worker2.aio.example.com   Ready    worker   18h   v1.22.3+b93fd35
-ocp4-worker3.aio.example.com   Ready    worker   18h   v1.22.3+b93fd35
+NAME                           STATUS   ROLES                  AGE   VERSION
+ocp4-master1.aio.example.com   Ready    control-plane,master   18h   v1.25.4+77bec7a
+ocp4-master2.aio.example.com   Ready    control-plane,master   18h   v1.25.4+77bec7a
+ocp4-master3.aio.example.com   Ready    control-plane,master   18h   v1.25.4+77bec7a
+ocp4-worker1.aio.example.com   Ready    worker                 18h   v1.25.4+77bec7a
+ocp4-worker2.aio.example.com   Ready    worker                 18h   v1.25.4+77bec7a
+ocp4-worker3.aio.example.com   Ready    worker                 18h   v1.25.4+77bec7a
 ~~~
 
-If you do **NOT** see **three** masters and **three** workers listed in your output, you may need to approve the CSR requests, again, note that <u>you only need to do this if you're missing nodes</u>, but it won't harm to run this regardless:
+If you do **NOT** see **three** masters and **three** workers listed in your output, you may need to approve the CSR requests. Again, note that <u>you only need to do this if you're missing nodes</u>, but it won't harm to run this regardless:
 
 ```execute
 for csr in $(oc get csr | awk '/Pending/ {print $1}'); \
     do oc adm certificate approve $csr; done
 ```
 
-Then if there are Pending ones, you should see an output similar to below:
+If all the nodes are ready, the output will be *No resources found*. Then, if there are Pending ones, you should see an output similar to below:
 ~~~bash
 certificatesigningrequest.certificates.k8s.io/csr-26rcg approved
 certificatesigningrequest.certificates.k8s.io/csr-4k6n8 approved
@@ -41,7 +41,7 @@ certificatesigningrequest.certificates.k8s.io/csr-4k6n8 approved
 >
 > **IMPORTANT**: If you do not have any CSR's to approve and you've still not got six nodes then it's likely that your environment has failed to deploy properly. We're trying to figure out why it very rarely does this. Please delete your environment and attempt another deployment - we apologise!
 
-Next let's validate the version that we've got deployed, and the status of the cluster operators:
+Next, let's validate the version that we've got deployed, and the status of the cluster operators:
 
 ```execute
 oc get clusterversion
@@ -51,10 +51,10 @@ Then you should see the following (your minor version may be different, but shou
 
 ~~~bash
 NAME      VERSION   AVAILABLE   PROGRESSING   SINCE   STATUS
-version   4.12.0     True        False         27m     Cluster version is 4.12.0
+version   4.12.0    True        False         18h     Cluster version is 4.12.0
 ~~~
 
-After that check the cluster operators:
+After that, check the cluster operators:
 
 ```execute
 oc get clusteroperators
@@ -64,17 +64,18 @@ This command will list the all cluster operators, the main components of OpenShi
 
 ~~~bash
 NAME                                       VERSION   AVAILABLE   PROGRESSING   DEGRADED   SINCE   MESSAGE
-authentication                             4.12.0    True        False         False      6h19m
-baremetal                                  4.12.0    True        False         False      6h40m
-cloud-controller-manager                   4.12.0    True        False         False      6h42m
-cloud-credential                           4.12.0    True        False         False      6h54m
-cluster-autoscaler                         4.12.0    True        False         False      6h40m
-config-operator                            4.12.0    True        False         False      6h42m
-console                                    4.12.0    True        False         False      6h23m
-csi-snapshot-controller                    4.12.0    True        False         False      6h41m
-dns                                        4.12.0    True        False         False      6h40m
-etcd                                       4.12.0    True        False         False      6h40m
-image-registry                             4.12.0    True        False         False      6h17m
+authentication                             4.12.0    True        False         False      18h
+baremetal                                  4.12.0    True        False         False      18h
+cloud-controller-manager                   4.12.0    True        False         False      18h
+cloud-credential                           4.12.0    True        False         False      18h
+cluster-autoscaler                         4.12.0    True        False         False      18h
+config-operator                            4.12.0    True        False         False      18h
+console                                    4.12.0    True        False         False      18h
+control-plane-machine-set                  4.12.0    True        False         False      18h
+csi-snapshot-controller                    4.12.0    True        False         False      18h
+dns                                        4.12.0    True        False         False      18h
+etcd                                       4.12.0    True        False         False      18h
+image-registry                             4.12.0    True        False         False      17h
 (...)
 ~~~
 
@@ -176,7 +177,7 @@ Before we start looking at OpenShift Virtualization, let's just clean up the tes
 ```execute
 oc delete project test
 ```
-Then wait for project deletion
+Then, wait for project deletion:
 
 ~~~bash
 project.project.openshift.io "test" deleted
@@ -184,4 +185,4 @@ project.project.openshift.io "test" deleted
 
 
 
-Now we can move onto deploying OpenShift Virtualization...
+Now we can move onto "**Deploying CNV**".
