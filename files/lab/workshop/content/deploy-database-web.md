@@ -61,7 +61,7 @@ NAME                    AGE   STATUS     READY
 mongodb-nationalparks   45s   Running    True
 ~~~
 
-Once the MongoDB Virtual Machine is in a Running state, go back to the **dedicated full Web Console** (%cnvlab-console-url%). Open the *Virtual Machine Console* by switching to the "**Administrator**" perspective in the top left hand corner, and then navigating to "**Virtualization → VirtualMachines**" and selecting "**mongodb-nationalparks**". Once there, select the "**Console**" tab and you should be able to see the virtual machine console. On the login screen, enter the following credentials:
+Once the MongoDB Virtual Machine is in a Running state, go back to the **dedicated full Web Console** (%cnvlab-console-url%). Open the *Virtual Machine Console* by switching to the "**Administrator**" perspective in the top left hand corner, and then navigating to "**Virtualization → VirtualMachines**" and selecting "**mongodb-nationalparks**" (make sure you have selected the 'parksmap-demo' project). Once there, select the "**Console**" tab and you should be able to see the virtual machine console. On the login screen, enter the following credentials:
 
 ~~~bash
 Login: %mongodb-vm-username%
