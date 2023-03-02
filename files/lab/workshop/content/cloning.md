@@ -164,7 +164,7 @@ importer-fc34-original   1/1     Running   0          21s
 
 Follow the importer logs:
 
-```copy
+```execute-1
 oc logs importer-fc34-original -f
 ```
 
@@ -307,7 +307,7 @@ fc34-original   81s   Running   192.168.123.65   ocp4-worker1.aio.example.com   
 
 When you've got an IP address, we should be able to SSH to it from our terminal window, noting you'll need to adapt the address below to match your environment (the password is the one you've set earlier), and your IP address may **not** be the same as the example - adapt for your configuration:
 
-```copy
+```copy-and-edit
 ssh root@192.168.123.65
 ```
 > **NOTE:** It will ask for the root password you set up when we customised the downloaded image. 
@@ -392,12 +392,11 @@ system:serviceaccount:workbook:cnv
 Let's quickly verify that this works as expected. You should be able to navigate directly to the IP address of your machine via `curl`. You may need to adjust the IP to reflect your environment's values.
 
 
-```copy
+```copy-and-edit
 curl http://192.168.123.65
 ```
 
 ~~~bash
-$ curl http://192.168.123.65
 Server address: 192.168.123.65:80
 Server name: fedora
 Date: 22/Feb/2023:16:25:27 +0000
@@ -586,7 +585,7 @@ This machine will also be visible from the OpenShift Virtualization tab. Switch 
 
 Like before, we should be able to just directly connect to the VM on port 80 via `curl` and view our simple NGINX based application responding. Let's try it! Remember to use to the IP address from **your** environment as the example below may be different:
 
-~~~copy
+~~~copy-and-edit
 curl http://192.168.123.66
 ~~~
 
@@ -653,7 +652,7 @@ fc34-original-clone   89s   Running   192.168.123.66   ocp4-worker3.aio.example.
 
 Like before, we should be able to confirm that it really is our clone:
 
-~~~copy
+~~~copy-and-edit
 curl http://192.168.123.66
 ~~~
 
