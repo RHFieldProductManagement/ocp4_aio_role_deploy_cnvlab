@@ -85,11 +85,11 @@ This starts to **schedule** the virtual machine across the available hypervisors
 oc get vm
 ```
 
-This command will list the `VirtualMachine` objects:
+This command will list the `VirtualMachine` objects. It will take a few moments to have our virtual machine up and running. Run again the last command until the 'READY' field reads 'True':
 
 ~~~bash
 NAME               AGE   STATUS     READY
-rhel8-server-ocs   4s    Starting   False
+rhel8-server-ocs   87s   Running    True
 ~~~
 
 Now execute following command to list the *instance* of that virtual machine object:
@@ -123,7 +123,7 @@ virt-launcher-rhel8-server-ocs-7b97m   1/1     Running   0          110s
 
 Then execute following to describe the details (if you copy from the lab remember to change the pod name to reflect your pod shown in the terminal):
 
-```copy
+```copy-and-edit
 oc describe pod virt-launcher-rhel8-server-ocs-7b97m
 ```
 
@@ -196,7 +196,7 @@ virt-launcher-rhel8-server-ocs-7b97m   1/1     Running   0          5m49s
 
 Execute the following to open a bash shell in the pod (if you copy from the lab remember to change the pod name to reflect your pod shown in the terminal):
 
-```copy
+```copy-and-edit
 oc exec -it virt-launcher-rhel8-server-ocs-7b97m bash
 ```
 And then you can run the usual virsh commands:
@@ -286,7 +286,7 @@ ip link | grep -A2 k6t-net1
     link/ether aa:d2:cd:df:26:72 brd ff:ff:ff:ff:ff:ff
 ~~~
 
-In this example that bridge device has an interface called *"**net1@if222**"* (yours may be slightly different - **note it down now for the next few steps**).
+In this example that bridge device has an interface called "**net1@if222**" (yours may be slightly different - **note it down now for the next few steps**).
 
 That's showing that there's a bridge inside of the pod called "**k6t-net1**" with both the **"tap1"** (the device attached to the VM), and the "**net1@if222**" device being how the packets get out onto the bridge on the hypervisor (more shortly):
 

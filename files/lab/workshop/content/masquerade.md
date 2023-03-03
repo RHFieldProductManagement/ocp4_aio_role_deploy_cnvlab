@@ -135,13 +135,12 @@ As this lab guide is running within a pod itself and being hosted within the sam
 
 
 ```copy-and-edit
-ping -c4 10.128.2.210
+ping -c4 10.129.2.210
 ```
 
 Which should return:
 
 ~~~bash
-$ ping -c4 10.129.2.210
 PING 10.129.2.210 (10.129.2.210) 56(84) bytes of data.
 64 bytes from 10.129.2.210: icmp_seq=1 ttl=63 time=1.69 ms
 64 bytes from 10.129.2.210: icmp_seq=2 ttl=63 time=1.69 ms

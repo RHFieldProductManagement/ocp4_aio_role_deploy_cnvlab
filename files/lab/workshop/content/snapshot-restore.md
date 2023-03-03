@@ -124,7 +124,7 @@ In previous exercises in this module, we created and restored a VM snapshot in t
 
 In this exercise, let's create another snapshot of our mongodb database vm, this time by using the cli.
 
-1. List the existing snapshots in the project.
+List the existing snapshots in the project.
 ```execute
 oc get vmsnapshots
 ```
@@ -135,7 +135,7 @@ NAME                          SOURCEKIND       SOURCENAME              PHASE    
 mongodb-nationalparks-snap0   VirtualMachine   mongodb-nationalparks   Succeeded   true         1h            
 ~~~
 
-2. Create the `VirtualMachineSnapshot` resource. The snapshot controller creates a `VirtualMachineSnapshotContent` object, binds it to the `VirtualMachineSnapshot` and updates the **status** and **readyToUse** fields of the VirtualMachineSnapshot object. The name of the new vm snapshot will be `mongodb-nationalparks-snap1` in this example.
+Create the `VirtualMachineSnapshot` resource. The snapshot controller creates a `VirtualMachineSnapshotContent` object, binds it to the `VirtualMachineSnapshot` and updates the **status** and **readyToUse** fields of the VirtualMachineSnapshot object. The name of the new vm snapshot will be `mongodb-nationalparks-snap1` in this example.
 
 ```execute-1
 cat << EOF | oc apply -f -
@@ -158,12 +158,12 @@ Which should then show:
 virtualmachinesnapshot.snapshot.kubevirt.io/mongodb-nationalparks-snap1 created
 ~~~
 
-3. **Optional**: As in the previous exercise, the snapshot creation will take a few seconds in the background, and you can use the wait command and monitor the status of the snapshot, although this may immediately signal that the condition has been met, which is confirmation that the snapshot has been successfully taken.
+**Optional**: As in the previous exercise, the snapshot creation will take a few seconds in the background, and you can use the wait command and monitor the status of the snapshot, although this may immediately signal that the condition has been met, which is confirmation that the snapshot has been successfully taken.
 ```execute
 oc wait vmsnapshot mongodb-nationalparks-snap1 --for condition=Ready
 ```
 
-4. List the existing snapshots in the project again to verify that the new vm snapshot is created successfully:
+List the existing snapshots in the project again to verify that the new vm snapshot is created successfully:
 ```execute
 oc get vmsnapshots
 ```
@@ -175,7 +175,7 @@ mongodb-nationalparks-snap0   VirtualMachine   mongodb-nationalparks   Succeeded
 mongodb-nationalparks-snap1   VirtualMachine   mongodb-nationalparks   Succeeded   true         9s             
 ~~~
 
-5. You can also verify that the `VirtualMachineSnapshot` object is created and bound with `VirtualMachineSnapshotContent` by describing it. The `readyToUse` flag must be set to `true`.
+You can also verify that the `VirtualMachineSnapshot` object is created and bound with `VirtualMachineSnapshotContent` by describing it. The `readyToUse` flag must be set to `true`.
 ```execute
 oc describe vmsnapshot mongodb-nationalparks-snap1
 ```
@@ -267,7 +267,7 @@ Events:
   Normal  SuccessfulVirtualMachineSnapshotContentCreate  4m58s  snapshot-controller  Successfully created VirtualMachineSnapshotContent vmsnapshot-content-f0c977b3-d008-4878-8819-b1acb023fafb
 ~~~
 
-6. `VirtualMachineSnapshotContent` objects represent a provisioned resource on the cluster, a VM snapshot in our case. It is created by the VM snapshot controller and contains references to all resources required to restore the VM. The underlying Kubernetes StorageClass, PersistentVolume(s), VolumeSnapshot objects used and created for each attached disk, and VM's metadata information is stored in the `VirtualMachineSnapshotContent` object. So it contains all the information needed to restore the VM to that specific point in time that snapshot is taken. You can see these details by describing the `VirtualMachineSnapshotContent` bound to our VM snapshot. This value for your environment is provided at the bottom of the previous command. Remember to change the vmsnapshotcontent name:
+`VirtualMachineSnapshotContent` objects represent a provisioned resource on the cluster, a VM snapshot in our case. It is created by the VM snapshot controller and contains references to all resources required to restore the VM. The underlying Kubernetes StorageClass, PersistentVolume(s), VolumeSnapshot objects used and created for each attached disk, and VM's metadata information is stored in the `VirtualMachineSnapshotContent` object. So it contains all the information needed to restore the VM to that specific point in time that snapshot is taken. You can see these details by describing the `VirtualMachineSnapshotContent` bound to our VM snapshot. This value for your environment is provided at the bottom of the previous command. Remember to change the vmsnapshotcontent name:
  
 ```copy
 oc describe vmsnapshotcontent vmsnapshot-content-f0c977b3-d008-4878-8819-b1acb023fafb
@@ -299,7 +299,7 @@ Now you can check by refreshing `ParksMap` [web page](http://parksmap-%parksmap-
 
 In this exercise, let's restore our MongoDB database VM (by using the CLI) to the snapshot created in the previous exercise.
 
-1. List the existing vmrestore objects in the project. There should be already a `vmrestore` object in the project because we initiated one in the previous exercise using the web console.
+List the existing vmrestore objects in the project. There should be already a `vmrestore` object in the project because we initiated one in the previous exercise using the web console.
 ```execute
 oc get vmrestores
 ```
@@ -310,7 +310,7 @@ NAME                                                TARGETKIND       TARGETNAME 
 mongodb-nationalparks-snap0-restore-1677071555347   VirtualMachine   mongodb-nationalparks   true       1h           
 ~~~
 
-2. Create a `VirtualMachineRestore` object that specifies the name of the VM we want to restore and the name of the snapshot to be used as the source. The name of the VM and it's snapshot will be `mongodb-nationalparks` and `mongodb-nationalparks-snap1` in this example respectively. Right after creating the `VirtualMachineRestore` object, the snapshot controller updates the status fields of the VirtualMachineRestore object and replaces the existing VM configuration with the snapshot content.
+Create a `VirtualMachineRestore` object that specifies the name of the VM we want to restore and the name of the snapshot to be used as the source. The name of the VM and it's snapshot will be `mongodb-nationalparks` and `mongodb-nationalparks-snap1` in this example respectively. Right after creating the `VirtualMachineRestore` object, the snapshot controller updates the status fields of the VirtualMachineRestore object and replaces the existing VM configuration with the snapshot content.
 ```execute-1
 cat << EOF | oc apply -f -
 apiVersion: snapshot.kubevirt.io/v1alpha1
@@ -333,12 +333,12 @@ Which should show that the `virtualmachinerestore` object has been created:
 virtualmachinerestore.snapshot.kubevirt.io/mongodb-nationalparks-vmrestore1 created
 ~~~
 
-3. **Optional**: As in the previous exercise, the VM restoration will take a little seconds in the background. You can use the wait command and monitor the status of the snapshot.
+**Optional**: As in the previous exercise, the VM restoration will take a little seconds in the background. You can use the wait command and monitor the status of the snapshot.
 ```execute
 oc wait vmrestore mongodb-nationalparks-vmrestore1 --for condition=Ready
 ```
 
-4. List the existing vm restore objects in the project again to verify that the new vm restore is created successfully. If the vm restored successfully then the `complete` flag must be set to `true`. 
+List the existing vm restore objects in the project again to verify that the new vm restore is created successfully. If the vm restored successfully then the `complete` flag must be set to `true`. 
 ~~~execute-1
 oc get vmrestores
 ~~~
@@ -350,7 +350,7 @@ mongodb-nationalparks-vmrestore1                    VirtualMachine   mongodb-nat
 resotre-mongodb-nationalparks-snap0-1677071555347   VirtualMachine   mongodb-nationalparks   true       78m     
 ~~~
 
-5. You can also describe the `VirtualMachineRestore` object to see additional details such as operation start/end times, disks restored, etc. The `Complete` flag must be set to `true`.
+You can also describe the `VirtualMachineRestore` object to see additional details such as operation start/end times, disks restored, etc. The `Complete` flag must be set to `true`.
 ```execute
 oc describe vmsnapshot mongodb-nationalparks-snap1
 ```

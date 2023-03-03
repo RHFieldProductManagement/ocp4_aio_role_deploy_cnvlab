@@ -1,9 +1,4 @@
-Before we begin, it's important to make sure that we're in the CLI view, so select the "**Terminal**" button at the top of the screen if it's not already selected. We also need to make sure that we're disconnected from the bastion machine that we connected to in a previous window, so make sure that you're the correct user:
-
-```execute
-oc whoami
-```
-This should return "**system:serviceaccount:workbook:cnv**". If it doesn't, select the menu from the top right hand corner and choose "**Reload Terminal**". This should take you right back to the beginning. Now you should be ready to continue...
+Before we begin, it's important to make sure that we're in the CLI view, so select the "**Terminal**" button at the top of the screen if it's not already selected. 
 
 On the right hand side where the web terminal is, let's see if we can execute the following:
 

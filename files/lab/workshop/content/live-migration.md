@@ -249,7 +249,7 @@ oc apply -f nodemaintenance.yaml
 See that the `NodeMaintenance` object is created:
 
 ~~~bash
-nodemaintenance.nodemaintenance.medik8s.io/worker1-maintenance
+nodemaintenance.nodemaintenance.medik8s.io/worker-maintenance
 ~~~
 
 > **NOTE**: You **may** lose your browser based web terminal like this:
@@ -318,9 +318,7 @@ worker-maintenance   5m16s
 
 Now delete it:
 
-> **NOTE**: You may need to modify the below command to specify your `nodemaintenance` object is the same as in the output from above.
-
-```copy
+```execute-1
 oc delete nodemaintenance/worker-maintenance
 ```
 
@@ -330,9 +328,9 @@ It should return the following output:
 nodemaintenance.nodemaintenance.medik8s.io "worker-maintenance" deleted
 ~~~
 
-Then check the same node again:
+Then, check again the node we saw with the `SchedulingDisabled` annotation:
 
-```copy
+```copy-and-edit
 oc get node/ocp4-worker1.aio.example.com
 ```
 

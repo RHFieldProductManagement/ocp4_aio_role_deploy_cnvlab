@@ -28,12 +28,12 @@ Continue the installation by clicking on "**Create**" at the bottom.
 <img  border="1" src="img/ocp-virt-operator-create-HyperC-new.png"/>
 
 
-Whilst this does its thing, you can move to the '**Workloads**' → '**Pods**' menu entry on the left side of the console and watch it start all of its resources:
+Whilst this does its thing, you can move to the "**Workloads**" → "**Pods**" menu entry on the left side of the console and watch it start all of its resources:
 
 <img  border="1" src="img/ocp-vrt-hco-4-new.png"/>
 
 
-You can also briefly return to the '**Terminal**' tab in your hosted lab guide and watch via the CLI:
+You can also briefly return to the "**Terminal**" tab in your hosted lab guide and watch via the CLI:
 
 ```execute-1
 watch -n2 'oc get pods -n openshift-cnv'
@@ -80,6 +80,7 @@ cdi-uploadproxy-578bcdf7bf-st8sn                       1/1     Running     0    
 cluster-network-addons-operator-c4c4b79b7-76jqk        2/2     Running     0             23m
 hco-operator-69fc9bfc4-kznpv                           1/1     Running     0             23m
 hco-webhook-56d654d8d7-nvzbl                           1/1     Running     0             23m
+(...)
 ~~~
 
 > **NOTE**: All pods shown from this command should be in the `Running` state. You will have many different types, the above snippet is just an example of the output at one point in time, you may have more or less at any one point. Below we discuss some of the pod types and what they do.
@@ -95,7 +96,7 @@ This should return an empty result, i.e. ALL pods are running successfully:
 ~~~bash
 NAME                                                  READY   STATUS    RESTARTS   AGE
 ~~~
-
+> **NOTE**: As mentioned before, during the process you will see some pods initializing and terminating, meaning that the output shown could not be empty at some point. Re-run the command until no pods are shown. That will indicate that the installation is completed.
 
 Together, all of these pods are responsible for various functions of running a virtual machine on-top of OpenShift/Kubernetes. See the table below that describes some of the various different pod types and their function:
 
@@ -135,7 +136,7 @@ Once finished, press the blue "**Install**" button and wait a couple of minutes 
 
 <img  border="1" src="img/nmstate-operator-install-success.png"/>
 
-Once the operator is installed, we still need to create an instance of NMState. Click on "**View Opearator**" and then select "**Create instance**" as follows:
+Once the operator is installed, we still need to create an instance of NMState. Click on "**View Operator**" and then select "**Create instance**" as follows:
 
 <img  border="1" src="img/nmstate-create-instance.png"/>
 
@@ -144,7 +145,7 @@ This will present us with a form, shall we need to add any advanced configuratio
 <img  border="1" src="img/nmstate-create-instance-2.png"/>
 
 
-NMState installation provides different resources like the `NodeNetworkState` (`nns`) which extracts the current network configuration of our nodes - this is used to verify whether physical networking configurations have been successfully applied by the `nmstate-handler` pods. This is useful for ensuring that the NetworkManager state on each node is configured as required. We use this for defining interfaces/bridges on each of the machines for both physical machine connectivity and for providing network access for pods (and virtual machines) within OpenShift/Kubernetes. View the NodeNetworkState state with:
+NMState installation provides different resources like the `NodeNetworkState` (`nns`) which extracts the current network configuration of our nodes - this is used to verify whether physical networking configurations have been successfully applied by the `nmstate-handler` pods. This is useful for ensuring that the NetworkManager state on each node is configured as required. We use this for defining interfaces/bridges on each of the machines for both physical machine connectivity and for providing network access for pods (and virtual machines) within OpenShift/Kubernetes. Back in the "**Terminal**" tab, view the NodeNetworkState state with:
 
 ```execute-1
 oc get nns -A
@@ -253,7 +254,7 @@ No resources found
 
 As mentioned at the beginning of this lab, when OpenShift Virtualization is deployed, it adds additional components to OpenShift's web console, but those cannot be displayed in the web console provided in the lab environment. That's why you need to go to your **dedicated Web Console tab/window** (%cnvlab-console-url%), so you can interact with objects and custom resources defined by OpenShift Virtualization, including `VirtualMachine` types.
 
-There, click on the new "**Virtualization**" entry created on the left-hand side panel. Note that you shouldn't have any virtual machines defined:
+There, click on the new "**Virtualization**" → "**Overview**" entry created on the left-hand side panel. Note that you shouldn't have any virtual machines defined:
 
 <img src="img/ocpvirt-dashboard-new.png"/>
 
