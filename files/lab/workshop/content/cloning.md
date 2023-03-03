@@ -22,7 +22,7 @@ cd /var/www/html
 Download the latest Fedora 34 cloud image to this directory:
 
 ```execute-1
-wget https://www.mirrorservice.org/sites/dl.fedoraproject.org/pub/fedora/linux/releases/34/Cloud/x86_64/images/%cloud-image-name-fedora%.xz
+wget http://mirror.uv.es/mirror/fedora/linux/releases/34/Cloud/x86_64/images/%cloud-image-name-fedora%.xz
 ```
 
 Wait for the download to complete and extract/decompress the image:
@@ -43,7 +43,7 @@ ls -l | grep -i fedora
 It should show the following:
 
 ~~~bash
--rw-r--r--. 1 root root  5368709120 Apr 23  2021 %cloud-image-name-fedora%
+-rw-r--r--. 1 root root  5368709120 Mar 3  2023 %cloud-image-name-fedora%
 ~~~
 
 Now we need to customise this image. We're going to do the following:
